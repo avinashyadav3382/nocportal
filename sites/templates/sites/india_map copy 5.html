@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NOC – India Site Topology</title>
+
+    <!-- =====================================================
+         amCharts LIBRARIES
+         NOTE: Load in this exact order
+         ===================================================== -->
+    <script src="{% static 'amcharts/core.js' %}"></script>
+    <script src="{% static 'amcharts/maps.js' %}"></script>
+    <script src="{% static 'amcharts/india2020High.js' %}"></script>
+    <script src="{% static 'amcharts/animated.js' %}"></script>
+
+    <style>
+        /* =====================================================
+           GLOBAL PAGE STYLE
+           ===================================================== */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #eef2f5;
+        }
+
+        /* =====================================================
+           HEADER (TOP BAR)
+           ===================================================== */
+        #header {
+            background-color: #002b5c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           MAP CONTAINER
+           ===================================================== */
+        #chartdiv {
+            width: 100%;
+            height: calc(100vh - 60px);
+            background-color: #d7e0e1;
+        }
+
+        /* =====================================================
+           FLOATING LEGEND (BOTTOM-LEFT)
+           ===================================================== */
+        #legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.65);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            z-index: 1000;
+        }
+
+        /* =====================================================
+           CONTACT INFO PANEL (BOTTOM-RIGHT)
+           ===================================================== */
+        #contact-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(255,255,255,0.96);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            display: none;
+            z-index: 1000;
+        }
+
+        #contact-header {
+            background: #002b5c;
+            color: white;
+            padding: 8px 10px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        #contact-content {
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           RESET ZOOM BUTTON
+           Positioned near zoom controls
+           ===================================================== */
+        #resetZoomBtn {
+            position: fixed;
+            top: 95px;     /* aligns near + / - zoom */
+            right: 20px;
+            z-index: 1000;
+            background: #ffffff;
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 4px;
+            width: 35%;
+            background: #f0f0f0;
+        }
+
+        td {
+            padding: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+<div id="header">
+    INDIA NOC – SITE TOPOLOGY
+</div>
+
+<!-- =====================================================
+     MAP CONTAINER
+     ===================================================== -->
+<div id="chartdiv"></div>
+
+<!-- =====================================================
+     RESET ZOOM BUTTON
+     ===================================================== -->
+<button id="resetZoomBtn" title="Reset Map View">
+    ⟳ Reset
+</button>
+
+<!-- =====================================================
+     FLOATING LEGEND
+     ===================================================== -->
+<div id="legend">
+    <b>Legend</b>
+    <div><span style="color:#00c853;">●</span> UP</div>
+    <div><span style="color:#ff5252;">●</span> DOWN</div>
+    <div><span style="color:#ffab00;">●</span> MAINT</div>
+    <div><span style="color:#b0bec5;">●</span> UNKNOWN</div>
+</div>
+
+<!-- =====================================================
+     CONTACT INFO PANEL
+     ===================================================== -->
+<div id="contact-panel">
+    <div id="contact-header">
+        <span id="contact-title">Site Contact</span>
+        <span>—</span>
+    </div>
+    <div id="contact-content"></div>
+</div>
+
+<script>
+/* ==========================================================
+   MAIN amCharts INITIALIZATION
+   ========================================================== */
+am4core.ready(function () {
+
+    /* ======================================================
+       GLOBAL CONFIGURATION FLAGS
+       ====================================================== */
+
+    // Toggle site pulse animation ON / OFF
+    // true  = pulse enabled
+    // false = pulse disabled (recommended for UP sites)
+    var ENABLE_SITE_PULSE = true;
+
+    am4core.useTheme(am4themes_animated);
+
+    /* ======================================================
+       CREATE MAP INSTANCE
+       ====================================================== */
+    var chart = am4core.create("chartdiv", am4maps.MapChart);
+    chart.geodata = am4geodata_india2020High;
+    chart.projection = new am4maps.projections.Miller();
+
+    /* Improve tooltip readability */
+    chart.tooltip.label.fill = am4core.color("#ffffff");
+    chart.tooltip.background.fill = am4core.color("#000000");
+    chart.tooltip.background.opacity = 0.85;
+
+    /* ======================================================
+       INDIA STATES (POLYGONS)
+       ====================================================== */
+    var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    polygonSeries.useGeodata = true;
+
+    var polygonTemplate = polygonSeries.mapPolygons.template;
+    polygonTemplate.fill = am4core.color("#5685d1");
+    polygonTemplate.strokeOpacity = 0.4;
+    polygonTemplate.cursorOverStyle = am4core.MouseCursorStyle.pointer;
+    polygonTemplate.tooltipText = "{name}";
+
+    /* Hover color for states */
+    polygonTemplate.states.create("hover").properties.fill =
+        am4core.color("#d32f2f");
+
+    /* ======================================================
+       SITE MARKERS
+       ====================================================== */
+    var imageSeries = chart.series.push(new am4maps.MapImageSeries());
+
+    imageSeries.mapImages.template.propertyFields.latitude = "latitude";
+    imageSeries.mapImages.template.propertyFields.longitude = "longitude";
+    imageSeries.mapImages.template.tooltipText = "{title}";
+
+    /* Solid site marker */
+    var marker = imageSeries.mapImages.template.createChild(am4core.Circle);
+    marker.radius = 5;
+    marker.nonScaling = true;
+    marker.propertyFields.fill = "color";
+
+    /* Pulse ring (optional) */
+    var pulse = imageSeries.mapImages.template.createChild(am4core.Circle);
+    pulse.radius = 3;
+    pulse.propertyFields.fill = "color";
+
+    /* Enable / disable pulse using flag */
+    if (ENABLE_SITE_PULSE) {
+        pulse.events.on("inited", function (ev) {
+            animatePulse(ev.target);
+        });
+    } else {
+        pulse.disabled = true;
+    }
+
+    /* Pulse animation function */
+    function animatePulse(circle) {
+        circle.animate(
+            [
+                { property: "scale", from: 1, to: 5 },
+                { property: "opacity", from: 1, to: 0 }
+            ],
+            1200
+        ).events.on("animationended", function () {
+            animatePulse(circle);
+        });
+    }
+
+    /* ======================================================
+       SITE CLICK HANDLER
+       ====================================================== */
+    imageSeries.mapImages.template.events.on("hit", function (ev) {
+        loadContactInfo(ev.target.dataItem.dataContext.title);
+    });
+
+    /* ======================================================
+       AUTO-CLOSE CONTACT PANEL ON MAP CLICK
+       ====================================================== */
+    chart.seriesContainer.events.on("hit", function () {
+        document.getElementById("contact-panel").style.display = "none";
+    });
+
+    /* ======================================================
+       CONTACT INFO FETCH
+       ====================================================== */
+    function loadContactInfo(siteName) {
+        fetch(`/api/contact-info/${siteName}/`)
+            .then(r => r.json())
+            .then(data => renderContact(siteName, data));
+    }
+
+    function renderContact(siteName, contacts) {
+        document.getElementById("contact-title").innerText = siteName;
+        let panel = document.getElementById("contact-panel");
+        let content = document.getElementById("contact-content");
+
+        if (contacts.length === 0) {
+            content.innerHTML = "<i>No contact details available</i>";
+        } else {
+            let rows = "";
+            contacts.forEach(c => {
+                rows += `
+                    <tr><th>Email</th><td>${c.email}</td></tr>
+                    <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
+                    <tr><th>Address</th><td>${c.address || "-"}</td></tr>
+                `;
+            });
+            content.innerHTML = `<table>${rows}</table>`;
+        }
+        panel.style.display = "block";
+    }
+
+    /* Collapse / expand contact panel */
+    document.getElementById("contact-header").onclick = function () {
+        let c = document.getElementById("contact-content");
+        c.style.display = (c.style.display === "none") ? "block" : "none";
+    };
+
+    /* ======================================================
+       LOAD SITE DATA FROM DJANGO
+       ====================================================== */
+    function loadSiteData() {
+        fetch("{% url 'site-map-api' %}")
+            .then(r => r.json())
+            .then(data => imageSeries.data = data);
+    }
+
+    loadSiteData();
+    setInterval(loadSiteData, 20000);
+
+    /* ======================================================
+       ZOOM CONTROLS + RESET BUTTON
+       ====================================================== */
+    chart.zoomControl = new am4maps.ZoomControl();
+
+    /* Reset map view to full India */
+    document.getElementById("resetZoomBtn").onclick = function () {
+        chart.goHome();   // Zoom out + center
+    };
+});
+</script>
+
+</body>
+</html>

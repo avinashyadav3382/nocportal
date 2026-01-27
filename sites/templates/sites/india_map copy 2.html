@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NOC – India Site Topology</title>
+
+    <!-- amCharts -->
+    <script src="{% static 'amcharts/core.js' %}"></script>
+    <script src="{% static 'amcharts/maps.js' %}"></script>
+    <script src="{% static 'amcharts/india2020High.js' %}"></script>
+    <script src="{% static 'amcharts/animated.js' %}"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #eef2f5;
+        }
+
+        #header {
+            background-color: #002b5c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #chartdiv {
+            width: 100%;
+            height: calc(100vh - 60px);
+            background-color: #d7e0e1;
+        }
+
+        /* FLOATING LEGEND */
+        #legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.65);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            z-index: 1000;
+        }
+
+        #legend div {
+            margin: 4px 0;
+        }
+
+        /* CONTACT PANEL */
+        #contact-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(255,255,255,0.96);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            display: none;
+            z-index: 1000;
+        }
+
+        #contact-header {
+            background: #002b5c;
+            color: white;
+            padding: 8px 10px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        #contact-content {
+            padding: 10px;
+            font-size: 13px;
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 4px;
+            width: 35%;
+            background: #f0f0f0;
+        }
+
+        td {
+            padding: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="header">INDIA NOC – SITE TOPOLOGY</div>
+
+<div id="chartdiv"></div>
+
+<!-- FLOATING LEGEND -->
+<div id="legend">
+    <b>Legend</b>
+    <div><span style="color:#00c853;">●</span> UP</div>
+    <div><span style="color:#ff5252;">●</span> DOWN</div>
+    <div><span style="color:#ffab00;">●</span> MAINT</div>
+    <div><span style="color:#b0bec5;">●</span> UNKNOWN</div>
+</div>
+
+<!-- CONTACT PANEL -->
+<div id="contact-panel">
+    <div id="contact-header">
+        <span id="contact-title">Site Contact</span>
+        <span>—</span>
+    </div>
+    <div id="contact-content"></div>
+</div>
+
+<script>
+am4core.ready(function () {
+
+    am4core.useTheme(am4themes_animated);
+
+    var chart = am4core.create("chartdiv", am4maps.MapChart);
+    chart.geodata = am4geodata_india2020High;
+    chart.projection = new am4maps.projections.Miller();
+
+    var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    polygonSeries.useGeodata = true;
+    polygonSeries.mapPolygons.template.fill = am4core.color("#5685d1");
+    polygonSeries.mapPolygons.template.strokeOpacity = 0.4;
+
+    var imageSeries = chart.series.push(new am4maps.MapImageSeries());
+    imageSeries.mapImages.template.propertyFields.latitude = "latitude";
+    imageSeries.mapImages.template.propertyFields.longitude = "longitude";
+    imageSeries.mapImages.template.tooltipText = "{title}";
+
+    var marker = imageSeries.mapImages.template.createChild(am4core.Circle);
+    marker.radius = 5;
+    marker.nonScaling = true;
+    marker.propertyFields.fill = "color";
+
+    var pulse = imageSeries.mapImages.template.createChild(am4core.Circle);
+    pulse.radius = 3;
+    pulse.propertyFields.fill = "color";
+
+    pulse.events.on("inited", function (event) {
+        animatePulse(event.target);
+    });
+
+    function animatePulse(circle) {
+        circle.animate(
+            [{ property: "scale", from: 1, to: 5 },
+             { property: "opacity", from: 1, to: 0 }],
+            1200
+        ).events.on("animationended", function () {
+            animatePulse(circle);
+        });
+    }
+
+    /* CLICK SITE */
+    imageSeries.mapImages.template.events.on("hit", function (ev) {
+        var siteName = ev.target.dataItem.dataContext.title;
+        loadContactInfo(siteName);
+    });
+
+    function loadContactInfo(siteName) {
+        fetch(`/api/contact-info/${siteName}/`)
+            .then(r => r.json())
+            .then(data => renderContact(siteName, data))
+            .catch(() => alert("Failed to load contact info"));
+    }
+
+    function renderContact(siteName, contacts) {
+        var panel = document.getElementById("contact-panel");
+        var content = document.getElementById("contact-content");
+        document.getElementById("contact-title").innerText = siteName;
+
+        if (contacts.length === 0) {
+            content.innerHTML = "<i>No contact details available</i>";
+        } else {
+            let rows = "";
+            contacts.forEach(c => {
+                rows += `
+                    <tr><th>Email</th><td>${c.email}</td></tr>
+                    <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
+                    <tr><th>Address</th><td>${c.address || "-"}</td></tr>
+                `;
+            });
+            content.innerHTML = `<table>${rows}</table>`;
+        }
+        panel.style.display = "block";
+    }
+
+    /* COLLAPSE PANEL */
+    document.getElementById("contact-header").onclick = function () {
+        var content = document.getElementById("contact-content");
+        content.style.display = content.style.display === "none" ? "block" : "none";
+    };
+
+    function loadSiteData() {
+        fetch("{% url 'site-map-api' %}")
+            .then(r => r.json())
+            .then(data => imageSeries.data = data);
+    }
+
+    loadSiteData();
+    setInterval(loadSiteData, 20000);
+
+    chart.zoomControl = new am4maps.ZoomControl();
+
+});
+</script>
+
+</body>
+</html>

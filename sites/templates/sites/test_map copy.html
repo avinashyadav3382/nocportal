@@ -1,0 +1,487 @@
+{% extends 'login/base_global_dashboard.html' %}
+{% block content %}
+{% load static %}
+<script src="{% static 'login/amcharts/core.js' %}"></script>
+<script src="{% static 'login/amcharts/maps.js' %}"></script>
+<script src="{% static 'login/amcharts/india2020High.js' %}"></script>
+<script src="{% static 'login/amcharts/animated.js' %}"></script>
+<style>
+9. #header {
+10. background-color: #002b5с;
+11. color: white;
+12. padding: 12px 20px;
+13. font-size: 22px;
+14. font-weight: bold;
+15.}
+16. #chartdiv {
+17. padding-top: 10px;
+18. width: 100;
+19. height: calc(100vh - 50px);
+20. background-color: #d7e0e1;
+21. padding-bottom: 100px;
+22.}
+23. #legend {
+24. position: fixed;
+25. bottom: 90px;
+26. left: 270px;
+27. background: rgba(0, 0, 0, 0.65);
+28. color: white;
+29. padding: 10px 14px;
+30. border-radius: 6px;
+31. font-size: 13px;
+32. z-index: 1000;
+33.}
+34. #contact-panel
+35. position: fixed;
+36. bottom: 90px;
+37. right: 40px;
+38. width: 360px;
+39. background: rgba(255, 255, 255, 0.96);
+40. border-radius: 6px;
+41. box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+42. display: none;
+43. z-index: 1000;
+44.}
+45. #contact-header {
+46. background: #002b5c;
+47. color: white;
+48. padding: 8px 10px;
+49. font-size: 14px:
+50. display: flex:
+51. justify-content: space between;
+52. cursor: pointer
+53.
+54. #contact-content (
+55. padding: 10px;
+56. font-size: 13px:
+57.)
+58. #resetZoomBtn{
+59.position: fixed;
+60. top: 110px;
+61. right: 20px;
+62. background: #002b5c;
+63. color: white;
+64.padding: 8px 12px;
+65. cursor:pointer;
+66.border:white;
+67. border-radius:4px;
+68. z-index: 1000;
+69.width: 90px;
+70.)
+71. table {
+72. width: 100%;
+73. border-collapse: collapse;
+74.
+75. th {
+76. text-align: left;
+77. padding: 4px;
+78. width: 35%;
+79. background: #fofOfo;
+80.}
+81. td {
+82. padding: 4px;
+83.}
+84. #settings-btn {
+85. position: fixed;
+86. top: 160px;
+87. right: 20px;
+88. background: #002b5c;
+89. color: white;
+90. padding: 8px 12px;
+91. cursor: pointer;
+92. border-radius: 4pх;
+93. z-index: 1001;
+94. width: 90px;
+95.}
+96. #settings-panel {
+97. position: fixed;
+98. right: -260px;
+99. top: 200px;
+100. width: 240px;
+101. background: white;
+102. border-radius: 6px;
+103. box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+104. padding: 12px;
+105. transition: right 0.3s ease;
+106. z-index: 1000;
+107. }
+108. /*
+109. #settingsPanel label {
+110. display: block;
+111. margin: 6pх 0;
+112.
+113. #settingsPanel input [type="range"] {
+114. width: 100%;
+115. }
+116. #saveSettings {
+117. width: 100%;
+118. margin-top: 10px;
+119. padding: 6px;
+120. background: #1e90ff;
+121. border: none;
+122. color: white;
+123. cursor: pointer;
+124. }*/
+125. #settings-panel.open {
+126. right: 20pх;
+127. }
+128. .settings-title{
+129. font-weight: bold;
+130. margin-bottom: 8px;
+131. }
+132. .settings-row {
+133. display: fleх;
+134. justify-content: space-between; 
+135. align-items: center;
+136. align-items: center;
+137. margin: 6pх 0;
+138. font-size: 13px;
+139.
+140. .switch{
+141. position: relative;
+142. width: 34px;
+143. height: 18px
+144. }
+145. .switch input {
+146. display: none;
+147.
+148. .slider {
+149. position: absolute;
+150. background: #ccc;
+151. border-radius: 18pх;
+152. inset: 0;
+153. cursor: pointer;
+154.
+155. .slider:before {
+156. content: "";
+157. position: absolute;
+158. height: 14px;
+159. width: 14px;
+160. left: 2px;
+161. bottom: 2px;
+162. background: white;
+163. border-radius: 50%;
+164. transition: 0.2s;
+165. }
+166. input:checked+.slider {
+167. background: #4caf50;
+168.
+169. input:checked+.slider:before {
+170. transform: translateX(16px);
+171. }
+172. input[type=range] {
+173. width: 110px;
+174. }
+175. </style>
+176. <!-- {% if user.is_authenticated %}
+177. <div class="watermark-container">
+178. {{ user.username }}
+179. </div>
+180. {% endif %} -->
+181.<div id="header">INDIA NOC - SITE TOPOLOGY</div>
+182. <div id="chartdiv"></div>
+183. <button id="resetZoomBtn">Reset</button>
+184. <div id="settings-btn">Settings</div>
+185. <div id="settings-panel">
+186. <div class="settings-title">Show Sites</div<
+187. <div class="settings-row">AFNET Site
+188. <label class="switch">
+189. <input type="checkbox" id="showA" checked>
+190. <span class="slider"></span>
+191. </label>
+192. </div>
+193. <div class="settings-row">Site on Satcom
+194. <label class="switch">
+195. <input type="checkbox" id="showB" checked>
+196. <span class="slider"></span>
+197. </label>
+198. </div>
+199. <div class="settings-row">Site Unreachable
+200. <label class="switch">
+201. <input type="checkbox" id="showC" checked>
+202. <span class="slider"></span>
+203. </label>
+204. </div>
+205. <hr>
+206. <div class="settings-title">Pulse</div>
+207. <div class="settings-row">AFNET Site
+208. <label class="switch">
+209. <input type="checkbox" id="pulseA" checked> 
+210. <span class="slider"></span>
+211. </label>
+212. </div>
+213. <div class="settings-row">Site on Satcom
+214. <label class="switch">
+215. <input type="checkbox" id="pulseB" checked>
+216. <span class="slider"></span>
+217. </label>
+218. </div>
+219. <div class="settings-row">Site Unreachable
+220. <label class="switch">
+221. <input type="checkbox" id="pulseC" checked<
+222. <span class="slider"></span>
+223. </label>
+224. </div>
+225. <div class="settings-title">Sizes</div>
+226. <div class="settings-row">Marker Size
+227. <input type="range" id="markerSize" min="3" max="12">
+228. </div>
+229. <div class="settings-row">Pulse Size
+230. <input type="range" id="pulseSize" min="5" max="15">
+231. </div>
+232. <hr>
+233. <button id="saveSettings"
+234. style="width: 100%; padding: 6px; background: #002b5c; color: white; border: none; border-radius: 4px;">Save
+235. Settings
+236. </button>
+237. </div>
+238. <div id="legend">
+239. <b>Legend</b><br>
+240. <div><span style="color: green; font-size: 20px;"></span> AFNET Site</div>
+241. <div><span style="color: yellow; font-size: 20px;"></span> Site on Satcom</div>
+242. <div><span style="color: red; font-size: 20px;"></span> Site Unreachable</div>
+243. </div>
+244. <div id="contact-panel">
+245. <div id="contact-header">
+246. <span id="contact-title">Site Detail</span>
+247. <span>--</span>
+248. </div>
+249. <div id="contact-content"></div>
+250. </div>
+251. <script>
+252. am4core.ready(function )( }
+253. am4core.useTheme(am4themes_animated);
+254. const DEFAULT_SETTINGS = {
+255. showA: true,
+256. showB: true,
+257. showC: true,
+258. pulseA: false,
+259. pulseB: false,
+260. pulseC: true,
+261. markerSize: 5,
+262. pulseSize:8
+263. };
+264. let SETTINGS = JSON.parse(localStorage.getltem("mapSettings")) || {...DEFAULT_SETTINGS};
+265. const COLOR_TYPE_A = "green";
+266. const COLOR_TYPE_B = "yellow";
+267. const COLOR_TYPE_C = "red";
+268. /* -------------MAP----------*/
+269. var chart = am4core.create("chartdiv", am4maps.MapChart);
+270. chart.geodata = am4geodata_india2020High;
+271. chart.projection = new am4maps.projections.Miller();
+272. chart.zoomControl = new am4maps.ZoomControl();
+273. chart.tooltip.label.fill = am4core.color("#ffffff");
+274. chart.tooltip.background.fill = am4core.color("#000000");
+275. chart.tooltip.background.opacity = 0.85;
+276. /* -------RESET ZOOM BUTTON------- */
+277. document.getElementById("resetZoomBtn").onclick = function () {
+278. chart.goHome();
+279. };
+280. /* --States-- */
+281. var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+282. polygonSeries.useGeodata = true;
+283. var polygonTemplate = polygonSeries.mapPolygons.template;
+284. polygonTemplate.fill = am4core.color("#5685d1");
+285. polygonTemplate.strokeOpacity = 0.4;
+286. polygonTemplate.cursonOverStyle = am4core.MouseCursorStyle.pointer;
+287. polygonTemplate.tooltipText = "{name}"
+288. /* hover color for states */
+289. polygonTemplate.states.create("hover").properties.fill = am4core.color("#ceadada6");
+290. Sites */
+291. var imageSeries = chart.series.push(new am4maps.MaplmageSeries());
+292. imageSeries.maplmages.template.propertyFields.latitude = "latitude";
+293. imageSeries.maplmages.template.propertyFields.longitude = "longitude";
+294. imageSeries.maplmages.template.tooltipText = "{title}";
+295. /*--Solid site marker---*/
+296. var marker = imageSeries.maplmages.template.createChild(am4core.Circle);
+297. // marker.radius = 6;
+298. pulse.adapter.add("radius", () => SETTINGS.pulseSize);
+299. pulse.nonScaling = true;
+300. pulse.propertyFields.fill = "color";
+301. pulse.opacity = 0.5;
+302. pulse.strokeWidth = 0;
+303. pulse.zindex = 0;
+304. /* Solid site marker */
+305. var marker = imageSeries.maplmages.template.createChild(am4core.Circle);
+306. //marker.radius = 4;
+307. marker.adapter.add("radius", () => SETTINGS.markerSize);
+308. marker.nonScaling = true;
+309. marker.propertyFields.fill = "color";
+310. marker.opacity = 1;
+311. marker.zIndex = 1;
+312. /*---Show/ Hide Site types--*/
+313. marker.adapter.add("opacity", function ( target) {
+314. let c = (target.dataltem?.dataContext?.color || "").toLowerCase().trim();
+315. if (c=== COLOR_TYPE_A) return SETTINGS.showA? 1:0;
+316. if (c=== COLOR_TYPE_B) return SETTINGS.showB?1:0;
+317. if (c === COLOR_TYPE_C) return SETTINGS.showC?1:0;
+318. return 1;
+319. });
+320. function startPulse(circle) {
+321. if (circle._pulseAnim){ circle._pulseAnim.stop();
+322. }
+323. circle.scale= 1;
+324. circle.opacity = 1;
+325. circle._pulseAnim = circle.animate([{property: "scale", from: 1, to: 5},{property: "scale", from: 1, to: 5},{ property: "opacity", from: 1, to: 0},],1200
+326 );
+327. circle._pulseAnim.events.on("animationended", function () {startPulse(circle);
+328. });
+329. }
+330. function stopPulse(circle) {
+331. if (circle._pulseAnim) {circle._pulseAnim.stop();circle._pulseAnim = null;
+332. }
+333. circle.opacity = 0;
+334. circle.scale = 1;
+335. }
+336. function updatePulse(mapImages) {
+337. let data = mapImages.dataItem.dataContext;
+338. let pulseCircle = mapImages.children.getIndex(0); // Assuming pulse is the second child
+339. let c = (data.color || "").toLowerCase().trim();
+340. let shouldPulse = ((c === COLOR_TYPE_A && SETTINGS.pulseA) || (c === COLOR_TYPE_B && SETTINGS.pulseB) || (c === COLOR_TYPE_C && SETTINGS.pulseC));
+341. console.log(data.title);
+342. if (shouldPulse) { startPulse(pulseCircle);
+343. } else { stopPulse(pulseCircle);
+344. }
+345. }
+346. 
+347. imageSeries.mapImages.template.events.on("inited", function (ev) {
+348. updatePulse(ev.target);
+349. });
+350. 
+351. imageSeries.mapImages.template.events.on("dataitemchanged", function (ev) {
+352. updatePulse(ev.target);
+353. });
+354. /* ================= site click handler ================= */
+355. imageSeries.mapImages.template.events.on("hit", function (ev) {
+356. loadContactInfo(ev.target.dataItem.dataContext.title);
+357. });
+358./*------------Auto Close contact panel on map click ---*/
+359. chart.seriesContainer.events.on("hit", function () {
+360. document.getElementById("contact-panel").style.display = "none";
+361. });
+362. /*-------------Contact info fetch--------------*/
+363. function loadContactInfo(siteName) {
+364. fetch(/api/site-contact-info/${siteName}/').then(r => r.json()).then(data => renderContact(siteName, data));
+365. }
+366. function renderContact(siteName, contacts) {
+367. document.getElementById("contact-title").innerText = siteName;
+368. let panel = document.getElementById("contact-panel");
+369. let content = document.getElementById("contact-content");
+370. if (contacts.length == 0) { content.innerHTML = "<i>No Contact Details Available </i>";
+371. }
+372. else { let rows=""; contacts.forEach(c => { rows += <tr><th>Email</th><td>${c.email || "-"}</td></tr><tr><th>Phone</th><td>${c.phone || "-"}</td></tr><tr><th><Address></Address></th><td>${c.address || "-"}</td></tr>`;}); content.innerHTML = `<table>${rows}</table>`
+373. }
+374. panel.style.display = "block";
+375. }
+376. /* ================= collapse expand contact panel ================= */
+377. document.getElementById("contact-header").onclick = function () {
+378. let c = document.getElementById("contact-content");
+379. c.style.display = (c.style.display === "none") ? "block": "none";
+380. };
+381. /* ================= Load Site Data ================= */
+382. function loadSiteData() {
+383. 
+384. fetch("{% url 'site-map-api' %}").then(r => r.json()).then(data => imageSeries.data = data);   
+385. }
+386. loadSiteData();
+387. setInterval(loadSiteData, 120000); 
+388. /* ================= Settings Panel ================= */
+389. Object.keys(SETTINGS).forEach(k => {
+390. let el = document.getElementById(k);
+391. if (el) {(el.type === "checkbox") ? el.checked = SETTINGS[k] : el.value = SETTINGS[k];
+392. } 
+393. }); 
+394. function refresh() {
+395. console.log("Refreshing markers...");
+396. imageSeries.mapImages.each(m => {updatePulse(m)});
+397. chart.invalidateRawData();
+398. }
+399. ["showA", "showB", "showC", "pulseA", "pulseB", "pulseC"].forEach(id => {
+400. document.getElementById(id).onchange = e => { SETTINGS[id] = e.target.checked; refresh(); };
+401. }
+402. });
+403. document.getElementById("markerSize").oninput = e => {
+404. SETTINGS.markerSize = +e.target.value;
+405. refresh();
+406. };
+407. document.getElementById("pulseSize").oninput = e => {
+408. SETTINGS.pulseSize = +e.target.value;
+409. refresh();
+410. };
+411. document.getElementById("saveSettings").onclick = () => {
+412. localStorage.setItem("mapSettings", JSON.stringify(SETTINGS));
+413. window.location.reload(true);
+414. alert("Settings Saved");
+415. };
+416. function initSettingsUI() {
+417. Object.keys(SETTINGS).forEach(key => { const el = document.getElementById(key); if (!el) return; if (el.type === "checkbox") { el.checked = SETTINGS[key]; } else { el.value = SETTINGS[key]; }
+418. });
+419. }
+420. initSettingsUI();
+421. // document.getElementByld("showA").onchange = e => {showA =e.target.checked; refresh();
+422. // document.getElementByld("showB").onchange = e => {showB = e.target.checked; refresh(); }
+423. // document.getElementByld("showC").onchange = e => {showC = e.target.checked; refresh();
+424. // document.getElementByld("pulseA").onchange = e => {pulseA = e.target.checked; refresh(); };
+425. // document.getElementByld("pulseB").onchange = e => {pulseB = e.target.checked; refresh(););
+426. // document.getElementByld("pulseC").onchange = e => {pulseC = e.target.checked; refresh(); }:
+427. document.getElementByld("settings-btn").onclick = () =>
+428. document.getElementByld("settings-panel").classList.toggle("open");
+429. });
+430. </script>
+431. <style>
+432. .watermark {
+433. position: fixed;
+434. top: 0;
+435. left: 0;
+436. width: 100%;
+437. height: 100%;
+438. display: grid;
+439. grid-template-columns: repeat(auto-fill, 300px);
+440. grid-template-rows: repeat(auto-fill, 200px);
+441. align-items: center;
+442. justify-content: center;
+443. pointer-events: none;
+444. z-index: 9999;
+445. user-select: none;
+446. transform: rotate(-30deg);
+447. color: rgba (0, 0, 0, 1);
+448. }
+449. </style>
+450. {% if user.is_authenticated %}
+451. <script>
+452. document.addEventListener("DOMContentLoaded", function (){
+453. const username = "{{ user.username|escapejs }}";
+454. const watermark = document.createElement("div");
+455. watermark.id = "username-watermark";
+456. watermark.style.cssText =
+457. position: fixed;
+458. top: 0;
+459. left: 0;
+460. width: 100%;
+461. height: 100%;
+462. display: grid;
+463. grid-template-columns: repeat(auto-fill, 300px);
+464. grid-template-rows: repeat(auto-fill, 200px);
+465. align-items: center;
+466. justify-content: center;
+467. pointer-events: none;
+468. z-index: 9999;
+469. user-select: none;
+470. `;
+471. for (let i = 0; i < 60; i++) {
+472. const text = document.createElement("div");
+473. text.innerText = username;
+474. text.style.cssText =
+475. font-size: 40px;
+476. font-weight: bold;
+477. color: rgba(0,0,0,0.04);
+478. transform: rotate(-30deg);
+479. white-space: nowrap;
+480.
+481. watermark.appendChild(text);
+482. }
+483. document.body.appendChild(watermark);
+484. })
+485. </script>
+486. {% endif %}
+487. {% endblock %}
