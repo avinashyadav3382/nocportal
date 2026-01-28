@@ -2,18 +2,14 @@
 {% block content %}
 {% load static %}
 
-<!-- ──────────────────────────────────────────────── -->
 <!-- Load AmCharts Libraries -->
-<!-- ──────────────────────────────────────────────── -->
 <script src="{% static 'amcharts/core.js' %}"></script>
 <script src="{% static 'amcharts/maps.js' %}"></script>
 <script src="{% static 'amcharts/india2020High.js' %}"></script>
 <script src="{% static 'amcharts/animated.js' %}"></script>
+<script src="{% static 'amcharts/dark.js' %}"></script>  <!-- Added for dark mode -->
 
-<!-- ──────────────────────────────────────────────── -->
 <!-- CSS Styles -->
-<!-- Panels are now scrollable with max-height to never exceed screen -->
-<!-- ──────────────────────────────────────────────── -->
 <style>
     #header {
         background-color: #002b5c;
@@ -26,7 +22,7 @@
     #chartdiv {
         width: 100%;
         height: calc(100vh - 60px);
-        background-color: #e8f0f2;
+        background-color: #e8f0f2;           /* light default – will be overridden by chart background in JS */
     }
 
     #legend {
@@ -86,17 +82,9 @@
         align-items: flex-start;
     }
 
-    #resetZoomBtn {
-        top: 120px;
-    }
-
-    #settings-btn {
-        top: 170px;
-    }
-
-    #history-btn {
-        top: 220px;
-    }
+    #resetZoomBtn { top: 120px; }
+    #settings-btn  { top: 170px; }
+    #history-btn   { top: 220px; }
 
     table {
         width: 100%;
@@ -120,9 +108,7 @@
         right: -300px;
         width: 280px;
         max-height: 70vh;
-        /* Prevents going beyond screen height */
         overflow-y: auto;
-        /* Scrollable if many rows (e.g. future colors) */
         background: white;
         border-radius: 8px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
@@ -180,11 +166,11 @@
         transition: 0.3s;
     }
 
-    input:checked+.slider {
+    input:checked + .slider {
         background: #4caf50;
     }
 
-    input:checked+.slider:before {
+    input:checked + .slider:before {
         transform: translateX(18px);
     }
 
@@ -211,7 +197,7 @@
         cursor: pointer;
     }
 
-    /* ── Alerts ── */
+    /* Alerts */
     #alert-container {
         position: fixed;
         top: 20px;
@@ -235,19 +221,11 @@
         opacity: 1;
     }
 
-    .alert-danger {
-        background: #dc3545;
-    }
+    .alert-danger   { background: #dc3545; }
+    .alert-success  { background: #198754; }
+    .alert-warning  { background: #fd7e14; }
 
-    .alert-success {
-        background: #198754;
-    }
-
-    .alert-warning {
-        background: #fd7e14;
-    }
-
-    /* ── History Panel – scrollable if needed ── */
+    /* History Panel */
     #history-panel {
         position: fixed;
         top: 270px;
@@ -280,15 +258,8 @@
         margin-bottom: 4px;
     }
 
-    .history-danger {
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    .history-success {
-        color: #198754;
-        font-weight: bold;
-    }
+    .history-danger  { color: #dc3545; font-weight: bold; }
+    .history-success { color: #198754; font-weight: bold; }
 </style>
 
 <div id="header">INDIA NOC - SITE TOPOLOGY</div>
@@ -298,9 +269,7 @@
 <div id="settings-btn"><i class="bi bi-gear me-2" aria-hidden="true"></i>Settings</div>
 <div id="history-btn"><i class="bi bi-clock me-2" aria-hidden="true"></i>History</div>
 
-<!-- ──────────────────────────────────────────────── -->
-<!-- Settings Panel – includes toggles for all 5 colors -->
-<!-- ──────────────────────────────────────────────── -->
+<!-- Settings Panel -->
 <div id="settings-panel">
     <div class="settings-title">Visibility</div>
     <div class="settings-row">AFNET Sites
@@ -346,12 +315,20 @@
         <input type="range" id="pulseSize" min="6" max="19" value="10">
     </div>
 
+    <!-- Dark mode toggle – only affects the map -->
+    <div class="settings-title">Map Appearance</div>
+    <div class="settings-row">
+        Dark Map
+        <label class="switch">
+            <input type="checkbox" id="darkMap">
+            <span class="slider"></span>
+        </label>
+    </div>
+
     <button id="saveSettings">Save Settings</button>
 </div>
 
-<!-- ──────────────────────────────────────────────── -->
-<!-- Legend – shows all 5 defined colors -->
-<!-- ──────────────────────────────────────────────── -->
+<!-- Legend -->
 <div id="legend">
     <b>Legend</b><br>
     <div><span style="color:green;font-size:22px">●</span> AFNET Site</div>
@@ -361,9 +338,7 @@
     <div><span style="color:blue;font-size:22px">●</span> Inactive</div>
 </div>
 
-<!-- ──────────────────────────────────────────────── -->
 <!-- Contact Panel -->
-<!-- ──────────────────────────────────────────────── -->
 <div id="contact-panel">
     <div id="contact-header">
         <span id="contact-title">Site Details</span>
@@ -372,22 +347,19 @@
     <div id="contact-content"></div>
 </div>
 
-<!-- Alerts container -->
+<!-- Alerts -->
 <div id="alert-container"></div>
 
-<!-- History Panel – scrollable -->
+<!-- History Panel -->
 <div id="history-panel">
     <h4 style="margin:0 0 12px;">Site Status Changes</h4>
     <div id="history-list" style="min-height:100px;"></div>
-    <button id="clear-history"
-        style="margin-top:12px;width:100%;padding:8px;background:#dc3545;color:white;border:none;border-radius:4px;cursor:pointer;">Clear
-        History</button>
+    <button id="clear-history" style="margin-top:12px;width:100%;padding:8px;background:#dc3545;color:white;border:none;border-radius:4px;cursor:pointer;">Clear History</button>
 </div>
 
 <script>
     // ────────────────────────────────────────────────
     // GLOBAL SETTINGS & CONSTANTS
-    // All 5 colors are fully supported with visibility/pulse toggles
     // ────────────────────────────────────────────────
     const SITE_COLORS = {
         A: "green",
@@ -398,18 +370,19 @@
     };
 
     const STATUS_NAMES = {
-        "green": "AFNET Site",
+        "green":  "AFNET Site",
         "yellow": "Site on Satcom",
-        "red": "Unreachable",
+        "red":    "Unreachable",
         "purple": "Purple Status",
-        "blue": "Inactive"
+        "blue":   "Inactive"
     };
 
     const DEFAULT_SETTINGS = {
         showA: true, showB: true, showC: true, showD: true, showE: true,
         pulseA: false, pulseB: false, pulseC: true, pulseD: false, pulseE: false,
         markerSize: 6,
-        pulseSize: 10
+        pulseSize: 10,
+        darkMap: false
     };
 
     const PULSE_CONFIG = {
@@ -420,15 +393,13 @@
 
     let settings = JSON.parse(localStorage.getItem("mapSettings")) || { ...DEFAULT_SETTINGS };
 
-    // Fix invalid saved sizes
+    // Size safety
     if (settings.markerSize > settings.pulseSize) settings.pulseSize = settings.markerSize + 2;
     if (settings.pulseSize < 6) settings.pulseSize = 6;
     if (settings.markerSize < 3) settings.markerSize = 3;
 
     // ────────────────────────────────────────────────
-    // MAP & MARKER SETUP
-    // Sites are only shown if their color matches one of the 5 defined colors
-    // Any other color → marker is hidden (opacity = 0)
+    // MAP SETUP
     // ────────────────────────────────────────────────
     am4core.ready(function () {
 
@@ -442,8 +413,6 @@
         let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
         polygonSeries.useGeodata = true;
         let poly = polygonSeries.mapPolygons.template;
-        poly.fill = am4core.color("#5dade2");
-        poly.strokeOpacity = 0.5;
         poly.tooltipText = "{name}";
         poly.states.create("hover").properties.fill = am4core.color("#85c1e9");
 
@@ -469,26 +438,63 @@
 
         marker.adapter.add("opacity", (_, target) => {
             let c = (target.dataItem?.dataContext?.color || "").toLowerCase().trim();
-            console.log("Marker color:", c);
-
-            // Explicitly hide if color is unknown / not in our list of 5
-            if (!Object.values(SITE_COLORS).includes(c)) {
-                console.log("Hiding marker due to unknown color", c);
-                return 0; // Hide marker completely (no dot on map)
-            }
-
-            // Only show if the corresponding toggle is enabled
+            if (!Object.values(SITE_COLORS).includes(c)) return 0;
             switch (c) {
                 case SITE_COLORS.A: return settings.showA ? 1 : 0;
                 case SITE_COLORS.B: return settings.showB ? 1 : 0;
                 case SITE_COLORS.C: return settings.showC ? 1 : 0;
                 case SITE_COLORS.D: return settings.showD ? 1 : 0;
                 case SITE_COLORS.E: return settings.showE ? 1 : 0;
-                default: return 0; // Extra safety – should never hit this
+                default: return 0;
             }
         });
+
         // ────────────────────────────────────────────────
-        // Pulse Animation
+        // THEME SWITCH FUNCTION – only affects map
+        // ────────────────────────────────────────────────
+        function applyMapTheme() {
+            am4core.unuseAllThemes();
+            am4core.useTheme(am4themes_animated);
+
+            if (settings.darkMap) {
+                am4core.useTheme(am4themes_dark);
+
+                chart.background.fill = am4core.color("#0f1e3a");
+                chart.background.fillOpacity = 1;
+
+                poly.fill = am4core.color("#1a3559");
+                poly.stroke = am4core.color("#3a5a8f");
+                poly.strokeOpacity = 0.35;
+
+                let hover = poly.states.getKey("hover");
+                if (hover) hover.properties.fill = am4core.color("#2e4f8a");
+
+                chart.zoomControl.plusButton.background.fill  = am4core.color("#4a6fa5");
+                chart.zoomControl.minusButton.background.fill = am4core.color("#4a6fa5");
+                chart.zoomControl.plusButton.background.states.getKey("hover").properties.fill  = am4core.color("#5b85c7");
+                chart.zoomControl.minusButton.background.states.getKey("hover").properties.fill = am4core.color("#5b85c7");
+            } else {
+                chart.background.fill = am4core.color("#e8f0f2");
+                chart.background.fillOpacity = 1;
+
+                poly.fill = am4core.color("#5dade2");
+                poly.stroke = am4core.color("#ffffff");
+                poly.strokeOpacity = 0.5;
+
+                let hover = poly.states.getKey("hover");
+                if (hover) hover.properties.fill = am4core.color("#85c1e9");
+
+                chart.zoomControl.plusButton.background.fill  = am4core.color("#cccccc");
+                chart.zoomControl.minusButton.background.fill = am4core.color("#cccccc");
+            }
+
+            chart.invalidate();
+            polygonSeries.invalidateRawData();
+            imageSeries.invalidateRawData();
+        }
+
+        // ────────────────────────────────────────────────
+        // Pulse logic
         // ────────────────────────────────────────────────
         function startPulse(circle) {
             if (circle._pulseAnim) circle._pulseAnim.stop();
@@ -514,8 +520,6 @@
             let data = image.dataItem?.dataContext;
             if (!data) return;
             let c = (data.color || "").toLowerCase().trim();
-
-            // Skip pulse if color is unknown (already hidden by opacity)
             if (!Object.values(SITE_COLORS).includes(c)) return;
 
             let pulseCircle = image.children.getIndex(0);
@@ -533,13 +537,11 @@
         imageSeries.mapImages.template.events.on("dataitemchanged", e => updatePulse(e.target));
 
         // ────────────────────────────────────────────────
-        // Site Click → Contact Info
+        // Click → Contact Info
         // ────────────────────────────────────────────────
         template.events.on("hit", ev => {
             const title = ev.target.dataItem.dataContext.title;
             const color = (ev.target.dataItem.dataContext.color || "").toLowerCase().trim();
-
-            // Only allow click if it's a known color
             if (Object.values(SITE_COLORS).includes(color)) {
                 loadContactInfo(title);
             }
@@ -563,10 +565,10 @@
                 content.innerHTML = "<i>No contact details available</i>";
             } else {
                 let html = contacts.map(c => `
-                <tr><th>Email</th><td>${c.email || "—"}</td></tr>
-                <tr><th>Phone</th><td>${c.phone || "—"}</td></tr>
-                <tr><th>Address</th><td>${c.address || "—"}</td></tr>
-            `).join("");
+                    <tr><th>Email</th><td>${c.email || "—"}</td></tr>
+                    <tr><th>Phone</th><td>${c.phone || "—"}</td></tr>
+                    <tr><th>Address</th><td>${c.address || "—"}</td></tr>
+                `).join("");
                 content.innerHTML = `<table>${html}</table>`;
             }
             document.getElementById("contact-panel").style.display = "block";
@@ -578,31 +580,18 @@
         };
 
         // ────────────────────────────────────────────────
-        // Data Loading & Refresh
+        // Data Loading
         // ────────────────────────────────────────────────
         function loadSiteData() {
             fetch("{% url 'site-map-api' %}")
                 .then(r => r.json())
                 .then(rawData => {
-                    // Filter out ANY site with invalid/unknown color BEFORE setting data
                     const validData = rawData.filter(site => {
                         const color = (site.color || "").toLowerCase().trim();
-                        const isValid = Object.values(SITE_COLORS).includes(color);
-
-                        if (!isValid) {
-                            console.log(`Filtered out invalid color site: ${site.title || "Unknown"} → color: ${color}`);
-                        }
-
-                        return isValid;
+                        return Object.values(SITE_COLORS).includes(color);
                     });
-
-                    // Log how many were filtered (for debugging)
-                    if (validData.length < rawData.length) {
-                        console.log(`Filtered ${rawData.length - validData.length} invalid-color sites. Rendering ${validData.length} valid sites.`);
-                    }
-
                     imageSeries.data = validData;
-                    detectChanges(validData);  // Only detect changes on valid sites
+                    detectChanges(validData);
                     refreshAll();
                 })
                 .catch(err => console.error("Site data error:", err));
@@ -617,11 +606,10 @@
         }
 
         // ────────────────────────────────────────────────
-        // Change Detection, Alerts & History
+        // Change Detection, Alerts, History
         // ────────────────────────────────────────────────
         let previousColors = JSON.parse(localStorage.getItem("sitePreviousColors")) || {};
         let changeHistory = JSON.parse(localStorage.getItem("siteChangeHistory")) || [];
-
         const MAX_HISTORY = 100;
 
         if ("Notification" in window && Notification.permission !== "granted") {
@@ -665,12 +653,12 @@
             list.innerHTML = changeHistory.map(item => {
                 let cls = item.to === "red" ? "history-danger" : (item.from === "red" && item.to !== "red") ? "history-success" : "";
                 return `
-                <div class="history-entry">
-                    <div class="history-time">${item.time}</div>
-                    <strong>${item.site}</strong><br>
-                    <span class="${cls}">${STATUS_NAMES[item.from] || item.from} → ${STATUS_NAMES[item.to] || item.to}</span>
-                </div>
-            `;
+                    <div class="history-entry">
+                        <div class="history-time">${item.time}</div>
+                        <strong>${item.site}</strong><br>
+                        <span class="${cls}">${STATUS_NAMES[item.from] || item.from} → ${STATUS_NAMES[item.to] || item.to}</span>
+                    </div>
+                `;
             }).join("") || "<p style='text-align:center;color:#777;'>No changes recorded yet.</p>";
         }
 
@@ -681,14 +669,11 @@
             newData.forEach(site => {
                 const title = site.title || "Unknown";
                 const color = (site.color || "").toLowerCase().trim();
-
-                // Skip unknown colors – they are already hidden by opacity filter
                 if (!Object.values(SITE_COLORS).includes(color)) return;
 
                 currentColors[title] = color;
                 currentSites.add(title);
 
-                // Normal change detection for A/B/C/D (purple)
                 if (previousColors[title]) {
                     const oldColor = previousColors[title];
                     if (oldColor !== color) {
@@ -697,14 +682,10 @@
 
                         if (color === "red") {
                             type = "danger";
-                            msg = `CRITICAL: ${title} is now UNREACHABLE (${STATUS_NAMES[oldColor] || oldColor} → ${STATUS_NAMES[color] || color})`;
+                            msg = `CRITICAL: ${title} is now UNREACHABLE`;
                         } else if (oldColor === "red") {
                             type = "success";
-                            msg = `RECOVERED: ${title} is back online (${STATUS_NAMES[oldColor] || oldColor} → ${STATUS_NAMES[color] || color})`;
-                        } else if (color === "yellow" && oldColor === "green") {
-                            msg = `${title}: AFNET Site → Site on Satcom`;
-                        } else if (color === "green" && oldColor === "yellow") {
-                            msg = `${title}: Site on Satcom → normal AFNET Site`;
+                            msg = `RECOVERED: ${title} is back online`;
                         }
 
                         showAlert(msg, type);
@@ -713,10 +694,9 @@
                 }
             });
 
-            // Special for blue (E) – inactive/active
             Object.keys(previousColors).forEach(title => {
                 if (previousColors[title] === "blue" && !currentSites.has(title)) {
-                    showAlert(`RECOVERED: ${title} is now ACTIVE (was Inactive)`, "success");
+                    showAlert(`RECOVERED: ${title} is now ACTIVE`, "success");
                     addHistoryEntry(title, "blue", "active");
                 }
             });
@@ -735,24 +715,24 @@
         }
 
         // ────────────────────────────────────────────────
-        // Settings UI Sync & Handlers
+        // Settings UI & Handlers
         // ────────────────────────────────────────────────
         function syncUI() {
-            ["A", "B", "C", "D", "E"].forEach(letter => {
-                document.getElementById("show" + letter).checked = settings["show" + letter];
-                document.getElementById("pulse" + letter).checked = settings["pulse" + letter];
+            ["A","B","C","D","E"].forEach(l => {
+                document.getElementById("show" + l).checked  = settings["show" + l];
+                document.getElementById("pulse" + l).checked = settings["pulse" + l];
             });
             document.getElementById("markerSize").value = settings.markerSize;
-            document.getElementById("pulseSize").value = settings.pulseSize;
+            document.getElementById("pulseSize").value  = settings.pulseSize;
             document.getElementById("markerValue").textContent = settings.markerSize + " px";
-            document.getElementById("pulseValue").textContent = settings.pulseSize + " px";
+            document.getElementById("pulseValue").textContent  = settings.pulseSize  + " px";
+            document.getElementById("darkMap").checked = settings.darkMap;
         }
 
         syncUI();
 
-        // Link show ↔ pulse toggles for all 5 types
-        ["A", "B", "C", "D", "E"].forEach(letter => {
-            const showId = "show" + letter;
+        ["A","B","C","D","E"].forEach(letter => {
+            const showId  = "show" + letter;
             const pulseId = "pulse" + letter;
             document.getElementById(showId).onchange = e => {
                 settings[showId] = e.target.checked;
@@ -762,7 +742,6 @@
                 }
                 refreshAll();
             };
-
             document.getElementById(pulseId).onchange = e => {
                 settings[pulseId] = e.target.checked;
                 if (e.target.checked) {
@@ -773,9 +752,6 @@
             };
         });
 
-        // ────────────────────────────────────────────────
-        // Size Constraints
-        // ────────────────────────────────────────────────
         document.getElementById("markerSize").oninput = e => {
             let val = parseInt(e.target.value);
             if (val > settings.pulseSize) {
@@ -790,10 +766,7 @@
 
         document.getElementById("pulseSize").oninput = e => {
             let val = parseInt(e.target.value);
-            if (val < 6) {
-                val = 6;
-                e.target.value = 6;
-            }
+            if (val < 6) val = 6, e.target.value = 6;
             if (val < settings.markerSize) {
                 settings.markerSize = val;
                 document.getElementById("markerSize").value = val;
@@ -804,21 +777,23 @@
             refreshAll();
         };
 
-        // ────────────────────────────────────────────────
-        // Save Settings & Panel Controls
-        // ────────────────────────────────────────────────
-        document.getElementById("saveSettings").onclick = () => {
-            localStorage.setItem("mapSettings", JSON.stringify(settings));
-            window.location.reload(true);
+        // Dark map toggle
+        document.getElementById("darkMap").onchange = e => {
+            settings.darkMap = e.target.checked;
+            applyMapTheme();
         };
 
-        // Mutual exclusive panels
+        document.getElementById("saveSettings").onclick = () => {
+            localStorage.setItem("mapSettings", JSON.stringify(settings));
+            applyMapTheme();
+            // window.location.reload(true);   // optional – live update is already working
+        };
+
+        // Panel toggles
         function closeOtherPanel(currentId) {
             const otherId = currentId === "settings-panel" ? "history-panel" : "settings-panel";
             const other = document.getElementById(otherId);
-            if (other && other.classList.contains("open")) {
-                other.classList.remove("open");
-            }
+            if (other?.classList.contains("open")) other.classList.remove("open");
         }
 
         document.getElementById("settings-btn").onclick = () => {
@@ -841,15 +816,14 @@
 
         document.getElementById("resetZoomBtn").onclick = () => chart.goHome();
 
-        // Initial history load
+        // Initial setup
+        applyMapTheme();
         updateHistoryDisplay();
     });
 </script>
 
 {% if user.is_authenticated %}
-<!-- ──────────────────────────────────────────────── -->
 <!-- Watermark -->
-<!-- ──────────────────────────────────────────────── -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const username = "{{ user.username|escapejs }}";

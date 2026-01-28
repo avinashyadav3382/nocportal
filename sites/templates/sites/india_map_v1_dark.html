@@ -2,12 +2,18 @@
 {% block content %}
 {% load static %}
 
-<!-- Load AmCharts libraries -->
+<!-- ──────────────────────────────────────────────── -->
+<!-- Load AmCharts Libraries -->
+<!-- ──────────────────────────────────────────────── -->
 <script src="{% static 'amcharts/core.js' %}"></script>
 <script src="{% static 'amcharts/maps.js' %}"></script>
 <script src="{% static 'amcharts/india2020High.js' %}"></script>
 <script src="{% static 'amcharts/animated.js' %}"></script>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- CSS Styles -->
+<!-- Panels are now scrollable with max-height to never exceed screen -->
+<!-- ──────────────────────────────────────────────── -->
 <style>
     #header {
         background-color: #002b5c;
@@ -20,7 +26,7 @@
     #chartdiv {
         width: 100%;
         height: calc(100vh - 60px);
-        background-color: #e8f0f2;
+        background-color: #0b1220;
     }
 
     #legend {
@@ -74,8 +80,10 @@
         border-radius: 6px;
         cursor: pointer;
         font-size: 14px;
-        width: 110px;
+        width: 130px;
         z-index: 1001;
+        display: flex;
+        align-items: flex-start;
     }
 
     #resetZoomBtn {
@@ -111,6 +119,10 @@
         top: 270px;
         right: -300px;
         width: 280px;
+        max-height: 70vh;
+        /* Prevents going beyond screen height */
+        overflow-y: auto;
+        /* Scrollable if many rows (e.g. future colors) */
         background: white;
         border-radius: 8px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
@@ -235,20 +247,20 @@
         background: #fd7e14;
     }
 
-    /* ── History Panel ── */
+    /* ── History Panel – scrollable if needed ── */
     #history-panel {
         position: fixed;
         top: 270px;
         right: -340px;
         width: 340px;
+        max-height: 70vh;
+        overflow-y: auto;
         background: white;
         border-radius: 8px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         padding: 16px;
         transition: right 0.3s ease;
         z-index: 1003;
-        max-height: 70vh;
-        overflow-y: auto;
         font-size: 13px;
     }
 
@@ -282,10 +294,13 @@
 <div id="header">INDIA NOC - SITE TOPOLOGY</div>
 <div id="chartdiv"></div>
 
-<button id="resetZoomBtn">Reset View</button>
-<div id="settings-btn">Settings</div>
-<div id="history-btn">History</div>
+<button id="resetZoomBtn"><i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>Reset View</button>
+<div id="settings-btn"><i class="bi bi-gear me-2" aria-hidden="true"></i>Settings</div>
+<div id="history-btn"><i class="bi bi-clock me-2" aria-hidden="true"></i>History</div>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- Settings Panel – includes toggles for all 5 colors -->
+<!-- ──────────────────────────────────────────────── -->
 <div id="settings-panel">
     <div class="settings-title">Visibility</div>
     <div class="settings-row">AFNET Sites
@@ -297,6 +312,12 @@
     <div class="settings-row">Unreachable
         <label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label>
     </div>
+    <div class="settings-row">Purple Status
+        <label class="switch"><input type="checkbox" id="showD" checked><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">Inactive Sites
+        <label class="switch"><input type="checkbox" id="showE" checked><span class="slider"></span></label>
+    </div>
 
     <div class="settings-title">Pulse Animation</div>
     <div class="settings-row">AFNET Sites
@@ -307,6 +328,12 @@
     </div>
     <div class="settings-row">Unreachable
         <label class="switch"><input type="checkbox" id="pulseC" checked><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">Purple Status
+        <label class="switch"><input type="checkbox" id="pulseD"><span class="slider"></span></label>
+    </div>
+    <div class="settings-row">Inactive Sites
+        <label class="switch"><input type="checkbox" id="pulseE"><span class="slider"></span></label>
     </div>
 
     <div class="settings-title">Marker Sizes</div>
@@ -322,13 +349,21 @@
     <button id="saveSettings">Save Settings</button>
 </div>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- Legend – shows all 5 defined colors -->
+<!-- ──────────────────────────────────────────────── -->
 <div id="legend">
     <b>Legend</b><br>
     <div><span style="color:green;font-size:22px">●</span> AFNET Site</div>
-    <div><span style="color:yellow;font-size:22px">●</span> Satcom Site</div>
+    <div><span style="color:yellow;font-size:22px">●</span> Site on Satcom</div>
     <div><span style="color:red;font-size:22px">●</span> Unreachable</div>
+    <div><span style="color:purple;font-size:22px">●</span> Purple Status</div>
+    <div><span style="color:blue;font-size:22px">●</span> Inactive</div>
 </div>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- Contact Panel -->
+<!-- ──────────────────────────────────────────────── -->
 <div id="contact-panel">
     <div id="contact-header">
         <span id="contact-title">Site Details</span>
@@ -340,29 +375,39 @@
 <!-- Alerts container -->
 <div id="alert-container"></div>
 
-<!-- History Panel -->
+<!-- History Panel – scrollable -->
 <div id="history-panel">
     <h4 style="margin:0 0 12px;">Site Status Changes</h4>
-    <div id="history-list" style="min-height:120px;"></div>
+    <div id="history-list" style="min-height:100px;"></div>
     <button id="clear-history"
         style="margin-top:12px;width:100%;padding:8px;background:#dc3545;color:white;border:none;border-radius:4px;cursor:pointer;">Clear
         History</button>
 </div>
 
 <script>
-    // ─────────────────────────────────────────────────────────────
-    //          SETTINGS – change values here only
-    // ─────────────────────────────────────────────────────────────
-
+    // ────────────────────────────────────────────────
+    // GLOBAL SETTINGS & CONSTANTS
+    // All 5 colors are fully supported with visibility/pulse toggles
+    // ────────────────────────────────────────────────
     const SITE_COLORS = {
         A: "green",
         B: "yellow",
-        C: "red"
+        C: "red",
+        D: "purple",
+        E: "blue"
+    };
+
+    const STATUS_NAMES = {
+        "green": "AFNET Site",
+        "yellow": "Site on Satcom",
+        "red": "Unreachable",
+        "purple": "Purple Status",
+        "blue": "Inactive"
     };
 
     const DEFAULT_SETTINGS = {
-        showA: true, showB: true, showC: true,
-        pulseA: false, pulseB: false, pulseC: true,
+        showA: true, showB: true, showC: true, showD: true, showE: true,
+        pulseA: false, pulseB: false, pulseC: true, pulseD: false, pulseE: false,
         markerSize: 6,
         pulseSize: 10
     };
@@ -373,19 +418,21 @@
         duration: 1600
     };
 
-    // ─────────────────────────────────────────────────────────────
+    let settings = JSON.parse(localStorage.getItem("mapSettings")) || { ...DEFAULT_SETTINGS };
 
+    // Fix invalid saved sizes
+    if (settings.markerSize > settings.pulseSize) settings.pulseSize = settings.markerSize + 2;
+    if (settings.pulseSize < 6) settings.pulseSize = 6;
+    if (settings.markerSize < 3) settings.markerSize = 3;
+
+    // ────────────────────────────────────────────────
+    // MAP & MARKER SETUP
+    // Sites are only shown if their color matches one of the 5 defined colors
+    // Any other color → marker is hidden (opacity = 0)
+    // ────────────────────────────────────────────────
     am4core.ready(function () {
 
         am4core.useTheme(am4themes_animated);
-
-        let settings = JSON.parse(localStorage.getItem("mapSettings")) || { ...DEFAULT_SETTINGS };
-
-        if (settings.markerSize > settings.pulseSize) {
-            settings.pulseSize = settings.markerSize + 2;
-        }
-        if (settings.pulseSize < 6) settings.pulseSize = 6;
-        if (settings.markerSize < 3) settings.markerSize = 3;
 
         const chart = am4core.create("chartdiv", am4maps.MapChart);
         chart.geodata = am4geodata_india2020High;
@@ -395,10 +442,10 @@
         let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
         polygonSeries.useGeodata = true;
         let poly = polygonSeries.mapPolygons.template;
-        poly.fill = am4core.color("#5dade2");
+        poly.fill = am4core.color("#1f3b57");
         poly.strokeOpacity = 0.5;
         poly.tooltipText = "{name}";
-        poly.states.create("hover").properties.fill = am4core.color("#85c1e9");
+        poly.states.create("hover").properties.fill = am4core.color("#2e5f8a");
 
         let imageSeries = chart.series.push(new am4maps.MapImageSeries());
         let template = imageSeries.mapImages.template;
@@ -421,13 +468,28 @@
         marker.zIndex = 1;
 
         marker.adapter.add("opacity", (_, target) => {
-            let c = (target.dataItem?.dataContext?.color || "").toLowerCase();
-            if (c === SITE_COLORS.A) return settings.showA ? 1 : 0;
-            if (c === SITE_COLORS.B) return settings.showB ? 1 : 0;
-            if (c === SITE_COLORS.C) return settings.showC ? 1 : 0;
-            return 1;
-        });
+            let c = (target.dataItem?.dataContext?.color || "").toLowerCase().trim();
+            console.log("Marker color:", c);
 
+            // Explicitly hide if color is unknown / not in our list of 5
+            if (!Object.values(SITE_COLORS).includes(c)) {
+                console.log("Hiding marker due to unknown color", c);
+                return 0; // Hide marker completely (no dot on map)
+            }
+
+            // Only show if the corresponding toggle is enabled
+            switch (c) {
+                case SITE_COLORS.A: return settings.showA ? 1 : 0;
+                case SITE_COLORS.B: return settings.showB ? 1 : 0;
+                case SITE_COLORS.C: return settings.showC ? 1 : 0;
+                case SITE_COLORS.D: return settings.showD ? 1 : 0;
+                case SITE_COLORS.E: return settings.showE ? 1 : 0;
+                default: return 0; // Extra safety – should never hit this
+            }
+        });
+        // ────────────────────────────────────────────────
+        // Pulse Animation
+        // ────────────────────────────────────────────────
         function startPulse(circle) {
             if (circle._pulseAnim) circle._pulseAnim.stop();
             circle.scale = 1;
@@ -451,20 +513,36 @@
         function updatePulse(image) {
             let data = image.dataItem?.dataContext;
             if (!data) return;
-            let c = (data.color || "").toLowerCase();
+            let c = (data.color || "").toLowerCase().trim();
+
+            // Skip pulse if color is unknown (already hidden by opacity)
+            if (!Object.values(SITE_COLORS).includes(c)) return;
+
             let pulseCircle = image.children.getIndex(0);
             let shouldPulse =
                 (c === SITE_COLORS.A && settings.pulseA) ||
                 (c === SITE_COLORS.B && settings.pulseB) ||
-                (c === SITE_COLORS.C && settings.pulseC);
+                (c === SITE_COLORS.C && settings.pulseC) ||
+                (c === SITE_COLORS.D && settings.pulseD) ||
+                (c === SITE_COLORS.E && settings.pulseE);
+
             shouldPulse ? startPulse(pulseCircle) : stopPulse(pulseCircle);
         }
 
         imageSeries.mapImages.template.events.on("inited", e => updatePulse(e.target));
         imageSeries.mapImages.template.events.on("dataitemchanged", e => updatePulse(e.target));
 
+        // ────────────────────────────────────────────────
+        // Site Click → Contact Info
+        // ────────────────────────────────────────────────
         template.events.on("hit", ev => {
-            loadContactInfo(ev.target.dataItem.dataContext.title);
+            const title = ev.target.dataItem.dataContext.title;
+            const color = (ev.target.dataItem.dataContext.color || "").toLowerCase().trim();
+
+            // Only allow click if it's a known color
+            if (Object.values(SITE_COLORS).includes(color)) {
+                loadContactInfo(title);
+            }
         });
 
         chart.seriesContainer.events.on("hit", () => {
@@ -499,70 +577,72 @@
             c.style.display = c.style.display === "none" ? "block" : "none";
         };
 
-        // ─────────────────────────────────────────────────────────────
-        //   CHANGE TRACKING + ALERTS + HISTORY
-        // ─────────────────────────────────────────────────────────────
+        // ────────────────────────────────────────────────
+        // Data Loading & Refresh
+        // ────────────────────────────────────────────────
+        function loadSiteData() {
+            fetch("{% url 'site-map-api' %}")
+                .then(r => r.json())
+                .then(rawData => {
+                    // Filter out ANY site with invalid/unknown color BEFORE setting data
+                    const validData = rawData.filter(site => {
+                        const color = (site.color || "").toLowerCase().trim();
+                        const isValid = Object.values(SITE_COLORS).includes(color);
 
+                        if (!isValid) {
+                            console.log(`Filtered out invalid color site: ${site.title || "Unknown"} → color: ${color}`);
+                        }
+
+                        return isValid;
+                    });
+
+                    // Log how many were filtered (for debugging)
+                    if (validData.length < rawData.length) {
+                        console.log(`Filtered ${rawData.length - validData.length} invalid-color sites. Rendering ${validData.length} valid sites.`);
+                    }
+
+                    imageSeries.data = validData;
+                    detectChanges(validData);  // Only detect changes on valid sites
+                    refreshAll();
+                })
+                .catch(err => console.error("Site data error:", err));
+        }
+
+        loadSiteData();
+        setInterval(loadSiteData, 120000);
+
+        function refreshAll() {
+            imageSeries.mapImages.each(updatePulse);
+            chart.invalidateRawData();
+        }
+
+        // ────────────────────────────────────────────────
+        // Change Detection, Alerts & History
+        // ────────────────────────────────────────────────
         let previousColors = JSON.parse(localStorage.getItem("sitePreviousColors")) || {};
         let changeHistory = JSON.parse(localStorage.getItem("siteChangeHistory")) || [];
 
         const MAX_HISTORY = 100;
 
-        // ── Notification permission & helper ──
-        let notificationPermission = "default";
-
-        async function requestNotificationPermission() {
-            if (!("Notification" in window)) return;
-            if (Notification.permission === "granted") {
-                notificationPermission = "granted";
-                return;
-            }
-            if (Notification.permission !== "denied") {
-                const permission = await Notification.requestPermission();
-                notificationPermission = permission;
-            }
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
         }
 
-        function showNotification(title, body, tag = "site-change") {
-            if (notificationPermission !== "granted") return;
-            new Notification(title, {
-                body,
-                tag,
-                icon: "/static/favicon.ico" // change to your icon if you have one
-            });
-        }
-
-        // Request permission on page load
-        requestNotificationPermission();
-
-        // ── Check if tab is visible/active ──
-        function isTabVisible() {
-            return !document.hidden;
-        }
-
-        function showChangeAlert(message, type = "warning") {
-            const isVisible = isTabVisible();
-
-            if (isVisible) {
-                // In-tab floating alert
+        function showAlert(message, type = "warning") {
+            if (document.hidden) {
+                if (Notification.permission === "granted") {
+                    new Notification("Site Status Alert", { body: message });
+                }
+            } else {
                 const div = document.createElement("div");
-                div.className = `alert alert-${type} show`;
+                div.className = `alert alert-${type}`;
                 div.textContent = message;
                 document.getElementById("alert-container").appendChild(div);
+                setTimeout(() => div.classList.add("show"), 10);
                 setTimeout(() => {
                     div.classList.remove("show");
-                    setTimeout(() => div.remove(), 600);
-                }, 8000);
-            } else {
-                // Browser notification when tab is backgrounded
-                let notifTitle = "Site Status Change";
-                let notifBody = message;
-                if (type === "danger") {
-                    notifTitle = "CRITICAL: Site Unreachable";
-                } else if (type === "success") {
-                    notifTitle = "Site Recovered";
-                }
-                showNotification(notifTitle, notifBody);
+                    setTimeout(() => div.remove(), 400);
+                }, 7000);
             }
         }
 
@@ -573,12 +653,8 @@
                 hour: "2-digit", minute: "2-digit", hour12: true
             });
 
-            const entry = { time: timeStr, site, from: oldColor, to: newColor };
-
-            changeHistory.unshift(entry);
-            if (changeHistory.length > MAX_HISTORY) {
-                changeHistory = changeHistory.slice(0, MAX_HISTORY);
-            }
+            changeHistory.unshift({ time: timeStr, site, from: oldColor, to: newColor });
+            if (changeHistory.length > MAX_HISTORY) changeHistory.pop();
 
             localStorage.setItem("siteChangeHistory", JSON.stringify(changeHistory));
             updateHistoryDisplay();
@@ -586,89 +662,86 @@
 
         function updateHistoryDisplay() {
             const list = document.getElementById("history-list");
-            if (changeHistory.length === 0) {
-                list.innerHTML = "<p style='text-align:center;color:#777;'>No status changes recorded yet.</p>";
-                return;
-            }
-
-            let html = "";
-            changeHistory.forEach(item => {
-                let cls = "";
-                if (item.to === "red") cls = "history-danger";
-                else if (item.from === "red" && item.to !== "red") cls = "history-success";
-
-                html += `
+            list.innerHTML = changeHistory.map(item => {
+                let cls = item.to === "red" ? "history-danger" : (item.from === "red" && item.to !== "red") ? "history-success" : "";
+                return `
                 <div class="history-entry">
-                    <span class="history-time">${item.time}</span>
+                    <div class="history-time">${item.time}</div>
                     <strong>${item.site}</strong><br>
-                    <span class="${cls}">${item.from} → ${item.to}</span>
+                    <span class="${cls}">${STATUS_NAMES[item.from] || item.from} → ${STATUS_NAMES[item.to] || item.to}</span>
                 </div>
             `;
-            });
-            list.innerHTML = html;
+            }).join("") || "<p style='text-align:center;color:#777;'>No changes recorded yet.</p>";
         }
 
         function detectChanges(newData) {
-            const current = {};
+            const currentColors = {};
+            const currentSites = new Set();
 
             newData.forEach(site => {
-                const title = site.title || "Unknown Site";
+                const title = site.title || "Unknown";
                 const color = (site.color || "").toLowerCase().trim();
-                current[title] = color;
 
+                // Skip unknown colors – they are already hidden by opacity filter
+                if (!Object.values(SITE_COLORS).includes(color)) return;
+
+                currentColors[title] = color;
+                currentSites.add(title);
+
+                // Normal change detection for A/B/C/D (purple)
                 if (previousColors[title]) {
-                    const old = previousColors[title];
-                    if (old !== color) {
-                        let alertType = "warning";
-                        let msg = `${title}: ${old} → ${color}`;
+                    const oldColor = previousColors[title];
+                    if (oldColor !== color) {
+                        let type = "warning";
+                        let msg = `${title}: ${STATUS_NAMES[oldColor] || oldColor} → ${STATUS_NAMES[color] || color}`;
 
                         if (color === "red") {
-                            alertType = "danger";
-                            msg = `CRITICAL: ${title} is now UNREACHABLE (${old} → red)`;
-                        } else if (old === "red") {
-                            alertType = "success";
-                            msg = `RECOVERED: ${title} is back online (${old} → ${color})`;
+                            type = "danger";
+                            msg = `CRITICAL: ${title} is now UNREACHABLE (${STATUS_NAMES[oldColor] || oldColor} → ${STATUS_NAMES[color] || color})`;
+                        } else if (oldColor === "red") {
+                            type = "success";
+                            msg = `RECOVERED: ${title} is back online (${STATUS_NAMES[oldColor] || oldColor} → ${STATUS_NAMES[color] || color})`;
+                        } else if (color === "yellow" && oldColor === "green") {
+                            msg = `${title}: AFNET Site → Site on Satcom`;
+                        } else if (color === "green" && oldColor === "yellow") {
+                            msg = `${title}: Site on Satcom → normal AFNET Site`;
                         }
 
-                        showChangeAlert(msg, alertType);
-                        addHistoryEntry(title, old, color);
+                        showAlert(msg, type);
+                        addHistoryEntry(title, oldColor, color);
                     }
                 }
             });
 
-            previousColors = { ...current };
+            // Special for blue (E) – inactive/active
+            Object.keys(previousColors).forEach(title => {
+                if (previousColors[title] === "blue" && !currentSites.has(title)) {
+                    showAlert(`RECOVERED: ${title} is now ACTIVE (was Inactive)`, "success");
+                    addHistoryEntry(title, "blue", "active");
+                }
+            });
+
+            newData.forEach(site => {
+                const title = site.title;
+                const color = (site.color || "").toLowerCase().trim();
+                if (color === "blue" && previousColors[title] !== "blue") {
+                    showAlert(`ALERT: ${title} is now INACTIVE`, "danger");
+                    addHistoryEntry(title, previousColors[title] || "active", "blue");
+                }
+            });
+
+            previousColors = { ...currentColors };
             localStorage.setItem("sitePreviousColors", JSON.stringify(previousColors));
         }
 
-        function loadSiteData() {
-            fetch("{% url 'site-map-api' %}")
-                .then(r => r.json())
-                .then(data => {
-                    imageSeries.data = data;
-                    detectChanges(data);
-                    refreshAll();
-                })
-                .catch(err => console.error("Site data error:", err));
-        }
-
-        loadSiteData();
-        setInterval(loadSiteData, 12000);
-
-        function refreshAll() {
-            imageSeries.mapImages.each(updatePulse);
-            chart.invalidateRawData();
-        }
-
-        updateHistoryDisplay();
-
-        // ── Settings UI sync ──
+        // ────────────────────────────────────────────────
+        // Settings UI Sync & Handlers
+        // ────────────────────────────────────────────────
         function syncUI() {
-            document.getElementById("showA").checked = settings.showA;
-            document.getElementById("showB").checked = settings.showB;
-            document.getElementById("showC").checked = settings.showC;
-            document.getElementById("pulseA").checked = settings.pulseA;
-            document.getElementById("pulseB").checked = settings.pulseB;
-            document.getElementById("pulseC").checked = settings.pulseC;
+            ["A", "B", "C", "D", "E"].forEach(letter => {
+                document.getElementById("show" + letter).checked = settings["show" + letter];
+                document.getElementById("pulse" + letter).checked = settings["pulse" + letter];
+            });
             document.getElementById("markerSize").value = settings.markerSize;
             document.getElementById("pulseSize").value = settings.pulseSize;
             document.getElementById("markerValue").textContent = settings.markerSize + " px";
@@ -677,28 +750,10 @@
 
         syncUI();
 
-        // ── Close other panel when one is opened ──
-        function closeOtherPanel(currentId) {
-            const otherId = currentId === "settings-panel" ? "history-panel" : "settings-panel";
-            const other = document.getElementById(otherId);
-            if (other && other.classList.contains("open")) {
-                other.classList.remove("open");
-            }
-        }
-
-        document.getElementById("settings-btn").onclick = () => {
-            const panel = document.getElementById("settings-panel");
-            closeOtherPanel("settings-panel");
-            panel.classList.toggle("open");
-        };
-
-        document.getElementById("history-btn").onclick = () => {
-            const panel = document.getElementById("history-panel");
-            closeOtherPanel("history-panel");
-            panel.classList.toggle("open");
-        };
-
-        function linkToggles(showId, pulseId) {
+        // Link show ↔ pulse toggles for all 5 types
+        ["A", "B", "C", "D", "E"].forEach(letter => {
+            const showId = "show" + letter;
+            const pulseId = "pulse" + letter;
             document.getElementById(showId).onchange = e => {
                 settings[showId] = e.target.checked;
                 if (!e.target.checked) {
@@ -716,12 +771,11 @@
                 }
                 refreshAll();
             };
-        }
+        });
 
-        linkToggles("showA", "pulseA");
-        linkToggles("showB", "pulseB");
-        linkToggles("showC", "pulseC");
-
+        // ────────────────────────────────────────────────
+        // Size Constraints
+        // ────────────────────────────────────────────────
         document.getElementById("markerSize").oninput = e => {
             let val = parseInt(e.target.value);
             if (val > settings.pulseSize) {
@@ -750,9 +804,31 @@
             refreshAll();
         };
 
+        // ────────────────────────────────────────────────
+        // Save Settings & Panel Controls
+        // ────────────────────────────────────────────────
         document.getElementById("saveSettings").onclick = () => {
             localStorage.setItem("mapSettings", JSON.stringify(settings));
             window.location.reload(true);
+        };
+
+        // Mutual exclusive panels
+        function closeOtherPanel(currentId) {
+            const otherId = currentId === "settings-panel" ? "history-panel" : "settings-panel";
+            const other = document.getElementById(otherId);
+            if (other && other.classList.contains("open")) {
+                other.classList.remove("open");
+            }
+        }
+
+        document.getElementById("settings-btn").onclick = () => {
+            closeOtherPanel("settings-panel");
+            document.getElementById("settings-panel").classList.toggle("open");
+        };
+
+        document.getElementById("history-btn").onclick = () => {
+            closeOtherPanel("history-panel");
+            document.getElementById("history-panel").classList.toggle("open");
         };
 
         document.getElementById("clear-history").onclick = () => {
@@ -764,16 +840,26 @@
         };
 
         document.getElementById("resetZoomBtn").onclick = () => chart.goHome();
+
+        // Initial history load
+        updateHistoryDisplay();
     });
 </script>
 
 {% if user.is_authenticated %}
+<!-- ──────────────────────────────────────────────── -->
+<!-- Watermark -->
+<!-- ──────────────────────────────────────────────── -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const username = "{{ user.username|escapejs }}";
         const wm = document.createElement("div");
         wm.style.cssText = `position:fixed;inset:0;pointer-events:none;z-index:9999;user-select:none;display:grid;grid-template-columns:repeat(auto-fill,320px);grid-auto-rows:220px;transform:rotate(-30deg);color:rgba(0,0,0,0.04);font-size:42px;font-weight:bold;`;
-        for (let i = 0; i < 60; i++) { let t = document.createElement("div"); t.textContent = username; wm.appendChild(t); }
+        for (let i = 0; i < 60; i++) {
+            let t = document.createElement("div");
+            t.textContent = username;
+            wm.appendChild(t);
+        }
         document.body.appendChild(wm);
     });
 </script>

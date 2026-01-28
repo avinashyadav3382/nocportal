@@ -1,5 +1,6 @@
 # sites/models.py
 from django.db import models
+from django.utils import timezone
 
 class Site(models.Model):
 
@@ -12,6 +13,19 @@ class Site(models.Model):
 
     def __str__(self):
         return self.name
+
+class SiteStatusHistory(models.Model):
+    site = models.ForeignKey(
+        Site,
+        on_delete=models.CASCADE,
+        related_name="status_history"
+    )
+    past_status = models.CharField(max_length=50)
+    current_status = models.CharField(max_length=50)
+    status_changed_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.site.name}: {self.past_status} → {self.current_status}"
 
 
 class ContactInfo(models.Model):
