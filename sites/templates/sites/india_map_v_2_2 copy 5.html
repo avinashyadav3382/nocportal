@@ -1,0 +1,1014 @@
+{% extends 'sites/base_global_dashboard.html' %}
+{% block content %}
+{% load static %}
+
+<script src="{% static 'amcharts/core.js' %}"></script>
+<script src="{% static 'amcharts/maps.js' %}"></script>
+<script src="{% static 'amcharts/india2020High.js' %}"></script>
+<script src="{% static 'amcharts/animated.js' %}"></script>
+
+<style>
+    :root {
+        --bg-dark:      #0b1121;
+        --bg-darker:    #060b17;
+        --panel-glass:  rgba(15, 23, 42, 0.88);
+        --text:         #e2e8f0;
+        --text-muted:   #94a3b8;
+        --accent:       #60a5fa;
+        --accent-glow:  rgba(96, 165, 250, 0.24);
+        --danger:       #f87171;
+        --warning:      #fbbf24;
+        --success:      #34d399;
+        --border:       rgba(96, 165, 250, 0.28);
+        --shadow-sm:    0 4px 16px -4px rgba(0,0,0,0.5);
+        --shadow-md:    0 12px 32px -10px rgba(0,0,0,0.6);
+        --transition:   all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+        color: var(--text);
+    }
+
+    #main-content-wrapper {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+    }
+
+    #map-column {
+        flex: 1;
+        position: relative;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 100%;
+    }
+
+    #last-updated {
+        position: absolute;
+        bottom: 18px;
+        right: 28px;
+        color: var(--text-muted);
+        font-size: 13px;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .control-btn {
+        position: absolute;
+        left: 28px;
+        background: rgba(2, 43, 92, 0.82);
+        backdrop-filter: blur(12px);
+        color: white;
+        padding: 11px 17px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        width: 185px;
+        z-index: 1002;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .control-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 14px 32px -10px var(--accent-glow);
+        border-color: var(--accent);
+    }
+
+    #resetZoomBtn  { top: 28px; }
+    #settings-btn  { top:  84px; }
+    #history-btn   { top: 140px; }
+    #dark-mode-btn { top: 196px; }
+
+    #legend {
+        position: absolute;
+        bottom: 36px;
+        left: 28px;
+        background: var(--panel-glass);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 22px;
+        font-size: 13.5px;
+        box-shadow: var(--shadow-md);
+        z-index: 1001;
+    }
+
+    #sidebar-column {
+        width: 420px;
+        min-width: 420px;
+        background: var(--panel-glass);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid var(--border);
+        box-shadow: -8px 0 32px rgba(0,0,0,0.58);
+        display: flex;
+        flex-direction: column;
+        transition: width 0.42s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    #sidebar-column.collapsed {
+        width: 64px;
+        min-width: 64px;
+    }
+
+    #sidebar-toggle {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(2,43,92,0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1010;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    #sidebar-toggle:hover {
+        transform: scale(1.14) rotate(180deg);
+        background: var(--accent);
+    }
+
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 22px;
+    }
+
+    .sidebar-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    .sidebar-content::-webkit-scrollbar-track {
+        background: rgba(30,41,59,0.35);
+    }
+    .sidebar-content::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 10px;
+    }
+
+    #site-search {
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(30,41,59,0.78);
+        color: var(--text);
+        font-size: 15px;
+    }
+
+    #site-search::placeholder {
+        color: var(--text-muted);
+    }
+
+    #search-results {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 22px;
+        right: 22px;
+        max-height: 340px;
+        overflow-y: auto;
+        background: var(--panel-glass);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        z-index: 1003;
+        box-shadow: var(--shadow-md);
+        display: none;
+    }
+
+    #search-results .search-item {
+        padding: 12px 16px;
+        cursor: pointer;
+    }
+
+    #search-results .search-item:hover {
+        background: rgba(96,165,250,0.22);
+    }
+
+    .panel-header {
+        background: linear-gradient(135deg, rgba(30,58,138,0.82), rgba(59,130,246,0.32));
+        color: white;
+        padding: 14px 18px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .panel-header:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px -8px var(--accent-glow);
+    }
+
+    .panel-content {
+        background: rgba(15,23,42,0.68);
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        margin-bottom: 16px;
+        display: none;
+    }
+
+    .panel-content.open {
+        display: block;
+    }
+
+    .scrollable-panel {
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+    .scrollable-panel.history {
+        max-height: 320px;
+    }
+
+    .scrollable-panel::-webkit-scrollbar {
+        width: 5px;
+    }
+    .scrollable-panel::-webkit-scrollbar-thumb {
+        background: rgba(96,165,250,0.45);
+        border-radius: 10px;
+    }
+
+    .problem-entry {
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        background: rgba(30,41,59,0.62);
+        border-radius: 10px;
+        border-left: 5px solid var(--danger);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .problem-entry.yellow {
+        border-left-color: var(--warning);
+    }
+
+    .problem-entry:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 20px -6px rgba(239,68,68,0.3);
+    }
+
+    .history-entry {
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        background: rgba(30,41,59,0.58);
+        border-radius: 10px;
+        font-size: 13.5px;
+    }
+
+    .history-entry:hover {
+        background: rgba(96,165,250,0.12);
+    }
+
+    .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 12px 0;
+        font-size: 14.2px;
+    }
+
+    .size-label {
+        min-width: 68px;
+        text-align: right;
+        color: var(--text-muted);
+        font-size: 13.5px;
+    }
+
+    #saveSettings {
+        margin-top: 24px;
+        width: 100%;
+        padding: 12px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    #saveSettings:hover {
+        background: #3b82f6;
+        transform: translateY(-1px);
+    }
+
+    #alert-container {
+        position: fixed;
+        top: 20px;
+        right: 450px;
+        z-index: 2000;
+        max-width: 420px;
+    }
+
+    .alert {
+        padding: 14px 20px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        color: white;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+        animation: slideInRight 0.4s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from { transform: translateX(140%); opacity: 0; }
+        to   { transform: translateX(0); opacity: 1; }
+    }
+
+    .alert-danger   { background: rgba(239,68,68,0.92); }
+    .alert-success  { background: rgba(16,185,129,0.92); }
+    .alert-warning  { background: rgba(245,158,11,0.92); }
+
+    #contact-panel {
+        margin-top: 20px;
+        background: rgba(15,23,42,0.72);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    #contact-header {
+        background: linear-gradient(135deg, rgba(2,43,92,0.92), rgba(30,58,138,0.68));
+        padding: 14px 18px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #contact-content {
+        padding: 18px;
+        display: none;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 22px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        inset: 0;
+        background: #444;
+        border-radius: 22px;
+        cursor: pointer;
+        transition: .3s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 2px;
+        bottom: 2px;
+        background: white;
+        border-radius: 50%;
+        transition: .3s;
+    }
+
+    input:checked + .slider {
+        background: #4caf50;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
+<div id="main-content-wrapper">
+    <div id="map-column">
+        <div id="chartdiv"></div>
+
+        <button id="resetZoomBtn"  class="control-btn"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset View</button>
+        <button id="settings-btn"   class="control-btn"><i class="bi bi-gear me-2"></i> Settings</button>
+        <button id="history-btn"    class="control-btn"><i class="bi bi-clock me-2"></i> History</button>
+        <button id="dark-mode-btn"  class="control-btn">
+            <i class="bi bi-brightness-high me-2"></i><span>Dark Mode</span>
+        </button>
+
+        <div id="legend">
+            <b>Legend</b><br>
+            <div><span style="color:#22c55e; font-size:22px">●</span> AFNET Site</div>
+            <div><span style="color:#fbbf24; font-size:22px">●</span> Site on Satcom</div>
+            <div><span style="color:#ef4444; font-size:22px">●</span> Unreachable</div>
+            <div><span style="color:#a855f7; font-size:22px">●</span> Purple Status</div>
+            <div><span style="color:#3b82f6; font-size:22px">●</span> Inactive</div>
+        </div>
+
+        <div id="last-updated">
+            Last updated: <span id="last-update-time">—</span>
+        </div>
+    </div>
+
+    <div id="sidebar-column">
+        <button id="sidebar-toggle" title="Collapse sidebar">→</button>
+
+        <div class="sidebar-content">
+
+            <input type="text" id="site-search" placeholder="Search sites (DEL, BOM, HYD...)" autocomplete="off">
+            <div id="search-results"></div>
+
+            <div class="panel-header" id="settings-header">
+                <span>Map Settings</span>
+                <span>▼</span>
+            </div>
+            <div class="panel-content" id="settings-content">
+                <div class="settings-row">Show AFNET      <label class="switch"><input type="checkbox" id="showA" checked><span class="slider"></span></label></div>
+                <div class="settings-row">Show Satcom     <label class="switch"><input type="checkbox" id="showB" checked><span class="slider"></span></label></div>
+                <div class="settings-row">Show Unreachable<label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label></div>
+                <div class="settings-row">Show Purple     <label class="switch"><input type="checkbox" id="showD" checked><span class="slider"></span></label></div>
+                <div class="settings-row">Show Inactive   <label class="switch"><input type="checkbox" id="showE" checked><span class="slider"></span></label></div>
+
+                <hr style="border-color:var(--border);margin:18px 0 16px;">
+
+                <div class="settings-row">Pulse AFNET      <label class="switch"><input type="checkbox" id="pulseA"><span class="slider"></span></label></div>
+                <div class="settings-row">Pulse Satcom     <label class="switch"><input type="checkbox" id="pulseB"><span class="slider"></span></label></div>
+                <div class="settings-row">Pulse Unreachable<label class="switch"><input type="checkbox" id="pulseC" checked><span class="slider"></span></label></div>
+                <div class="settings-row">Pulse Purple     <label class="switch"><input type="checkbox" id="pulseD"><span class="slider"></span></label></div>
+                <div class="settings-row">Pulse Inactive   <label class="switch"><input type="checkbox" id="pulseE"><span class="slider"></span></label></div>
+
+                <hr style="border-color:var(--border);margin:18px 0 16px;">
+
+                <div class="settings-row">
+                    Marker size
+                    <span id="markerValue" class="size-label">6 px</span>
+                    <input type="range" id="markerSize" min="3" max="16" value="6">
+                </div>
+                <div class="settings-row">
+                    Pulse ring
+                    <span id="pulseValue" class="size-label">10 px</span>
+                    <input type="range" id="pulseSize" min="6" max="19" value="10">
+                </div>
+
+                <button id="saveSettings">Save & Reload</button>
+            </div>
+
+            <div class="panel-header" id="problems-header">
+                <span>Current Active Issues</span>
+                <span>▼</span>
+            </div>
+            <div class="panel-content" id="problems-content">
+                <div id="problems-list" class="scrollable-panel"></div>
+                <div id="problems-empty" style="text-align:center; color:var(--text-muted); padding:60px 0; display:none;">
+                    No active issues detected
+                </div>
+            </div>
+
+            <div class="panel-header" id="history-header">
+                <span id="history-panel-title">Status History</span>
+                <span>▼</span>
+            </div>
+            <div class="panel-content" id="history-content">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h6 id="history-panel-subtitle" class="mb-0">All Sites</h6>
+                    <button id="history-back-btn" class="btn btn-sm btn-outline-light" style="display:none;">← Back</button>
+                </div>
+                <div id="history-list" class="scrollable-panel history"></div>
+            </div>
+
+            <div id="contact-panel" style="display:none;">
+                <div id="contact-header">
+                    <span id="contact-title">Site Details</span>
+                    <span>▼</span>
+                </div>
+                <div id="contact-content"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="alert-container"></div>
+
+<script>
+am4core.ready(function () {
+
+    // Theme & constants
+    const MAP_THEME = {
+        light: { bg: "#f1f5f9", poly: "#60a5fa", hover: "#93c5fd", stroke: "#e2e8f0", ttBg: "#ffffff", ttTxt: "#0f172a" },
+        dark:  { bg: "#0b1121", poly: "#1e293b", hover: "#334155", stroke: "#475569", ttBg: "#0f172a", ttTxt: "#e2e8f0" }
+    };
+
+    let currentTheme = localStorage.getItem("mapTheme") || "dark";
+    let theme = MAP_THEME[currentTheme];
+    if (currentTheme === "dark") document.body.classList.add("dark-mode");
+
+    const SITE_COLORS = { A: "green", B: "yellow", C: "red", D: "purple", E: "blue" };
+    const PULSE_CONFIG = { opacity: 0.42, maxScale: 5.4, duration: 1800 };
+
+    let settings = JSON.parse(localStorage.getItem("mapSettings")) || {
+        showA: true, showB: true, showC: true, showD: true, showE: true,
+        pulseA: false, pulseB: false, pulseC: true, pulseD: false, pulseE: false,
+        markerSize: 6, pulseSize: 10
+    };
+
+    let chart, imageSeries, allSitesData = [], currentHistorySite = null;
+
+    // Helpers
+    function formatDateLocal(dt) {
+        return new Date(dt).toLocaleString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        }).replace(/,/g, '');
+    }
+
+    function showAlert(message, type = "danger") {
+        const container = document.getElementById("alert-container");
+        const alert = document.createElement("div");
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 4800);
+    }
+
+    function debounce(fn, delay = 220) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+
+    // Chart initialization
+    chart = am4core.create("chartdiv", am4maps.MapChart);
+    chart.geodata = am4geodata_india2020High;
+    chart.projection = new am4maps.projections.Miller();
+    chart.zoomControl = new am4maps.ZoomControl();
+    chart.background.fill = am4core.color(theme.bg);
+    chart.tooltip.background.fill = am4core.color(theme.ttBg);
+    chart.tooltip.label.fill = am4core.color(theme.ttTxt);
+
+    const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    polygonSeries.useGeodata = true;
+    const poly = polygonSeries.mapPolygons.template;
+    poly.fill = am4core.color(theme.poly);
+    poly.stroke = am4core.color(theme.stroke);
+    poly.strokeOpacity = 0.4;
+    poly.tooltipText = "{name}";
+    poly.states.create("hover").properties.fill = am4core.color(theme.hover);
+
+    imageSeries = chart.series.push(new am4maps.MapImageSeries());
+    const template = imageSeries.mapImages.template;
+    template.propertyFields.latitude = "latitude";
+    template.propertyFields.longitude = "longitude";
+    template.tooltipText = "{title}";
+
+    const pulseCircle = template.createChild(am4core.Circle);
+    pulseCircle.adapter.add("radius", () => settings.pulseSize);
+    pulseCircle.nonScaling = true;
+    pulseCircle.propertyFields.fill = "color";
+    pulseCircle.opacity = PULSE_CONFIG.opacity;
+    pulseCircle.zIndex = 0;
+
+    const markerCircle = template.createChild(am4core.Circle);
+    markerCircle.adapter.add("radius", () => settings.markerSize);
+    markerCircle.nonScaling = true;
+    markerCircle.propertyFields.fill = "color";
+    markerCircle.zIndex = 1;
+
+    markerCircle.adapter.add("opacity", function(_, target) {
+        const c = (target.dataItem?.dataContext?.color || "").toLowerCase().trim();
+        const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
+        return key && settings[`show${key}`] ? 1 : 0;
+    });
+
+    function zoomToLatLon(lat, lon, zoomLevel = 8) {
+        chart.zoomToGeoPoint({ latitude: lat, longitude: lon }, zoomLevel, true);
+    }
+
+    function startPulse(circle) {
+        if (circle._pulseAnim) circle._pulseAnim.stop();
+        circle.scale = 1;
+        circle.opacity = PULSE_CONFIG.opacity;
+        circle._pulseAnim = circle.animate([
+            { property: "scale", from: 1, to: PULSE_CONFIG.maxScale },
+            { property: "opacity", from: PULSE_CONFIG.opacity, to: 0 }
+        ], PULSE_CONFIG.duration);
+        circle._pulseAnim.events.on("animationended", () => startPulse(circle));
+    }
+
+    function stopPulse(circle) {
+        if (circle._pulseAnim) circle._pulseAnim.stop();
+        circle.opacity = 0;
+        circle.scale = 1;
+    }
+
+    function updatePulse(image) {
+        const data = image.dataItem?.dataContext;
+        if (!data) return;
+        const c = (data.color || "").toLowerCase().trim();
+        const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
+        if (!key) return;
+        const pulse = image.children.getIndex(0);
+        settings[`pulse${key}`] ? startPulse(pulse) : stopPulse(pulse);
+    }
+
+    imageSeries.mapImages.template.events.on("inited", e => updatePulse(e.target));
+    imageSeries.mapImages.template.events.on("dataitemchanged", e => updatePulse(e.target));
+
+    // Data loading
+    function loadSiteData() {
+        fetch("{% url 'site-map-api' %}")
+            .then(r => r.ok ? r.json() : [])
+            .then(raw => {
+                allSitesData = raw.filter(s => Object.values(SITE_COLORS).includes((s.color||"").toLowerCase().trim()));
+                imageSeries.data = allSitesData;
+                updateProblemsDisplay(allSitesData);
+                imageSeries.mapImages.each(updatePulse);
+                document.getElementById("last-update-time").textContent = formatDateLocal(new Date());
+            })
+            .catch(() => showAlert("Failed to load site data", "danger"));
+    }
+
+    loadSiteData();
+    setInterval(loadSiteData, 120000);
+
+    // Sidebar collapse
+    const sidebar = document.getElementById('sidebar-column');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+
+    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebar.classList.add('collapsed');
+        toggleBtn.textContent = '←';
+        toggleBtn.title = 'Expand sidebar';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        const collapsed = sidebar.classList.toggle('collapsed');
+        toggleBtn.textContent = collapsed ? '←' : '→';
+        toggleBtn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        localStorage.setItem('sidebarCollapsed', collapsed);
+    });
+
+    // Accordion - only one open
+    function closeAllPanels() {
+        document.querySelectorAll('.panel-content').forEach(c => c.classList.remove('open'));
+        document.querySelectorAll('.panel-header span:last-child').forEach(s => s.textContent = '▼');
+    }
+
+    document.querySelectorAll('.panel-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const isOpen = content.classList.contains('open');
+            closeAllPanels();
+            if (!isOpen) {
+                content.classList.add('open');
+                header.querySelector('span:last-child').textContent = '▲';
+            }
+        });
+    });
+
+    // Settings button
+    document.getElementById("settings-btn").onclick = () => {
+        closeAllPanels();
+        document.getElementById("settings-content").classList.add("open");
+        document.getElementById("settings-header").querySelector("span:last-child").textContent = "▲";
+        if (sidebar.classList.contains("collapsed")) {
+            sidebar.classList.remove("collapsed");
+            toggleBtn.textContent = "→";
+            localStorage.setItem('sidebarCollapsed', 'false');
+        }
+    };
+
+    // Save settings
+    document.getElementById("saveSettings").onclick = () => {
+        localStorage.setItem("mapSettings", JSON.stringify(settings));
+        closeAllPanels();
+        window.location.reload();
+    };
+
+    // Sync settings UI
+    ["A","B","C","D","E"].forEach(k => {
+        document.getElementById(`show${k}`).checked = settings[`show${k}`];
+        document.getElementById(`pulse${k}`).checked = settings[`pulse${k}`];
+
+        document.getElementById(`show${k}`).onchange = e => {
+            settings[`show${k}`] = e.target.checked;
+            if (!e.target.checked) {
+                settings[`pulse${k}`] = false;
+                document.getElementById(`pulse${k}`).checked = false;
+            }
+            refreshAll();
+        };
+
+        document.getElementById(`pulse${k}`).onchange = e => {
+            settings[`pulse${k}`] = e.target.checked;
+            if (e.target.checked) {
+                settings[`show${k}`] = true;
+                document.getElementById(`show${k}`).checked = true;
+            }
+            refreshAll();
+        };
+    });
+
+    document.getElementById("markerSize").value = settings.markerSize;
+    document.getElementById("pulseSize").value = settings.pulseSize;
+    document.getElementById("markerValue").textContent = settings.markerSize + " px";
+    document.getElementById("pulseValue").textContent = settings.pulseSize + " px";
+
+    document.getElementById("markerSize").oninput = debounce(e => {
+        let v = parseInt(e.target.value);
+        if (v > settings.pulseSize) {
+            settings.pulseSize = v + 2;
+            document.getElementById("pulseSize").value = settings.pulseSize;
+            document.getElementById("pulseValue").textContent = settings.pulseSize + " px";
+        }
+        settings.markerSize = v;
+        document.getElementById("markerValue").textContent = v + " px";
+        refreshAll();
+    });
+
+    document.getElementById("pulseSize").oninput = debounce(e => {
+        let v = Math.max(6, parseInt(e.target.value));
+        e.target.value = v;
+        if (v < settings.markerSize) {
+            settings.markerSize = v;
+            document.getElementById("markerSize").value = v;
+            document.getElementById("markerValue").textContent = v + " px";
+        }
+        settings.pulseSize = v;
+        document.getElementById("pulseValue").textContent = v + " px";
+        refreshAll();
+    });
+
+    function refreshAll() {
+        imageSeries.mapImages.each(updatePulse);
+        chart.invalidateRawData();
+    }
+
+    // Site search
+    const searchInput = document.getElementById("site-search");
+    const searchResults = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", debounce(() => {
+        const query = searchInput.value.toLowerCase().trim();
+        searchResults.innerHTML = "";
+        searchResults.style.display = "none";
+
+        if (query.length < 2) return;
+
+        const matches = allSitesData.filter(s => s.title.toLowerCase().includes(query));
+        if (matches.length === 0) {
+            searchResults.innerHTML = '<div class="p-3 text-center text-muted">No matching sites</div>';
+        } else {
+            matches.forEach(site => {
+                const item = document.createElement("div");
+                item.className = "search-item";
+                item.textContent = site.title;
+                item.onclick = () => {
+                    zoomToLatLon(site.latitude, site.longitude, 10);
+                    loadContactInfo(site.title);
+                    searchInput.value = "";
+                    searchResults.style.display = "none";
+                };
+                searchResults.appendChild(item);
+            });
+        }
+        searchResults.style.display = "block";
+    }, 300));
+
+    document.addEventListener("click", e => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = "none";
+        }
+    });
+
+    // Contact info
+    function loadContactInfo(siteName) {
+        fetch(`/api/contact-info/${encodeURIComponent(siteName)}/`)
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                document.getElementById("contact-title").textContent = siteName;
+                const content = document.getElementById("contact-content");
+                content.innerHTML = data.length === 0
+                    ? "<i style='color:var(--text-muted)'>No contact details available</i>"
+                    : `<table>${data.map(c => `
+                        <tr><th>Email</th><td>${c.email || "—"}</td></tr>
+                        <tr><th>Phone</th><td>${c.phone || "—"}</td></tr>
+                        <tr><th>Address</th><td>${c.address || "—"}</td></tr>
+                    `).join("")}</table>`;
+                document.getElementById("contact-panel").style.display = "block";
+                document.getElementById("contact-content").style.display = "block";
+            })
+            .catch(() => {
+                showAlert("Failed to load contact info", "danger");
+                document.getElementById("contact-panel").style.display = "block";
+            });
+    }
+
+    document.getElementById("contact-header").onclick = () => {
+        const content = document.getElementById("contact-content");
+        content.style.display = content.style.display === "none" ? "block" : "none";
+    };
+
+    chart.seriesContainer.events.on("hit", () => {
+        document.getElementById("contact-panel").style.display = "none";
+    });
+
+    // Problems list
+    function updateProblemsDisplay(sites) {
+        const problematic = sites.filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+        const list = document.getElementById("problems-list");
+        const empty = document.getElementById("problems-empty");
+        list.innerHTML = "";
+
+        if (problematic.length === 0) {
+            empty.style.display = "block";
+            return;
+        }
+        empty.style.display = "none";
+
+        problematic.sort((a,b) => new Date(b.problem_since) - new Date(a.problem_since));
+        renderProblemEntries(problematic);
+    }
+
+    function renderProblemEntries(items) {
+        const list = document.getElementById("problems-list");
+        list.innerHTML = "";
+
+        items.forEach(site => {
+            const color = (site.color || "").toLowerCase().trim();
+            const div = document.createElement("div");
+            div.className = `problem-entry ${color === "red" ? "" : "yellow"}`;
+            div.innerHTML = `
+                <div class="problem-site">${site.title}</div>
+                <div class="problem-status">${color === "red" ? "Unreachable" : "Satcom"}</div>
+                <div class="problem-since">since ${formatDateLocal(site.problem_since)}</div>
+            `;
+            list.appendChild(div);
+        });
+
+        document.querySelectorAll('.problem-entry').forEach(el => {
+            el.addEventListener('click', () => {
+                const site = el.querySelector('.problem-site').textContent.trim();
+                loadSiteHistory(site, "desc");
+
+                closeAllPanels();
+                document.getElementById("history-content").classList.add("open");
+                document.getElementById("history-header").querySelector("span:last-child").textContent = "▲";
+
+                document.getElementById("history-panel-subtitle").textContent = `History: ${site}`;
+                document.getElementById("history-back-btn").style.display = "inline-block";
+
+                if (sidebar.classList.contains("collapsed")) {
+                    sidebar.classList.remove("collapsed");
+                    toggleBtn.textContent = "→";
+                    localStorage.setItem("sidebarCollapsed", "false");
+                }
+            });
+        });
+    }
+
+    // History
+    function renderHistoryEntries(entries) {
+        const list = document.getElementById("history-list");
+        list.innerHTML = "";
+
+        if (!entries || entries.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:60px 0;">No history records found</div>';
+            return;
+        }
+
+        entries.forEach(entry => {
+            const div = document.createElement("div");
+            div.className = "history-entry";
+            div.innerHTML = `
+                <div class="history-time">${formatDateLocal(entry.status_changed_at)}</div>
+                <div style="font-weight:600; margin:4px 0;">
+                    ${entry.site__name || entry.site_name || "—"}
+                </div>
+                <div>
+                    <span style="color:var(--text-muted);">from</span> 
+                    <span>${entry.past_status}</span> 
+                    <span style="color:var(--text-muted);"> → </span> 
+                    <span style="${/down|unreach/i.test(entry.current_status) ? 'color:var(--danger);font-weight:600;' : 'color:var(--success);font-weight:600;'}">
+                        ${entry.current_status}
+                    </span>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function loadAllSitesHistory(order = "desc") {
+        fetch("{% url 'status-history-all-sites' %}")
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                data.sort((a,b) => {
+                    const ta = new Date(a.status_changed_at);
+                    const tb = new Date(b.status_changed_at);
+                    return order === "desc" ? tb - ta : ta - tb;
+                });
+                renderHistoryEntries(data);
+            })
+            .catch(() => {
+                showAlert("Failed to load history", "danger");
+                document.getElementById("history-list").innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:60px 0;">History unavailable</div>';
+            });
+    }
+
+    function loadSiteHistory(siteName, order = "desc") {
+        currentHistorySite = siteName;
+        fetch(`/api/status-history/${encodeURIComponent(siteName)}/`)
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                data.sort((a,b) => {
+                    const ta = new Date(a.status_changed_at);
+                    const tb = new Date(b.status_changed_at);
+                    return order === "desc" ? tb - ta : ta - tb;
+                });
+                renderHistoryEntries(data);
+            })
+            .catch(() => {
+                showAlert("Failed to load site history", "danger");
+                document.getElementById("history-list").innerHTML = '<div style="text-align:center; color:var(--danger); padding:60px 0;">History unavailable</div>';
+            });
+    }
+
+    document.getElementById("history-btn").onclick = () => {
+        closeAllPanels();
+        document.getElementById("history-content").classList.add("open");
+        document.getElementById("history-header").querySelector("span:last-child").textContent = "▲";
+
+        document.getElementById("history-panel-title").textContent = "Status History";
+        document.getElementById("history-panel-subtitle").textContent = "All Sites";
+        document.getElementById("history-back-btn").style.display = "none";
+
+        loadAllSitesHistory("desc");
+
+        if (sidebar.classList.contains("collapsed")) {
+            sidebar.classList.remove("collapsed");
+            toggleBtn.textContent = "→";
+            localStorage.setItem("sidebarCollapsed", "false");
+        }
+    };
+
+    document.getElementById("history-back-btn").onclick = () => {
+        document.getElementById("history-back-btn").style.display = "none";
+        document.getElementById("history-panel-subtitle").textContent = "All Sites";
+        currentHistorySite = null;
+        loadAllSitesHistory("desc");
+    };
+
+    document.querySelectorAll("#history-content .history-sort-btn")?.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const order = btn.dataset.order;
+            document.querySelectorAll("#history-content .history-sort-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            if (currentHistorySite) {
+                loadSiteHistory(currentHistorySite, order);
+            } else {
+                loadAllSitesHistory(order);
+            }
+        });
+    });
+
+    // Dark mode toggle
+    document.getElementById("dark-mode-btn").onclick = () => {
+        const isDark = !document.body.classList.contains("dark-mode");
+        localStorage.setItem("mapTheme", isDark ? "dark" : "light");
+        window.location.reload();
+    };
+
+    // Reset zoom
+    document.getElementById("resetZoomBtn").onclick = () => chart.goHome();
+
+    // Initial problems display
+    updateProblemsDisplay([]);
+});
+</script>
+
+{% endblock %}

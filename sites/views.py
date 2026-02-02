@@ -1,9 +1,10 @@
+import random
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 from .models import Site, ContactInfo, SiteStatusHistory
 
 
@@ -31,13 +32,17 @@ class SiteMapAPIView(APIView):
     def get(self, request):
         sites = Site.objects.all()
         data = []
+        fake_times = [datetime.now() - timedelta(hours=random.randint(1, 72)) for _ in range(200)]
+        fake_idx = 0
         for site in sites:
             data.append({
                 "title": site.name,
                 "latitude": site.latitude,
                 "longitude": site.longitude,
                 "color": site.color,
+                "problem_since": fake_times[fake_idx].isoformat(),
             })
+            fake_idx = (fake_idx + 1) % len(fake_times)
 
         return Response(data)
 

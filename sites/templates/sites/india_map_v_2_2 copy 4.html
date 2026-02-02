@@ -11,20 +11,20 @@
 <!-- Styles -->
 <style>
     :root {
-        --bg-dark:      #0b1121;
-        --bg-darker:    #060b17;
-        --panel-glass:  rgba(15, 23, 42, 0.88);
-        --text:         #e2e8f0;
-        --text-muted:   #94a3b8;
-        --accent:       #60a5fa;
-        --accent-glow:  rgba(96, 165, 250, 0.24);
-        --danger:       #f87171;
-        --warning:      #fbbf24;
-        --success:      #34d399;
-        --border:       rgba(96, 165, 250, 0.30);
-        --shadow-sm:    0 6px 20px -6px rgba(0,0,0,0.55);
-        --shadow-md:    0 16px 40px -12px rgba(0,0,0,0.65);
-        --transition:   all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        --bg-dark: #0b1121;
+        --bg-darker: #060b17;
+        --panel-glass: rgba(15, 23, 42, 0.88);
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #60a5fa;
+        --accent-glow: rgba(96, 165, 250, 0.24);
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --success: #34d399;
+        --border: rgba(96, 165, 250, 0.30);
+        --shadow-sm: 0 6px 20px -6px rgba(0, 0, 0, 0.55);
+        --shadow-md: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
+        --transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     body {
@@ -94,10 +94,21 @@
         background: rgba(2, 43, 92, 0.94);
     }
 
-    #resetZoomBtn  { top: 32px; }
-    #settings-btn  { top: 92px; }
-    #history-btn   { top: 152px; }
-    #dark-mode-btn { top: 212px; }
+    #resetZoomBtn {
+        top: 32px;
+    }
+
+    #settings-btn {
+        top: 92px;
+    }
+
+    #history-btn {
+        top: 152px;
+    }
+
+    #dark-mode-btn {
+        top: 212px;
+    }
 
     #legend {
         position: absolute;
@@ -131,11 +142,11 @@
         background: var(--panel-glass);
         backdrop-filter: blur(20px);
         border-left: 1px solid var(--border);
-        box-shadow: -8px 0 32px rgba(0,0,0,0.6);
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        transition: width 0.45s cubic-bezier(0.22,1,0.36,1);
+        transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
         position: relative;
         z-index: 1000;
     }
@@ -149,7 +160,7 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        background: rgba(2,43,92,0.9);
+        background: rgba(2, 43, 92, 0.9);
         color: white;
         border: none;
         border-radius: 50%;
@@ -180,7 +191,7 @@
     }
 
     .panel-header {
-        background: linear-gradient(135deg, rgba(30,58,138,0.88), rgba(59,130,246,0.38));
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.88), rgba(59, 130, 246, 0.38));
         color: white;
         padding: 16px 20px;
         font-size: 15.5px;
@@ -201,7 +212,7 @@
     }
 
     .panel-content {
-        background: rgba(15,23,42,0.68);
+        background: rgba(15, 23, 42, 0.68);
         border-radius: 14px;
         padding: 20px;
         border: 1px solid var(--border);
@@ -215,14 +226,21 @@
     }
 
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0);   }
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .problem-entry {
         padding: 16px 18px;
         margin-bottom: 12px;
-        background: rgba(30,41,59,0.62);
+        background: rgba(30, 41, 59, 0.62);
         border-radius: 12px;
         border-left: 5px solid var(--danger);
         cursor: pointer;
@@ -236,7 +254,7 @@
 
     .problem-entry:hover {
         transform: translateX(8px) scale(1.02);
-        box-shadow: 0 12px 36px -8px rgba(239,68,68,0.42);
+        box-shadow: 0 12px 36px -8px rgba(239, 68, 68, 0.42);
     }
 
     .problem-site {
@@ -259,14 +277,14 @@
     .history-entry {
         padding: 14px 18px;
         margin-bottom: 12px;
-        background: rgba(30,41,59,0.62);
+        background: rgba(30, 41, 59, 0.62);
         border-radius: 12px;
         font-size: 13.8px;
         transition: var(--transition);
     }
 
     .history-entry:hover {
-        background: rgba(96,165,250,0.16);
+        background: rgba(96, 165, 250, 0.16);
         transform: translateX(4px);
     }
 
@@ -279,10 +297,12 @@
     .sidebar-content::-webkit-scrollbar {
         width: 6px;
     }
+
     .sidebar-content::-webkit-scrollbar-track {
-        background: rgba(30,41,59,0.4);
+        background: rgba(30, 41, 59, 0.4);
         border-radius: 10px;
     }
+
     .sidebar-content::-webkit-scrollbar-thumb {
         background: var(--accent);
         border-radius: 10px;
@@ -303,21 +323,40 @@
         color: white;
         font-size: 15px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.12);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
         animation: slideInRight 0.45s ease-out;
     }
 
     @keyframes slideInRight {
-        from { transform: translateX(140%); opacity: 0; }
-        to   { transform: translateX(0);    opacity: 1; }
+        from {
+            transform: translateX(140%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
-    .alert-danger   { background: rgba(239,68,68,0.92);  border-color: #fca5a5; }
-    .alert-success  { background: rgba(16,185,129,0.92); border-color: #6ee7b7; }
-    .alert-warning  { background: rgba(245,158,11,0.92); border-color: #fcd34d; }
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.92);
+        border-color: #fca5a5;
+    }
 
-    .sort-btn.active, .history-sort-btn.active {
+    .alert-success {
+        background: rgba(16, 185, 129, 0.92);
+        border-color: #6ee7b7;
+    }
+
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.92);
+        border-color: #fcd34d;
+    }
+
+    .sort-btn.active,
+    .history-sort-btn.active {
         background: var(--accent);
         color: white !important;
         border-color: var(--accent);
@@ -328,7 +367,7 @@
         padding: 10px 14px;
         border: 1px solid var(--border);
         border-radius: 8px;
-        background: rgba(30,41,59,0.8);
+        background: rgba(30, 41, 59, 0.8);
         color: var(--text);
         font-size: 14px;
     }
@@ -360,7 +399,7 @@
     }
 
     #search-results .search-item:hover {
-        background: rgba(96,165,250,0.3);
+        background: rgba(96, 165, 250, 0.3);
     }
 
     #contact-panel {
@@ -376,7 +415,7 @@
     }
 
     #contact-header {
-        background: linear-gradient(135deg, rgba(2,43,92,0.9), rgba(30,58,138,0.7));
+        background: linear-gradient(135deg, rgba(2, 43, 92, 0.9), rgba(30, 58, 138, 0.7));
         color: white;
         padding: 14px 20px;
         font-size: 15.5px;
@@ -396,142 +435,25 @@
         width: 100%;
         border-collapse: collapse;
     }
+
     th {
         text-align: left;
         padding: 10px 0;
         color: var(--text-muted);
         width: 35%;
     }
+
     td {
         padding: 10px 0;
     }
-
-    
-    #settings-panel,
-    #history-panel {
-        position: fixed;
-        top: 320px;
-        right: -340px;
-        max-height: 65vh;
-        overflow-y: auto;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-        padding: 16px;
-        transition: right 0.3s ease;
-        z-index: 1002;
-    }
-
-    body.dark-mode #settings-panel,
-    body.dark-mode #history-panel {
-        background: #1e293b;
-        color: #e2e8f0;
-    }
-
-    #settings-panel {
-        width: 300px;
-        z-index: 1002;
-    }
-
-    #history-panel {
-        width: 340px;
-        z-index: 1003;
-        font-size: 13px;
-    }
-
-    #settings-panel.open,
-    #history-panel.open {
-        right: 24px;
-    }
-
-    .settings-title {
-        font-weight: 600;
-        margin: 16px 0 10px;
-        color: #333;
-    }
-
-    body.dark-mode .settings-title {
-        color: #cbd5e1;
-    }
-
-    .settings-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px 0;
-    }
-
-    /* Switch & Slider styles unchanged – kept minimal */
-    .switch {
-        position: relative;
-        width: 38px;
-        height: 20px;
-    }
-
-    .switch input {
-        display: none;
-    }
-
-    .slider {
-        position: absolute;
-        inset: 0;
-        background: #ccc;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .slider:before {
-        content: "";
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        left: 2px;
-        bottom: 2px;
-        background: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-
-    input:checked+.slider {
-        background: #4caf50;
-    }
-
-    input:checked+.slider:before {
-        transform: translateX(18px);
-    }
-
-    input[type=range] {
-        width: 130px;
-        accent-color: #002b5c;
-    }
-
-    .size-label {
-        min-width: 70px;
-        text-align: right;
-        color: #555;
-        font-size: 13px;
-    }
-
-    #saveSettings {
-        margin-top: 20px;
-        width: 100%;
-        padding: 10px;
-        background: #002b5c;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-
 </style>
 
 <div id="main-content-wrapper">
     <div id="map-column">
         <div id="chartdiv"></div>
 
-        <button id="resetZoomBtn" class="control-btn"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset View</button>
+        <button id="resetZoomBtn" class="control-btn"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset
+            View</button>
         <button id="settings-btn" class="control-btn"><i class="bi bi-gear me-2"></i> Settings</button>
         <button id="history-btn" class="control-btn"><i class="bi bi-clock me-2"></i> History</button>
         <button id="dark-mode-btn" class="control-btn">
@@ -571,7 +493,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="mb-0">
                         Current Active Issues
-                        <span id="issues-count" class="badge bg-danger ms-2" style="font-size:0.8rem; display:none;">0</span>
+                        <span id="issues-count" class="badge bg-danger ms-2"
+                            style="font-size:0.8rem; display:none;">0</span>
                     </h6>
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-light sort-btn active" data-sort="time">Newest</button>
@@ -580,7 +503,8 @@
                     </div>
                 </div>
                 <div id="problems-list"></div>
-                <div id="problems-empty" style="text-align:center; color:var(--text-muted); padding:50px 0; display:none;">
+                <div id="problems-empty"
+                    style="text-align:center; color:var(--text-muted); padding:50px 0; display:none;">
                     No active issues detected
                 </div>
             </div>
@@ -594,17 +518,20 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h6 class="mb-0" id="history-panel-subtitle">Status History</h6>
                     <div class="d-flex align-items-center gap-2">
-                        <button id="history-back-btn" style="display:none;" class="btn btn-outline-light btn-sm">← Back</button>
+                        <button id="history-back-btn" style="display:none;" class="btn btn-outline-light btn-sm">←
+                            Back</button>
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-light history-sort-btn active" data-order="desc">Newest first</button>
-                            <button class="btn btn-outline-light history-sort-btn" data-order="asc">Oldest first</button>
+                            <button class="btn btn-outline-light history-sort-btn active" data-order="desc">Newest
+                                first</button>
+                            <button class="btn btn-outline-light history-sort-btn" data-order="asc">Oldest
+                                first</button>
                         </div>
                     </div>
                 </div>
                 <div id="history-list"></div>
             </div>
 
-            <!-- Contact Panel (will be moved here when sidebar open) -->
+            <!-- Contact Panel (moved inside sidebar when open) -->
             <div id="contact-panel" style="display:none;">
                 <div id="contact-header">
                     <span id="contact-title">Site Details</span>
@@ -619,18 +546,28 @@
 <!-- Settings Panel -->
 <div id="settings-panel">
     <div class="settings-title">Visibility</div>
-    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="showA" checked><span class="slider"></span></label></div>
-    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="showB" checked><span class="slider"></span></label></div>
-    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label></div>
-    <div class="settings-row">Purple Status <label class="switch"><input type="checkbox" id="showD" checked><span class="slider"></span></label></div>
-    <div class="settings-row">Inactive Sites <label class="switch"><input type="checkbox" id="showE" checked><span class="slider"></span></label></div>
+    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="showA" checked><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="showB" checked><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="showC" checked><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Purple Status <label class="switch"><input type="checkbox" id="showD" checked><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Inactive Sites <label class="switch"><input type="checkbox" id="showE" checked><span
+                class="slider"></span></label></div>
 
     <div class="settings-title">Pulse Animation</div>
-    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="pulseA"><span class="slider"></span></label></div>
-    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="pulseB"><span class="slider"></span></label></div>
-    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="pulseC" checked><span class="slider"></span></label></div>
-    <div class="settings-row">Purple Status <label class="switch"><input type="checkbox" id="pulseD"><span class="slider"></span></label></div>
-    <div class="settings-row">Inactive Sites <label class="switch"><input type="checkbox" id="pulseE"><span class="slider"></span></label></div>
+    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="pulseA"><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="pulseB"><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="pulseC" checked><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Purple Status <label class="switch"><input type="checkbox" id="pulseD"><span
+                class="slider"></span></label></div>
+    <div class="settings-row">Inactive Sites <label class="switch"><input type="checkbox" id="pulseE"><span
+                class="slider"></span></label></div>
 
     <div class="settings-title">Marker Sizes</div>
     <div class="settings-row">
@@ -652,7 +589,7 @@
     // ── Theme & Constants ────────────────────────────────────────────────────
     const MAP_THEME = {
         light: { background: "#f1f5f9", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" },
-        dark:  { background: "#0b1121", polygonFill: "#1e293b", polygonHover: "#334155", polygonStroke: "#475569", tooltipBg: "#0f172a", tooltipText: "#e2e8f0" }
+        dark: { background: "#0b1121", polygonFill: "#1e293b", polygonHover: "#334155", polygonStroke: "#475569", tooltipBg: "#0f172a", tooltipText: "#e2e8f0" }
     };
 
     let currentTheme = localStorage.getItem("mapTheme") || "dark";
@@ -697,6 +634,7 @@
 
     // ── AmCharts ─────────────────────────────────────────────────────────────
     let chartInstance;
+    let currentZoomedSite = null;
 
     am4core.ready(function () {
         am4core.useTheme(am4themes_animated);
@@ -753,6 +691,8 @@
             );
         }
 
+
+
         function startPulse(circle) {
             if (circle._pulseAnim) circle._pulseAnim.stop();
             circle.scale = 1;
@@ -787,31 +727,17 @@
             const ctx = ev.target.dataItem.dataContext;
             const color = (ctx.color || "").toLowerCase().trim();
             if (Object.values(SITE_COLORS).includes(color)) {
-                fetch(`/api/contact-info/${encodeURIComponent(ctx.title)}/`)
-                    .then(r => r.ok ? r.json() : [])
-                    .then(data => {
-                        document.getElementById("contact-title").textContent = ctx.title;
-                        const content = document.getElementById("contact-content");
-                        content.innerHTML = data.length === 0
-                            ? "<i style='color:var(--text-muted)'>No contact details available</i>"
-                            : `<table>${data.map(c => `
-                                <tr><th>Email</th><td>${c.email || "—"}</td></tr>
-                                <tr><th>Phone</th><td>${c.phone || "—"}</td></tr>
-                                <tr><th>Address</th><td>${c.address || "—"}</td></tr>
-                            `).join("")}</table>`;
-                        document.getElementById("contact-panel").style.display = "block";
-                        document.getElementById("contact-content").style.display = "block";
-                    })
-                    .catch(() => {
-                        showAlert("Failed to load contact info", "danger");
-                        document.getElementById("contact-panel").style.display = "block";
-                    });
+                loadContactInfo(ctx.title);
+                // Optional: highlight/zoom slightly on click
+                chartInstance.zoomToMapLocation(ctx.latitude, ctx.longitude, 10);
             }
         });
 
         chartInstance.seriesContainer.events.on("hit", () => {
             document.getElementById("contact-panel").style.display = "none";
         });
+
+
 
         // ── Data Loading ─────────────────────────────────────────────────────
         let allSitesData = [];
@@ -820,7 +746,7 @@
             fetch("{% url 'site-map-api' %}")
                 .then(r => r.json())
                 .then(raw => {
-                    allSitesData = raw.filter(s => Object.values(SITE_COLORS).includes((s.color||"").toLowerCase().trim()));
+                    allSitesData = raw.filter(s => Object.values(SITE_COLORS).includes((s.color || "").toLowerCase().trim()));
                     imageSeries.data = allSitesData;
                     updateProblemsDisplay(allSitesData);
                     refreshAll();
@@ -902,6 +828,7 @@
                     item.textContent = site.title;
                     item.onclick = () => {
                         zoomToLatLon(site.latitude, site.longitude, 10);
+                        // chartInstance.zoomToMapLocation(site.latitude, site.longitude, 10);
                         loadContactInfo(site.title);
                         searchInput.value = "";
                         searchResults.style.display = "none";
@@ -946,40 +873,13 @@
             content.style.display = content.style.display === "none" ? "block" : "none";
         };
 
-        // ── Accordion (fixed version) ────────────────────────────────────────
-        document.querySelectorAll('.panel-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const content = header.nextElementSibling;
-                const isCurrentlyOpen = content.classList.contains('open');
-
-                // Close all other panels
-                document.querySelectorAll('.panel-content').forEach(c => {
-                    if (c !== content) c.classList.remove('open');
-                });
-
-                // Reset all arrows
-                document.querySelectorAll('.panel-header span:last-child').forEach(s => {
-                    s.textContent = '▼';
-                });
-
-                // Toggle clicked panel
-                if (isCurrentlyOpen) {
-                    content.classList.remove('open');
-                    header.querySelector('span:last-child').textContent = '▼';
-                } else {
-                    content.classList.add('open');
-                    header.querySelector('span:last-child').textContent = '▲';
-                }
-            });
-        });
-
         // ── Current Active Issues ────────────────────────────────────────────
         let nameSortAsc = true;
         let colorSortDesc = true;
         let timeSortNewestFirst = true;
 
         function updateProblemsDisplay(sites) {
-            const problematic = sites.filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+            const problematic = sites.filter(s => ["red", "yellow"].includes((s.color || "").toLowerCase().trim()));
             const list = document.getElementById("problems-list");
             const empty = document.getElementById("problems-empty");
             list.innerHTML = "";
@@ -993,7 +893,7 @@
             document.getElementById("issues-count").textContent = problematic.length;
             document.getElementById("issues-count").style.display = "inline";
 
-            problematic.sort((a,b) => new Date(b.problem_since) - new Date(a.problem_since));
+            problematic.sort((a, b) => new Date(b.problem_since) - new Date(a.problem_since));
 
             renderProblemEntries(problematic);
         }
@@ -1020,7 +920,7 @@
         document.querySelectorAll('#problems-content .sort-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const sortType = btn.dataset.sort;
-                let items = [...allSitesData].filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+                let items = [...allSitesData].filter(s => ["red", "yellow"].includes((s.color || "").toLowerCase().trim()));
 
                 document.querySelectorAll('#problems-content .sort-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -1036,15 +936,15 @@
                     });
                 } else if (sortType === "name") {
                     nameSortAsc = !nameSortAsc;
-                    items.sort((a,b) => {
+                    items.sort((a, b) => {
                         const cmp = a.title.localeCompare(b.title);
                         return nameSortAsc ? cmp : -cmp;
                     });
                 } else if (sortType === "color") {
                     colorSortDesc = !colorSortDesc;
-                    items.sort((a,b) => {
-                        const ca = (a.color||"").toLowerCase().trim();
-                        const cb = (b.color||"").toLowerCase().trim();
+                    items.sort((a, b) => {
+                        const ca = (a.color || "").toLowerCase().trim();
+                        const cb = (b.color || "").toLowerCase().trim();
                         const cmp = ca.localeCompare(cb);
                         return colorSortDesc ? -cmp : cmp;
                     });
@@ -1091,7 +991,7 @@
             fetch("{% url 'status-history-all-sites' %}")
                 .then(r => r.ok ? r.json() : [])
                 .then(data => {
-                    data.sort((a,b) => {
+                    data.sort((a, b) => {
                         const ta = new Date(a.status_changed_at);
                         const tb = new Date(b.status_changed_at);
                         return order === "desc" ? tb - ta : ta - tb;
@@ -1100,7 +1000,7 @@
                 })
                 .catch(() => {
                     showAlert("Failed to load history", "danger");
-                    document.getElementById('history-list').innerHTML = 
+                    document.getElementById('history-list').innerHTML =
                         '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">History unavailable</div>';
                 });
         }
@@ -1110,7 +1010,7 @@
             fetch(`/api/status-history/${encodeURIComponent(siteName)}/`)
                 .then(r => r.ok ? r.json() : [])
                 .then(data => {
-                    data.sort((a,b) => {
+                    data.sort((a, b) => {
                         const ta = new Date(a.status_changed_at);
                         const tb = new Date(b.status_changed_at);
                         return order === "desc" ? tb - ta : ta - tb;
@@ -1119,7 +1019,7 @@
                 })
                 .catch(() => {
                     showAlert("Failed to load site history", "danger");
-                    document.getElementById('history-list').innerHTML = 
+                    document.getElementById('history-list').innerHTML =
                         '<div style="color:var(--danger);padding:30px 0;text-align:center;">History unavailable</div>';
                 });
         }
@@ -1191,7 +1091,7 @@
 
         // ── Settings UI ──────────────────────────────────────────────────────
         function syncSettingsUI() {
-            ["A","B","C","D","E"].forEach(k => {
+            ["A", "B", "C", "D", "E"].forEach(k => {
                 document.getElementById(`show${k}`).checked = settings[`show${k}`];
                 document.getElementById(`pulse${k}`).checked = settings[`pulse${k}`];
             });
@@ -1202,7 +1102,7 @@
         }
         syncSettingsUI();
 
-        ["A","B","C","D","E"].forEach(k => {
+        ["A", "B", "C", "D", "E"].forEach(k => {
             const showEl = document.getElementById(`show${k}`);
             const pulseEl = document.getElementById(`pulse${k}`);
             showEl.onchange = e => {

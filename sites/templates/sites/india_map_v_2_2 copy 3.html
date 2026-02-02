@@ -54,16 +54,6 @@
         height: 100%;
     }
 
-    #last-updated {
-        position: absolute;
-        bottom: 16px;
-        right: 32px;
-        color: var(--text-muted);
-        font-size: 13px;
-        z-index: 1000;
-        pointer-events: none;
-    }
-
     .control-btn {
         position: absolute;
         left: 32px;
@@ -322,209 +312,6 @@
         color: white !important;
         border-color: var(--accent);
     }
-
-    #site-search {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: rgba(30,41,59,0.8);
-        color: var(--text);
-        font-size: 14px;
-    }
-
-    #site-search::placeholder {
-        color: var(--text-muted);
-    }
-
-    #search-results {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        max-height: 300px;
-        overflow-y: auto;
-        background: var(--panel-glass);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        margin-top: 6px;
-        z-index: 1002;
-        box-shadow: var(--shadow-md);
-        display: none;
-    }
-
-    #search-results .search-item {
-        padding: 10px 14px;
-        cursor: pointer;
-        color: var(--text);
-    }
-
-    #search-results .search-item:hover {
-        background: rgba(96,165,250,0.3);
-    }
-
-    #contact-panel {
-        background: var(--panel-glass);
-        backdrop-filter: blur(16px);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        box-shadow: var(--shadow-md);
-        color: var(--text);
-        margin: 20px 0;
-        width: 100%;
-        max-width: 380px;
-    }
-
-    #contact-header {
-        background: linear-gradient(135deg, rgba(2,43,92,0.9), rgba(30,58,138,0.7));
-        color: white;
-        padding: 14px 20px;
-        font-size: 15.5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        border-radius: 14px 14px 0 0;
-    }
-
-    #contact-content {
-        padding: 20px;
-        font-size: 14px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th {
-        text-align: left;
-        padding: 10px 0;
-        color: var(--text-muted);
-        width: 35%;
-    }
-    td {
-        padding: 10px 0;
-    }
-
-    
-    #settings-panel,
-    #history-panel {
-        position: fixed;
-        top: 320px;
-        right: -340px;
-        max-height: 65vh;
-        overflow-y: auto;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-        padding: 16px;
-        transition: right 0.3s ease;
-        z-index: 1002;
-    }
-
-    body.dark-mode #settings-panel,
-    body.dark-mode #history-panel {
-        background: #1e293b;
-        color: #e2e8f0;
-    }
-
-    #settings-panel {
-        width: 300px;
-        z-index: 1002;
-    }
-
-    #history-panel {
-        width: 340px;
-        z-index: 1003;
-        font-size: 13px;
-    }
-
-    #settings-panel.open,
-    #history-panel.open {
-        right: 24px;
-    }
-
-    .settings-title {
-        font-weight: 600;
-        margin: 16px 0 10px;
-        color: #333;
-    }
-
-    body.dark-mode .settings-title {
-        color: #cbd5e1;
-    }
-
-    .settings-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px 0;
-    }
-
-    /* Switch & Slider styles unchanged – kept minimal */
-    .switch {
-        position: relative;
-        width: 38px;
-        height: 20px;
-    }
-
-    .switch input {
-        display: none;
-    }
-
-    .slider {
-        position: absolute;
-        inset: 0;
-        background: #ccc;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .slider:before {
-        content: "";
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        left: 2px;
-        bottom: 2px;
-        background: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-
-    input:checked+.slider {
-        background: #4caf50;
-    }
-
-    input:checked+.slider:before {
-        transform: translateX(18px);
-    }
-
-    input[type=range] {
-        width: 130px;
-        accent-color: #002b5c;
-    }
-
-    .size-label {
-        min-width: 70px;
-        text-align: right;
-        color: #555;
-        font-size: 13px;
-    }
-
-    #saveSettings {
-        margin-top: 20px;
-        width: 100%;
-        padding: 10px;
-        background: #002b5c;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-
 </style>
 
 <div id="main-content-wrapper">
@@ -546,21 +333,12 @@
             <div><span style="color:#a855f7; font-size:22px">●</span> Purple Status</div>
             <div><span style="color:#3b82f6; font-size:22px">●</span> Inactive</div>
         </div>
-
-        <div id="last-updated">
-            Last updated: <span id="last-update-time">—</span>
-        </div>
     </div>
 
     <div id="sidebar-column">
         <button id="sidebar-toggle" title="Collapse sidebar">→</button>
 
         <div class="sidebar-content">
-            <!-- Site Search -->
-            <div class="mb-4 position-relative">
-                <input type="text" id="site-search" placeholder="Search sites (e.g. DEL)" autocomplete="off">
-                <div id="search-results"></div>
-            </div>
 
             <!-- Current Active Issues -->
             <div class="panel-header" id="problems-header">
@@ -569,12 +347,9 @@
             </div>
             <div class="panel-content" id="problems-content">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="mb-0">
-                        Current Active Issues
-                        <span id="issues-count" class="badge bg-danger ms-2" style="font-size:0.8rem; display:none;">0</span>
-                    </h6>
+                    <h6 class="mb-0">Current Active Issues</h6>
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-light sort-btn active" data-sort="time">Newest</button>
+                        <button class="btn btn-outline-light sort-btn active" data-sort="time">Time</button>
                         <button class="btn btn-outline-light sort-btn" data-sort="name">Name</button>
                         <button class="btn btn-outline-light sort-btn" data-sort="color">Color</button>
                     </div>
@@ -604,19 +379,10 @@
                 <div id="history-list"></div>
             </div>
 
-            <!-- Contact Panel (will be moved here when sidebar open) -->
-            <div id="contact-panel" style="display:none;">
-                <div id="contact-header">
-                    <span id="contact-title">Site Details</span>
-                    <span>▼</span>
-                </div>
-                <div id="contact-content" style="display:none;"></div>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Settings Panel -->
 <div id="settings-panel">
     <div class="settings-title">Visibility</div>
     <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="showA" checked><span class="slider"></span></label></div>
@@ -646,6 +412,13 @@
 </div>
 
 <div id="alert-container"></div>
+<div id="contact-panel">
+    <div id="contact-header">
+        <span id="contact-title">Site Details</span>
+        <span>▼</span>
+    </div>
+    <div id="contact-content"></div>
+</div>
 
 <!-- JavaScript -->
 <script>
@@ -678,37 +451,18 @@
         }).replace(/,/g, '');
     }
 
-    function showAlert(message, type = "danger") {
-        const container = document.getElementById("alert-container");
-        const alert = document.createElement("div");
-        alert.className = `alert alert-${type}`;
-        alert.textContent = message;
-        container.appendChild(alert);
-        setTimeout(() => alert.remove(), 5000);
-    }
-
-    function debounce(fn, delay = 200) {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn(...args), delay);
-        };
-    }
-
     // ── AmCharts ─────────────────────────────────────────────────────────────
-    let chartInstance;
-
     am4core.ready(function () {
         am4core.useTheme(am4themes_animated);
-        chartInstance = am4core.create("chartdiv", am4maps.MapChart);
-        chartInstance.geodata = am4geodata_india2020High;
-        chartInstance.projection = new am4maps.projections.Miller();
-        chartInstance.zoomControl = new am4maps.ZoomControl();
-        chartInstance.tooltip.background.fill = am4core.color(theme.tooltipBg);
-        chartInstance.tooltip.label.fill = am4core.color(theme.tooltipText);
-        chartInstance.background.fill = am4core.color(theme.background);
+        const chart = am4core.create("chartdiv", am4maps.MapChart);
+        chart.geodata = am4geodata_india2020High;
+        chart.projection = new am4maps.projections.Miller();
+        chart.zoomControl = new am4maps.ZoomControl();
+        chart.tooltip.background.fill = am4core.color(theme.tooltipBg);
+        chart.tooltip.label.fill = am4core.color(theme.tooltipText);
+        chart.background.fill = am4core.color(theme.background);
 
-        const polygonSeries = chartInstance.series.push(new am4maps.MapPolygonSeries());
+        const polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
         polygonSeries.useGeodata = true;
         const poly = polygonSeries.mapPolygons.template;
         poly.fill = am4core.color(theme.polygonFill);
@@ -717,7 +471,7 @@
         poly.tooltipText = "{name}";
         poly.states.create("hover").properties.fill = am4core.color(theme.polygonHover);
 
-        const imageSeries = chartInstance.series.push(new am4maps.MapImageSeries());
+        const imageSeries = chart.series.push(new am4maps.MapImageSeries());
         const template = imageSeries.mapImages.template;
         template.propertyFields.latitude = "latitude";
         template.propertyFields.longitude = "longitude";
@@ -742,16 +496,6 @@
             const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
             return settings[`show${key}`] ? 1 : 0;
         });
-
-        function zoomToLatLon(lat, lon, zoomLevel = 8, animate = true) {
-            if (!chartInstance) return;
-
-            chartInstance.zoomToGeoPoint(
-                { latitude: lat, longitude: lon },
-                zoomLevel,
-                animate
-            );
-        }
 
         function startPulse(circle) {
             if (circle._pulseAnim) circle._pulseAnim.stop();
@@ -800,16 +544,15 @@
                                 <tr><th>Address</th><td>${c.address || "—"}</td></tr>
                             `).join("")}</table>`;
                         document.getElementById("contact-panel").style.display = "block";
-                        document.getElementById("contact-content").style.display = "block";
                     })
                     .catch(() => {
-                        showAlert("Failed to load contact info", "danger");
+                        document.getElementById("contact-content").innerHTML = "<i style='color:var(--danger)'>Failed to load contact info</i>";
                         document.getElementById("contact-panel").style.display = "block";
                     });
             }
         });
 
-        chartInstance.seriesContainer.events.on("hit", () => {
+        chart.seriesContainer.events.on("hit", () => {
             document.getElementById("contact-panel").style.display = "none";
         });
 
@@ -824,149 +567,50 @@
                     imageSeries.data = allSitesData;
                     updateProblemsDisplay(allSitesData);
                     refreshAll();
-                    document.getElementById("last-update-time").textContent = formatDateLocal(new Date());
                 })
-                .catch(err => {
-                    console.error(err);
-                    showAlert("Failed to load site data", "danger");
-                });
+                .catch(err => console.error("Failed to load sites:", err));
         }
 
         function refreshAll() {
             imageSeries.mapImages.each(updatePulse);
-            chartInstance.invalidateRawData();
+            chart.invalidateRawData();
         }
 
         loadSiteData();
         loadAllSitesHistory();
         setInterval(loadSiteData, 120000);
 
-        // ── Sidebar Collapse & Contact Positioning ───────────────────────────
+        // ── Sidebar Collapse ─────────────────────────────────────────────────
         const sidebar = document.getElementById('sidebar-column');
         const toggleBtn = document.getElementById('sidebar-toggle');
-        const contactPanel = document.getElementById('contact-panel');
-        const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
-
-        function updateContactPosition() {
-            if (sidebar.classList.contains('collapsed')) {
-                document.body.appendChild(contactPanel);
-                contactPanel.style.position = "fixed";
-                contactPanel.style.bottom = "100px";
-                contactPanel.style.right = "40px";
-                contactPanel.style.width = "400px";
-                contactPanel.style.margin = "0";
-            } else {
-                sidebarContent.appendChild(contactPanel);
-                contactPanel.style.position = "relative";
-                contactPanel.style.bottom = "auto";
-                contactPanel.style.right = "auto";
-                contactPanel.style.width = "100%";
-                contactPanel.style.maxWidth = "380px";
-                contactPanel.style.margin = "20px 0";
-            }
-        }
 
         if (localStorage.getItem('sidebarCollapsed') === 'true') {
             sidebar.classList.add('collapsed');
             toggleBtn.textContent = '←';
             toggleBtn.title = 'Expand sidebar';
         }
-        updateContactPosition();
 
         toggleBtn.addEventListener('click', () => {
             const collapsed = sidebar.classList.toggle('collapsed');
             toggleBtn.textContent = collapsed ? '←' : '→';
             toggleBtn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
             localStorage.setItem('sidebarCollapsed', collapsed);
-            updateContactPosition();
         });
 
-        // ── Site Search ──────────────────────────────────────────────────────
-        const searchInput = document.getElementById("site-search");
-        const searchResults = document.getElementById("search-results");
-
-        searchInput.addEventListener("input", debounce(() => {
-            const query = searchInput.value.toLowerCase().trim();
-            searchResults.innerHTML = "";
-            searchResults.style.display = "none";
-
-            if (query.length < 2) return;
-
-            const matches = allSitesData.filter(s => s.title.toLowerCase().includes(query));
-            if (matches.length === 0) {
-                searchResults.innerHTML = '<div class="p-3 text-center text-muted">No matching sites</div>';
-            } else {
-                matches.forEach(site => {
-                    const item = document.createElement("div");
-                    item.className = "search-item";
-                    item.textContent = site.title;
-                    item.onclick = () => {
-                        zoomToLatLon(site.latitude, site.longitude, 10);
-                        loadContactInfo(site.title);
-                        searchInput.value = "";
-                        searchResults.style.display = "none";
-                    };
-                    searchResults.appendChild(item);
-                });
-            }
-            searchResults.style.display = "block";
-        }, 300));
-
-        document.addEventListener("click", e => {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                searchResults.style.display = "none";
-            }
-        });
-
-        // ── Contact Info ─────────────────────────────────────────────────────
-        function loadContactInfo(siteName) {
-            fetch(`/api/contact-info/${encodeURIComponent(siteName)}/`)
-                .then(r => r.ok ? r.json() : [])
-                .then(data => {
-                    document.getElementById("contact-title").textContent = siteName;
-                    const content = document.getElementById("contact-content");
-                    content.innerHTML = data.length === 0
-                        ? "<i style='color:var(--text-muted)'>No contact details available</i>"
-                        : `<table>${data.map(c => `
-                            <tr><th>Email</th><td>${c.email || "—"}</td></tr>
-                            <tr><th>Phone</th><td>${c.phone || "—"}</td></tr>
-                            <tr><th>Address</th><td>${c.address || "—"}</td></tr>
-                        `).join("")}</table>`;
-                    document.getElementById("contact-panel").style.display = "block";
-                    document.getElementById("contact-content").style.display = "block";
-                })
-                .catch(() => {
-                    showAlert("Failed to load contact info", "danger");
-                    document.getElementById("contact-panel").style.display = "block";
-                });
-        }
-
-        document.getElementById("contact-header").onclick = () => {
-            const content = document.getElementById("contact-content");
-            content.style.display = content.style.display === "none" ? "block" : "none";
-        };
-
-        // ── Accordion (fixed version) ────────────────────────────────────────
+        // ── Accordion ────────────────────────────────────────────────────────
         document.querySelectorAll('.panel-header').forEach(header => {
             header.addEventListener('click', () => {
                 const content = header.nextElementSibling;
-                const isCurrentlyOpen = content.classList.contains('open');
+                const isOpen = content.classList.contains('open');
 
-                // Close all other panels
                 document.querySelectorAll('.panel-content').forEach(c => {
-                    if (c !== content) c.classList.remove('open');
+                    c.classList.remove('open');
                 });
-
-                // Reset all arrows
                 document.querySelectorAll('.panel-header span:last-child').forEach(s => {
                     s.textContent = '▼';
                 });
 
-                // Toggle clicked panel
-                if (isCurrentlyOpen) {
-                    content.classList.remove('open');
-                    header.querySelector('span:last-child').textContent = '▼';
-                } else {
+                if (!isOpen) {
                     content.classList.add('open');
                     header.querySelector('span:last-child').textContent = '▲';
                 }
@@ -976,7 +620,6 @@
         // ── Current Active Issues ────────────────────────────────────────────
         let nameSortAsc = true;
         let colorSortDesc = true;
-        let timeSortNewestFirst = true;
 
         function updateProblemsDisplay(sites) {
             const problematic = sites.filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
@@ -986,12 +629,9 @@
 
             if (problematic.length === 0) {
                 empty.style.display = "block";
-                document.getElementById("issues-count").style.display = "none";
                 return;
             }
             empty.style.display = "none";
-            document.getElementById("issues-count").textContent = problematic.length;
-            document.getElementById("issues-count").style.display = "inline";
 
             problematic.sort((a,b) => new Date(b.problem_since) - new Date(a.problem_since));
 
@@ -1026,13 +666,15 @@
                 btn.classList.add('active');
 
                 if (sortType === "time") {
-                    timeSortNewestFirst = !timeSortNewestFirst;
-                    btn.textContent = timeSortNewestFirst ? "Newest" : "Oldest";
+                    //ascending and descending toggles on each click
+                    const timeSortAsc = btn.classList.contains('asc');
+                    btn.classList.toggle('asc', !timeSortAsc);
+                    btn.classList.toggle('desc', timeSortAsc);
 
                     items.sort((a, b) => {
                         const ta = new Date(a.problem_since);
                         const tb = new Date(b.problem_since);
-                        return timeSortNewestFirst ? tb - ta : ta - tb;
+                        return timeSortAsc ? ta - tb : tb - ta;
                     });
                 } else if (sortType === "name") {
                     nameSortAsc = !nameSortAsc;
@@ -1099,9 +741,8 @@
                     renderHistoryEntries(data);
                 })
                 .catch(() => {
-                    showAlert("Failed to load history", "danger");
                     document.getElementById('history-list').innerHTML = 
-                        '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">History unavailable</div>';
+                        '<div style="color:var(--danger); text-align:center; padding:40px 0;">Failed to load history</div>';
                 });
         }
 
@@ -1118,12 +759,12 @@
                     renderHistoryEntries(data);
                 })
                 .catch(() => {
-                    showAlert("Failed to load site history", "danger");
                     document.getElementById('history-list').innerHTML = 
-                        '<div style="color:var(--danger);padding:30px 0;text-align:center;">History unavailable</div>';
+                        '<div style="color:var(--danger);padding:30px 0;text-align:center;">Failed to load history</div>';
                 });
         }
 
+        // ── History Controls ─────────────────────────────────────────────────
         document.getElementById("history-btn").onclick = () => {
             if (sidebar.classList.contains('collapsed')) {
                 sidebar.classList.remove('collapsed');
@@ -1223,7 +864,7 @@
             };
         });
 
-        document.getElementById("markerSize").oninput = debounce(e => {
+        document.getElementById("markerSize").oninput = e => {
             let v = parseInt(e.target.value);
             if (v > settings.pulseSize) {
                 settings.pulseSize = v + 2;
@@ -1233,9 +874,9 @@
             settings.markerSize = v;
             document.getElementById("markerValue").textContent = v + " px";
             refreshAll();
-        });
+        };
 
-        document.getElementById("pulseSize").oninput = debounce(e => {
+        document.getElementById("pulseSize").oninput = e => {
             let v = Math.max(6, parseInt(e.target.value));
             e.target.value = v;
             if (v < settings.markerSize) {
@@ -1246,7 +887,7 @@
             settings.pulseSize = v;
             document.getElementById("pulseValue").textContent = v + " px";
             refreshAll();
-        });
+        };
 
         document.getElementById("saveSettings").onclick = () => {
             localStorage.setItem("mapSettings", JSON.stringify(settings));
@@ -1257,7 +898,7 @@
             document.getElementById("settings-panel").classList.toggle("open");
         };
 
-        document.getElementById("resetZoomBtn").onclick = () => chartInstance.goHome();
+        document.getElementById("resetZoomBtn").onclick = () => chart.goHome();
 
         const darkBtn = document.getElementById("dark-mode-btn");
         darkBtn.onclick = () => {
@@ -1265,21 +906,6 @@
             localStorage.setItem("mapTheme", isDark ? "dark" : "light");
             window.location.reload();
         };
-
-        // ── Watermark for authenticated users ────────────────────────────────
-        {% if user.is_authenticated %}
-        document.addEventListener("DOMContentLoaded", () => {
-            const username = "{{ user.username|escapejs }}";
-            const wm = document.createElement("div");
-            wm.style.cssText = `position:fixed;inset:0;pointer-events:none;z-index:999;user-select:none;display:grid;grid-template-columns:repeat(auto-fill,340px);grid-auto-rows:240px;transform:rotate(-32deg);color:rgba(255,255,255,0.02);font-size:48px;font-weight:900;opacity:0.15;`;
-            for (let i = 0; i < 80; i++) {
-                const t = document.createElement("div");
-                t.textContent = username.toUpperCase();
-                wm.appendChild(t);
-            }
-            document.body.appendChild(wm);
-        });
-        {% endif %}
 
         // Initial load
         updateProblemsDisplay([]);
