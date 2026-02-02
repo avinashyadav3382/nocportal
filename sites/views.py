@@ -16,7 +16,7 @@ def india_map_view(request):
     """
     sites = Site.objects.all()
 
-    return render(request, "sites/india_map_v_2.html", {"sites": sites})
+    return render(request, "sites/india_map_v_2_2.html", {"sites": sites})
 
 
 
