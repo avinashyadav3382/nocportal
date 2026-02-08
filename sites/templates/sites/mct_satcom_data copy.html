@@ -1,0 +1,143 @@
+{% extends 'sites/base_global_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+<style>
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.4em 0.8em;
+        border-radius: 1rem;
+        display: inline-block;
+    }
+    .status-FULLY_OPS    { background: #198754; color: white; }
+    .status-RESTRICTED_OPS { background: #fd7e14; color: white; }
+    .status-NON_OPS      { background: #dc3545; color: white; }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(96, 165, 250, 0.08);
+    }
+
+    .status-cell select {
+        display: none;
+        width: 180px;
+    }
+
+    .edit-mode .status-cell select {
+        display: inline-block;
+    }
+
+    .edit-mode .status-cell .status-badge {
+        display: none;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">MCT / Satcom Status Management</h2>
+        <div>
+            <button id="editBtn" class="btn btn-primary me-2">Enter Edit Mode</button>
+            <button type="submit" form="statusForm" id="saveBtn" class="btn btn-success me-2" style="display:none;">
+                Save All Changes
+            </button>
+            <button id="cancelBtn" class="btn btn-outline-secondary" style="display:none;" onclick="location.reload();">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <form id="statusForm" method="post" novalidate>
+                {% csrf_token %}
+                {{ formset.management_form }}
+
+                <table id="dataTable" class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Data Type</th>
+                            <th>Status</th>
+                            <th>Last Updated By</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr>
+                            <td class="fw-medium">{{ form.instance.name }}</td>
+                            <td>{{ form.instance.get_data_type_display }}</td>
+                            <td class="status-cell">
+                                <!-- Hidden fields are CRITICAL for formset to work -->
+                                {{ form.id }}
+                                {{ form.status }}
+                                <span class="status-badge status-{{ form.instance.status }}">
+                                    {{ form.instance.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ form.instance.last_updated_by|default:"—" }}</td>
+                            <td>{{ form.instance.last_updated|date:"Y-m-d H:i:s" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">No records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#dataTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[4, 'desc']],
+        columnDefs: [
+            { orderable: false, targets: 2 } // disable sorting on status column
+        ]
+    });
+
+    // Enter edit mode
+    $('#editBtn').click(function () {
+        $('body').addClass('edit-mode');
+        $('#editBtn').hide();
+        $('#saveBtn, #cancelBtn').show();
+    });
+});
+</script>
+
+{% endblock %}

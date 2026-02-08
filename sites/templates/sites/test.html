@@ -1,0 +1,3519 @@
+{%
+extends
+'login/base
+{%
+block
+content
+%}
+{%
+load
+static
+%}
+_global_dashboard.htm1"
+%}0
+<l==: Libraries - <script src="{%
+static
+<script src=" {% static <script src="{%
+static
+<script src=" {% static 'login/amcharts/core.js' %}">
+    </script>
+    '1ogin/amcharts/maps.js'
+    %Y"></scripty '1ogin/amcharts/indiazezeHigh.js' %}">
+    </script>
+    '1ogin/amcharts/animated.js'
+    %}"></script>
+    ==
+    Styles
+    <3 <style>
+        :root
+        {
+        --bg-dark:
+        #0b1121;
+        --bg-darker:
+        #060b17;
+        --panel-glass:
+        rgba(15,
+        23,
+        42,.0.88);
+        --text:
+        #e2e8f0;
+        --text-muted:
+        #94a3b8;
+        --accent: #60a5fa;
+        --accent-glow:
+        rgba(96,
+        165, 250,
+        0.24);
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --success: #34d399;
+        --border: rgba(96,
+        165,
+        250,:°0.30);
+        --shadow-sm:
+        @
+        6px
+        20px
+        -6px
+        rgba(e,
+        @, 0,
+        0.55);
+        --shadow-md:
+        @
+        16px
+        4@px -12px
+        rgba(@,
+        90,
+        0,
+        0.65);
+        --transition:
+        all
+        0.3s
+        cubic-bezier(0.22,
+        1,
+        0.36,
+        1);
+        --status-green:
+        #28a745;
+        --status-red:
+        red;
+        --bg-color:
+        #e8fof2;
+        }
+        body {
+        margin: 0;
+        font-family:
+        'Segoe
+        UI',
+        system-ui,
+        -apple-system, sans-serif;
+        100%) ;
+        }
+        body.dark-mode
+        {
+        background:
+        var(--bg-darker);
+        color:
+        var(--text);
+        }
+        #main-content-wrapper
+        {
+        display:
+        flex;
+        height:
+        calc(100vh
+        -
+        60px);
+        overflow: hidden;
+        }
+        #map-column
+        {
+        flex: 1
+        position: relative;
+        background:
+        linear-gradient(135deg, var(--bg-dark)
+        0%,
+        var(--bg-darker)
+        #chartdiv
+        {
+        width:
+        100%;
+        height:
+        100%;
+        background-color:
+        var(--bg-color);
+        }
+        #last-updated {
+        position: absolute;
+        bottom: 16px;
+        right::32px;
+        color: var(--text-muted);
+        font-size: 13px;
+        Z-index: 1000;
+        pointer-events: none;
+        }
+        .control-btn
+        {
+        position: absolute;
+        left: 32px;
+        background:
+        rgba(2,
+        43,
+        92,
+        0.80);
+        backdrop-filter:
+        blur(12px);
+        -webkit-backdrop-filter:
+        blur(12px);
+        color: white;
+        padding:
+        12px 18px;
+        border:
+        1px
+        solid
+        var(--border);
+        border-radius:
+        14px;
+        cursor: pointer;
+        font-size:
+        14px;
+        font-weight:
+        500;
+        letter-spacing:
+        6.3px:
+        width: 190px;
+        z-index:
+        1002;
+        display:
+        flex;
+        align-items:
+        center;gap:
+        10px;
+        box-shadow: var(--shadow-sm);transition: var(--transition);
+        }
+        .control-btn:hover
+        {
+        transform: translateY(-4px)
+        scale(1.03);box-shadow:
+        @
+        16px 4@px -12px
+        var(--accent-glow);
+        border-color: var(--accent);background:
+        rgba(2,
+        43, 92,
+        0.94);
+        }
+        #resetZoomBtn {
+        top: - 32pX;
+        }
+        #settings-btn {
+        top: 92px;
+        }
+        g
+        RN
+        #dark-mode-btn
+        {
+        top:
+        157px;
+        }
+        #legend
+        {
+        position: absolute;
+        bottom:
+        40px;
+        e+t
+        :32px}
+        background:
+        var(--panel-glass);
+        backdrop-filter:
+        blur(16px);
+        border:
+        1px
+        solid
+        var(--border);
+        border-radius:
+        16px;
+        padding:
+        18px 24px;
+        font-size:
+        14px;
+        color:
+        var(--text);
+        box-shadow:
+        var(--shadow-md);
+        z-index:
+        1001;
+        Transition:
+        var(--transition);
+        }
+        #legend:hover {
+        transform: translateY(-6px);
+        box-shadow: @ 20px 5@0px -12px var(--accent-glow);
+        }
+        #legend b {
+        color: var(--accent);
+        font-weight: 700;
+        }
+        /* --- BOX LIMITED TO CONTENT --- */
+        .city-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+        }
+        .city-box {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px 14px;
+        flex: © 1 auto;
+        /* Limits width to content only */
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        min-width: fit-content;
+        }
+        .city-box:hover
+        {
+        transform:
+        translateY(-3px);
+        border-color:
+        var(--accent-color);
+        background:
+        var(--panel-bg);
+        box-shadow:
+        @
+        5px
+        15px
+        rgba(@,
+        0, 0,
+        ©.05);
+        }
+        .city-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-color);
+        white-space: nowrap;
+        }
+        /* Status Dot Hover */
+        .status-dots {
+        display: flex;
+        gap: 5px;
+        }
+        .glass-card {
+        /* background: var(--panel-bg); border: 1px solid var(--border-color);
+        g/
+        background: #0f@e0e;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 15px;
+        box-shadow: © 10px 30px rgba(e, 0, 0, 0.08);
+        }
+        .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(e, @, 0, 0.1);
+        position: relative;
+        transition: transform 0.2s;
+        }
+        .dot:hover {
+        transform: scale(1.4);
+        z-index: 10;
+        }
+        .dot::after {
+        content: attr(data-label);
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        TeeeatER YRRNN T T
+        padding:
+        4px
+        8px;
+        font-size:
+        10px;
+        border-radius:
+        4px;
+        white-space:
+        nowrap;
+        opacity:
+        9;
+        pointer-events:
+        none;
+        transition:
+        0.2s;
+        .dot:hover::after
+        {
+        opacity:
+        1;
+        }
+        .bg-green
+        {
+        background-color: var(--status-green);
+        }
+        .bg-red {
+        background-color: var(--status-red);
+        }
+        #sidebar-column {
+        width: 420px;
+        min-width: 420px;
+        background: var(--panel-glass);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid var(--border);
+        box-shadow: -8px © 32px rgba(e, 0, 0, 0.6);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+        width 0.45s
+        cubic-bezier(0.22,
+        1,
+        position: relative;
+        z-index:
+        1000;
+        8.36; 1);
+        }
+        #sidebar-column.collapsed
+        {
+        width:
+        64px;
+        min-width:
+        64px;
+        }
+        #sidebar-toggle
+        {
+        position: absolute;
+        top:
+        20pX;
+        FIgNE
+        Y
+        20DX;
+        background:
+        rgba(2,
+        43, 92,
+        0.9);
+        color: white;
+        border:
+        none;
+        border-radius:
+        50%;
+        width: 44px;
+        height: 44px;
+        font-size:
+        22px;
+        cursor: pointer;
+        z-1ndex: 1010;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        }
+        #sidebar-toggle:hover
+        {
+        transform: scale(1.14)
+        rotate(180deg);
+        background:
+        var(--accent);
+        }
+        .sidebar-content
+        {
+        FieXri
+        s
+        overflow-y:
+        auto;
+        padding:
+        24px 20px;
+        transition:
+        opacity
+        9.45s
+        ease;
+        }
+        #sidebar-column.collapsed
+        .Sidebar-content
+        {
+        opacity:
+        9;
+        pointer-events:
+        none;
+        )
+        -panel-header
+        {
+        background:
+        linear-gradient(135deg,
+        rgba(3e,
+        58,
+        138,
+        0.88),
+        rgba(59,
+        130, 246,
+        0.38));
+        color: white;
+        padding:
+        16px 20px;
+        font-size:
+        15.5px;
+        font-weight:
+        600;
+        border-radius:
+        14px;
+        margin-bottom:
+        16px;
+        cursor: pointer;
+        display:
+        flex;
+        justify-content: space-between;align-items:
+        center;
+        box-shadow:
+        var(--shadow-sm);transition: var(--transition);
+        }
+        .panel-header:hover
+        {
+        transform:
+        translateY(-3px);box-shadow:
+        @
+        16px 40px -12px
+        var(--accent-glow);
+        }
+        .panel-content {
+        background: rgba(15, 23, 42, 0.68);
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+        display: none;
+        animation: fadeInUp 0.45s ease-out;
+        -panel-content,
+        open
+        {
+        }
+        display:
+        block;
+        @keyframes
+        fadeInup
+        {
+        from
+        {
+        opacity:
+        9;
+        |
+        transform:
+        translateY(16px);
+        t0:4
+        opacity: 1;
+        transform: translateY(Q);
+        }
+        .problem-entry
+        {
+        padding:
+        16px 18px;
+        margin-bottom:
+        12px;
+        background:
+        rgba(390,
+        41,
+        59,
+        0.62);
+        border-radius:
+        12px;
+        border-left:
+        Spx
+        solid
+        var(--danger);
+        cursor: pointer;
+        transition:
+        var(--transition);
+        box-shadow:
+        var(--shadow-sm);
+        ¥
+        .problem-entry.yellow {
+        border-left-color: var(--warning);
+        ¥
+        .problem-entry:hover
+        {
+        transform:
+        translateX(8px)
+        scale(1.02);
+        box-shadow:
+        ©
+        12px 36px
+        -8px
+        rgba(239,
+        68, 68,
+        0.42);
+        }
+        .problem-site {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6pXx;
+        }
+        .problem-status
+        {
+        font-size:
+        13.5pX;
+        font-weight:
+        700;
+        margin:
+        4px
+        0;
+        }
+        .problem-since
+        {
+        font-size: 12.5pX;
+        color:
+        var(--text-muted);
+        ¥
+        .history-entry
+        {
+        padding:
+        14px 18px,
+        margin-bottom:
+        12px;
+        background:
+        rgba(30,
+        41,
+        59,
+        0.62);
+        border-radius:
+        12px;
+        font-size:
+        13.8px;
+        transition:
+        var(--transition);
+        }
+        .history-entry:hover
+        {
+        background:
+        rgba(96,
+        165, 250,
+        0.16);
+        transform:
+        translateX(4px);
+        }
+        history-time
+        {
+        font-size:
+        12px;
+        color:
+        var(--text-muted);
+        margin-bottom:
+        6px;
+        }
+        -Sidebar-content:: -webkit-scrollbar
+        {
+        width:
+        6px;
+        }
+        .sidebar-content::-webkit-scrollbar-track
+        {
+        background:
+        rgba(30,
+        41,
+        59,
+        0.4);
+        border-radius:
+        10px;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb
+        {
+        background:
+        var(--accent);
+        border-radius:
+        10px;
+        }
+        #alert-container
+        {
+        position:
+        fixed;top:
+        24px;
+        right: 460px;
+        z-index:
+        2000;
+        max-width:
+        420px;
+        }
+        .alert
+        {
+        padding:
+        16px 22px;
+        margin-bottom:
+        14px;
+        border-radius:
+        14px;
+        color: white;
+        font-size:
+        15px;
+        backdrop-filter: blur(10px);border:
+        1px
+        solid
+        rgba(255,
+        255, 255,
+        0.12);
+        box-shadow:
+        @
+        12px 32px
+        rgba(e,
+        o, o,
+        0.6);
+        animation: slideInRight
+        0.45s
+        ease-out;
+        }
+        @keyframes slideInRight
+        {
+        from {
+        transform: translateX(140%);
+        opacity:
+        9;
+        }
+        to
+        {
+        transform:
+        translateX(0);
+        opacity:
+        1;
+        }
+        }
+        .alert-danger {
+        background: rgba(239, 68, 68, 0.92);
+        border-color: #fca5a5;
+        }
+        .alert-success {
+        background: rgba(16, 185, 129, 0.92);
+        border-color: #6ee7b7,;
+        }
+        .alert-warning {
+        background: rgba(245, 158, 11, 0.92);
+        border-color: #fcd34d;
+        }
+        .sort-btn.active,
+        .history-sort-btn.active {
+        background: var(--accent);
+        color: white !important;
+        border-color: var(--accent);
+        }
+        #site-search {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: rgba(3e, 41, 59, 0.8);
+        color: var(--text);
+        font-size: 14px;
+        ¥
+        #site-search::placeholder {
+        color: var(--text-muted);
+        }
+        #search-results {
+        position: absolute;
+        top: 100%;
+        left :¢:0;
+        right: 0;
+        max-height: 300px;
+        overflow-y: auto;
+        r
+        WU,
+        background: var(--panel-glass);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-top: 6px;
+        Z-index: 1002;
+        box-shadow: var(--shadow-md);
+        display: none;
+        #search-results
+        .search-item
+        {
+        padding:
+        1@0px
+        14px;
+        cursor:
+        pointer;
+        color:
+        var(--text);
+        }
+        #search-results .search-item:hover
+        {
+        background:
+        rgha(96,
+        165, 250,
+        9.3);
+        }
+        #contact-panel
+        {
+        background:
+        var(--panel-glass);
+        backdrop-filter:
+        blur(16px);
+        border:
+        1px
+        solid
+        var(--border);
+        border-radius:
+        14px;
+        box-shadow:
+        var(--shadow-md)
+        ;
+        color:
+        var(--text);
+        margin:
+        20px
+        0;
+        width:
+        100%;
+        max-width:
+        380px;
+        }
+        #contact-header
+        {
+        background:
+        linear-gradient(lBSdeg,
+        rgba(2,
+        43,
+        92,
+        9.9),
+        rgba(3e,
+        58,
+        1385:077)):
+        color: white;
+        padding:
+        14px 20px;
+        font-size:
+        15.5px;
+        display:
+        flex;
+        justify-content: space-between;
+        align-items:
+        center;
+        cursor: pointer;
+        border-radius:
+        14px 14px
+        0
+        0;
+        }
+        #contact-content
+        {
+        padding:
+        20px;
+        font-size:
+        14px;
+        }
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        }
+        th {
+        text-align: left;
+        padding: 1@px 0;
+        color: var(--text-muted);
+        width: 35%;
+        }
+        td {
+        padding: 10px 0;
+        }
+        #settings-panel,
+        #history-panel {
+        position: fixed;
+        top: 320px;
+        right: -340px;
+        max-height: 65vh;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8pX;
+        box-shadow: @ 6px 20px rgba(e,
+        padding: 16pX;
+        transition: right 0.3s ease;
+        z-index: 1002;
+        }
+        body.dark-mode #settings-panel,
+        body.dark-mode #history-panel
+        {
+        background:
+        #1e293b;color:
+        #e2e8f0;
+        }
+        #settings-panel
+        {
+        width: 300px;
+        z-index:
+        1002;
+        }
+        #history-panel
+        {
+        width: 340px;
+        z-index:
+        1003;
+        font-size:
+        13pX;
+        }
+        #settings-panel.open,
+        #history-panel.open
+        {
+        right: 24px;
+        }
+        .settings-title
+        {
+        font-weight:
+        600;
+        margin: 16px
+        ©
+        10pX;
+        color: #333;
+        0,
+        0,
+        0.25);
+        body.dark-mode .settings-title
+        {
+        color:
+        #cbdSel;
+        }
+        .settings-row
+        {
+        display:
+        flex;
+        justify-content: Space-between;
+        align-items:
+        center;
+        margin:
+        10px
+        0;
+        }
+        /*
+        Switch
+        &
+        Slider
+        styles
+        unchanged
+        -
+        kept
+        minimal
+        */
+        .Switch
+        {
+        position: relative;
+        width:
+        38px;
+        height:
+        20px;
+        }
+        -switch
+        input
+        {
+        display:
+        none;
+        }
+        .Sslider
+        {
+        position: absolute;
+        inset:
+        o;
+        background:
+        #ccce;
+        border-radius:
+        20px
+        ;
+        cursor:
+        pointer;
+        transition:
+        0.:35;
+        }
+        .slider:before
+        {
+        content;
+        7"
+        position: absolute;width:
+        16px;
+        height:
+        16px;
+        left:
+        2px;
+        bottom:
+        2px;
+        background:
+        white;
+        border-radius:
+        50%;
+        transition:
+        935
+        }
+        input:checked+.slider
+        {
+        background:
+        #4cafs50;
+        }
+        input:checked+.slider:before
+        {
+        transform: translateX(18px);
+        }
+        input[type=range]
+        {
+        width: 130px;
+        accent-color:
+        #002b5¢;
+        .Size-label
+        {
+        min-width:
+        70px;
+        text-align:
+        right;
+        color:
+        #555;
+        font-size:
+        13px;
+        #saveSettings
+        {
+        margin-top:
+        20px;
+        width:
+        100%;
+        padding:
+        10px;
+        background:
+        #002bSc;
+        color: white;
+        border:
+        none;
+        border-radius:
+        6px;
+        cursor: pointer;
+        .group-site {
+        background: rgba(30, 41, 59, 0.62);
+        border-radius: 12pX;
+        padding: 14px 16pX;
+        margin-bottom: 12pX;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        width: 100px;
+        }
+        .group-site:hover
+        {
+        transform:
+        translateX(6px);box-shadow:
+        @
+        12px 36px -8px
+        var(--accent-glow);
+        ¥
+        .group-title
+        {
+        font-weight:
+        600;
+        margin-bottom:
+        8px;
+        font-size:
+        14.5pX;
+        }
+        .status-dots
+        {
+        display:
+        flex;
+        gap:
+        6pXx;
+        ¥
+        .status-dot
+        {
+        width: 10px;
+        height: 10pX;
+        border-radius:
+        50%;
+        .status-dot.green {
+        background: #22c55e;
+        .status-dot.yellow {
+        background: #fbbf24;
+        .status-dot.red
+        {
+        background:
+        #ef4444;
+        }
+        -status-dot.blue
+        {
+        background:
+        #3b8216;
+        }
+        -Status-dot.orange
+        {
+        background:
+        #a855f7;
+        }
+        </style>
+        <div id="main-content-wrapper">
+            <div 1d="map-column" s <div id="chartdiv"></div>
+            <button id="resetZoothn" class="control-btn"><i class="bi
+bi-arrow-counterclockwise
+me-2"></i>
+                Reset
+                View</buttons <button ig='
+' settings-ptn" class="control-btn"><i class="bj bi-gearme-2"></i>
+                Settings</buttons <button id="dark-mode-btn" <1 class="pj
+bi-brightness
+</button>
+<div
+id=" legend"><b>Legend</b>
+                <hprs <div><span style="color:green; font-size:22px”Site</divs <div><span
+Style=" Satcom</divy Nodes</divs </div>
+                        <div id="last-updated">
+                            Last
+                            updated:
+                            <Span id="
+</div>
+</div>
+<div
+id=”sidebar-column">
+                                (b
+                                1d="¢3
+                                "
+                                1
+                                utton
+                                id
+                                Sldebar-toggle title="Collapse sidebar"»+
+            </button>
+            <div class=“sidebar-content“>
+                <!--
+Site
+Search
+--»
+<dlv
+class="mb-4
+position-relative"s
+:
+<input
+type="text"
+id="site-search"
+placeholder="Search
+sites
+(e.g.
+MCC)"
+autocomplete="off"s
+<div
+id="search-results"></div>
+</div>
+<div class="panel-header" id="group-header">
+<span>Site Groups</span>
+<span>¥</span»
+</div>
+<div
+class="panel-content" id="group-content™>
+¢!--
+Group
+selector
+-->
+                <div class="btn-group btn-group-sm
+w-100
+mb-3">
+                    <button class="btn
+btn-outline-light
+group-btn
+active”
+data-group=" group_A">IACCS</button>
+                    <button class="btn btn-outline-light group-btn”
+data-group=" group_B">DC</button>
+                </div>
+                ¢<!--
+Group
+sites
+list
+-->
+                <div id="group-sites-list" class="city-container"></div>
+                :
+                <div id="group-empty" style="text-align:center;
+color:var(--text-muted);
+padding:30px
+©;
+display:none;">
+                    No
+                    sites
+                    in
+                    this
+                    group
+                </div>
+            </div>
+            ¢!-- MCT
+            and
+            Satcom display
+            codes
+            -->
+            <div class="panel-header" id="subtype-header">
+                <span>MCT
+                    &
+                    Satcom</span>
+                <span id="subtype-arrow">v</span>
+            </div>
+            <div class="panel-content" id="subtype-content">
+                ¢<!--
+Group
+selector
+-->
+                <div class="btn-group btn-group-sm
+w-100 mb-3">
+                    <button class="btn btn-outline-light type-btn active" data-type="MCT_Vehicle">MCT</button>
+                    <button class="btn btn-outline-light type-btn" data-type="SATCOM">SATCOM</button>
+                </div>
+                <div id="subtype-list"></div>
+                ¢!--
+                Group
+                sites
+                list
+                -->
+                i
+                i
+                ¢!--
+                <div id="subtype-data-container”></div>
+-->
+<div
+id=" subtype-empty" | style="text-align:
+center;
+color:
+var(--text-muted);
+padding:
+3@px
+0,
+display:
+none;">.
+                    No
+                    Data
+                    in
+                    this
+                    group</div>
+            </div>
+            <I'-- Current Active Issues -->
+                <div class="panel-header" id="problems-header">
+                    <span>Current
+                        Active
+                        Issues</span>
+                    <Span>¥</span>
+                </div>
+                <div class="panel-content" id="problems-content">
+                    <div class="d-flex
+justify-content-between align-items-center
+mb-3">
+                        <h6 class="mb-0">
+                            Current Active
+                            Issues<Span id="issues-count" class="badge bg-danger
+ms-2" style="font-size:6.8rem; display:none;“>6</span>
+</h6>
+<div
+class=" btn-group btn-group-sm">
+                                <button class="btn
+btn-outline-light
+sort-btn active" data—sort="time">Newest</button>
+                                <button class="btn
+btn-outline-light
+sort-btn" data-sort="name">Name</button>
+                                <button class=data-sort="color">Color</button>
+                    </div>
+                </div>
+                <div id="problems-1ist"></div>
+                <div class="glass-card" id="city-shelf">
+                    <div id="city-list" class="city—container"></div>
+                </div>
+                <div id="prob1ems-empty" style="text-align:center; color:var(--text-muted};padding:50px
+0;
+display:none;">
+                    "btn
+                    btn-outline-light
+                    sort-btn"
+                    No
+                    active issues
+                    detected</div>
+        </div>
+        <!--
+Status History
+--»
+<div
+class="panel-header"
+<span
+id="history-pane
+<span>¥</span></div><div
+class="panel-content"
+id="history-header"s
+1-title">Status History</span>
+id="history-content"s
+<div
+class="4.
+; .
+mb-3
+flex-wrap
+gap-2"s
+d-flex
+JUstify-content-between
+align-items-center
+.
+<h6
+Cl
+:"
+o
+r
+LU me
+s
+History</h6s
+ass="mb-0"
+id=
+history-panel-subtitle"sStatus
+<div
+classs=
+e
+"qéflex
+align-items-center
+gap-2"»
+_n
+on
+1d="hij
+A <
+"
+MY
+;
+.
+class="btn
+btn-outline-1ight
+btn—sm"?iStory
+e
+s
+ane
+Ly
+L3
+dieplay
+ahone;
+'
+Back</button>
+<div
+class="btn-group btn-group-sm">
+]
+<button
+class="btn
+btn-outline-light
+hlstory-sort-btn
+active"
+data-order="desc">Newest
+j
+first</button>
+hist ! <button class="btn btn-outline-light
+story-sort-btn" data-order="asc">0ldest
+first</button>
+</divy
+</div>
+</div>
+<div id="history-list" style="height: 30@px; overflow-y:
+auto;"></divy
+</div>
+<!--
+Contact
+Panel
+(will
+be
+moved
+here
+when
+sidebar
+open)
+-->
+        <div id="contact-panel" style="display:none;">
+            <div id="contact-header">
+                <span id="contact-title">Site
+                    Details</span>
+                <span>¥</span>
+            </div>
+            <div id="contact-content" style="display:none;"></div>
+        </div>
+        </div>
+        </div>
+        </div>
+        ¢<!-- Settings Panel -->
+        <div id="settings-panel">
+            <div class="settings-title">visibility</div>
+            <div class="settings-row">AFNET
+                Sites
+                <label class="switch"><input type="checkbox" id="showA" checked><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">Satcom
+                Sites <label class="switch"><input type="checkbox" id="showB" checked><span
+                        class="slider"></span></label></div>
+            <div class="settings-row">Unreachable
+                <label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">IACCS
+                Sites <label class="switch"><input type="checkbox" id="showD" checked><span
+                        class="slider"></span></label></div>
+            <div class="settings-title">Pulse Animation</div>
+            <div class="settings-row">AFNET
+                Sites <label class="switch"><input type="checkbox" id="pulseA"><span "
+.
+" div>
+                        class="slider"></span></label></ 1B O <div class="settings-row">Satcom
+                Sites
+                <label class="switch">
+                    <inp type="checkbox" id="pulseB"><span . s class="slider"></span>
+                </label>
+            </div>
+            e
+            ey
+            tiiolt
+            <div class="settings-row">Unreachable
+                <label class="switc
+type=" checkbox" id="pulsecC" checked><span . class="slider" s</spans</label>
+            </div>
+            il
+            <div class="settings-row">IACCS
+                Sites
+                <label class="switch" s><i p type="checkbox" 1d="pulseD"><span . class="slider"></span></label></d1v>
+                <div class="settings-title" sMarker Sizes</div>
+                    <div class="settings-row" s Marker <span id="markerValue" class="size-label">6
+                        Ex</span: : <input type="range" id="markerSize" min="3" max="16" value="6">
+                        </divy <div class="settings-row">
+                        Pulse
+                        ring
+                        <span 1d="pulseValue" class="size-label”>10
+px</span>
+<input
+type=" range" id="pulseSize" min="6" max="19" value="19"></divy <button id="saveSettings">Save Settings</buttony </div>
+                            <div id="a1ert-container"></div>
+                            <l-- JavaScript --» <scripty const siteData=[ { title: "AYA" , group: “group A", 1lat:
+                                28.61, long: 77.20, status: [llgr\eenll, llgr‘een"] }) { title: *33SU", group: "group
+A" , lat: 19.07, long: 72.87, status: [llgr‘eenll, llgr‘eenll) llgr‘eenll] }, { title: "58SU" , group: “group A", 1at:
+                                18.52, long: 73.85, status: [llgr‘een") llgr‘eenll) llgreenll) llgpeenlll }) {
+                                title: "MEM" , group: "group
+A" , lat: 25.31, long: 82.97, status: [ltgreenll’ ugreenn] }, { title: "601SU" , group: "group
+A" , 1lat: 22.57, long: 88.36, status: [llgr‘eenll) llgr\eenll] }’ { title: "BNLA" , group: "group
+A" , 1lat: 13.08, long: 80.27, status: ["green", “green"] }, { title: "WAD" , group: “group A", 1lat: 1497 long: 77.59,
+                                status: ["green", "green" ] }, { title: "SAL" ; group: "group
+A" , 1lat: 12.97, long: 77.59, status: ["green", "green" ] }, { title: "PK" , group: "group_A" , 1lat: 12,97, long:
+                                77.59, status: ["gr\eenll) llgr‘een"] }, {:title: "MCC" , group: "group
+B" , 1at: 28.57, long: 77.17, status: ["green"] }; { title: "KNH" , group: "group
+B" , 1lat: 4952, long: 72.98, status: [“green"].}, { title: "PK" , group: "group
+B" , 1lat: 25.56, long: 91.88, status: : "BGLR" , group: "group
+B" , lat: 13.07, long: 77.54, status: . "BMRL" , group: "group
+B" , lat: 25.44, long: 81.73, status: let currentGroup="group
+A" ; // — Theme & Constants ——————————————-—""""'—_______—_———__——___———_—__ const MAP_THEME={ light: {
+                                background: "#f1f5f9" , polygonFill: "#@a5fa" , polygonHover: "#93¢5fd" ,
+                                polygonStroke: "#e2e8fe" , tooltipBg: "wEFFFFF" , tooltipText: "$0f172a" }, dark: {
+                                background: "#9h1121" , polygonFill: n#epa5fa", polygonHover: "#93¢5fd" ,
+                                polygonStroke: "#a2e8f0" , tooltipBg: "wfFEFFFY,
+tooltipText:
+" #0f172a" } }s // const MAP_THEME={ /1 light: { background: "#£1F5F9" , polygonFill: "#60a5fa" ,
+                                polygonHover: "#93c5fd" , polygonStroke: "#e2e8f0" , tooltipBg: nyfFEEFF",
+                                tooltipText: "#0f172a" }, /] dark: { background: "#9b1121" , polygonFill: "#1e293b" ,
+                                polygonHover: "#334155" , polygonStroke: "#475569" , tooltipBg: ngpf172a",
+                                tooltipText: "#0208f0" } /] }; let currentTheme=localstorage.getItem("mapTheme")
+                                || "dark" ; let theme=MAP_THEME[currentTheme]; const root=document.documentElement; if
+                                (currentTheme===raarkey document.body.classList.add("dark-mode"); if
+                                (currentTheme==="dark" ™ ) *{ root.style.setProperty("--bg—color", "#0f172a" ); } else {
+                                root.style.setProperty("--bg-color“, "#e8f0f2" ); } const SITE _COLORS={ A: "green" ,
+                                B: "yellow" , C: "red" , D: "orange" , E: 'hluet
+“};
+let
+settings
+=
+JSON.parse(localStorage.getItem("mapSettings"))
+Ay
+showA: true, showB: true, showC: true, showD: true, showE: true,
+pulseA: false, pulseB: false, pulseC: true, pulseD: false, pulseE:
+false,
+markerSize:
+6,
+pulseSize:
+10
+}s
+const PULSE
+CONFIG
+=
+{
+opacity:
+0.45,
+maxScale:
+5.5,
+duration:
+1800
+,
+]
+==
+HEIPENS
+St
+sttt
+il
+e
+function formatDatelocal(dt) {
+return new Date(dt).toLocaleString(' en-IN', { day: '2-digit' , month: 'short' , year: 'numeric’,
+hour: ' 2-digit', minute: '2-digit' , hourl2: true }).replace(/,/g, '' ); } function showAlert(message, type="danger" )
+                                { | const container=document.getElementById("alert-container"); const
+                                alert=document.createElement("div"); alert.className=“alert alert-${type}’;
+                                alert.textContent=message; container.appendChild(alert); setTimeout(()=>
+                                alert.remove(),
+                                5000);
+                                }
+                                function debounce(fn,
+                                delay
+                                =
+                                200)
+                                {
+                                let
+                                timer;
+                                return
+                                (...args)
+                                =>
+                                {
+                                clearTimeout(timer);
+                                timer
+                                =
+                                setTimeout(()
+                                =>
+                                fn(...args),
+                                delay);
+                                };
+                                }
+                                Y=
+                                AMCRartS
+                                —
+                                SO
+                                T
+                                ORI
+                                RAS
+                                N
+                                B
+                                A
+                                S
+                                A
+                                R
+                                let
+                                chartInstance;
+                                am4core.ready(function
+                                ()
+                                {
+                                am4core.useTheme(am4themes_animated);chartlInstance
+                                =
+                                am4core.create("chartdiv",
+                                amdmaps
+                                .MapChart);
+                                chartInstance.geodata
+                                =
+                                amdgeodata_india2020High;
+                                chartInstance.projection
+                                =
+                                new
+                                amdmaps.projections.Miller();
+                                chartInstance.zoomControl
+                                =
+                                new
+                                amdmaps
+                                .
+                                ZoomControl();
+                                chartInstance.tooltip.background.fill
+                                =
+                                am4core.color(theme.tooltipBg);
+                                chartInstance.tooltip.label.fill
+                                =
+                                am4core.color(theme.tooltipText);
+                                chartInstance.background.fill
+                                =
+                                am4core.color(theme.background);
+                                const
+                                polygonSeries
+                                =
+                                chartInstance.series.push(new
+                                am4maps
+                                .MapPolygonSeries());
+                                polygonSeries.useGeodata
+                                =
+                                true;
+                                const poly
+                                =
+                                polygonSeries.mapPolygons.template;poly.fill
+                                =
+                                amé4core.color(theme.polygonFill);
+                                poly.stroke
+                                =
+                                am4core.color(theme.polygonStroke);
+                                poly.strokeOpacity
+                                =
+                                0.35;
+                                poly.tooltipText
+                                =
+                                "{name}
+                                -
+                                {address}";
+                                poly.states.create("hover").properties.fill
+                                =
+                                am4core.color(theme.polygonHover);const
+                                imageSeries
+                                =
+                                chartInstance.series.push(new
+                                am4maps .MapImageSeries());
+                                const template = imageSeries.mapImages.template;
+                                template.propertyFields.latitude
+                                =
+                                "latitude";
+                                template.propertyFields.longitude
+                                =
+                                "longitude";
+                                template.tooltipText
+                                =
+                                "{title}
+                                -
+                                {address}";
+                                const
+                                pulseCircle
+                                =
+                                template.createChild(amdcore.Circle);
+                                pulseCircle.adapter.add("radius",
+                                ()
+                                =>
+                                settings.pulseSize);
+                                pulseCircle.nonScaling
+                                =
+                                true;
+                                pulseCircle.propertyFields.fill
+                                =
+                                "color”;
+                                pulseCircle.opacity
+                                =
+                                PULSE_CONFIG.opacity;
+                                pulseCircle.zIndex
+                                =
+                                9;
+                                const
+                                markerCircle
+                                =
+                                template.createChild(am4core.Circle)%
+                                markerCircle.adapter.add("radius”,
+                                ()
+                                =>
+                                settings.marker51ze);
+                                markerCircle.nonScaling = true;
+                                markerCircle.propertyFields.fill = "color";
+                                markerCircle.zIndex = 1;
+                                target)
+                                =>
+                                {
+                                markerCircle.adapter.add("opacity”,
+                                (_,
+                                t?.color
+                                ||
+                                const
+                                ¢
+                                =
+                                (target.dataltem?.dataContex
+                                "").toLowerCase().trim();
+                                if
+                                (!Object.values(SITE_COLORS).includes(c))
+                                return
+                                0;
+                                const
+                                key
+                                =
+                                Object.keys(SITE_COLORS).find(k
+                                =>
+                                SITE_COLORS[K]
+                                ===
+                                Q); return settings[ show${key} ] 2217305
+                                s
+                                function zoomToLatlLon(lat,
+                                lon,
+                                if
+                                (!chartInstance)
+                                return;
+                                soomLevel
+                                =
+                                8,
+                                animate
+                                =
+                                true)
+                                {
+                                chartInstance.zoomToGeoPoint(
+                                {
+                                latitude:
+                                lat,
+                                longitude:
+                                lon
+                                },
+                                zoomLevel,animate
+                                )5
+                                }
+                                function
+                                focusSiteTemporarily(siteTitle,
+                                duration
+                                =
+                                console.log("focus
+                                site
+                                function invoked11");
+                                if
+                                (!limageSeries)
+                                {
+                                console.log("image
+                                series
+                                not
+                                found");
+                                return;
+                                5000)
+                                {
+                                }let found = false;
+                                imageSeries.mapImages.each(function
+                                (img)
+                                {
+                                if
+                                (found
+                                ===
+                                true) return;
+                                console.log( checking
+                                image index ${img}
+                                );
+                                if
+                                (limg
+                                ||
+                                !img.dataIltem)
+                                {
+                                console.log("no dataitem
+                                or
+                                img
+                                found™);return;
+                                }s
+                                }
+                                const
+                                ctx
+                                =
+                                16
+                                (1etx)
+                                1
+                                console.log
+                                return,
+                                }
+                                img.isHover
+                                =
+                                false;
+                                if (img.
+                                img.
+                                tooltip) {
+                                tooltip?.hide();
+                                img.dataltem.dataContext;
+                                ("no
+                                datacontext
+                                found
+                                on
+                                dataitem”);
+                                console.log("reset
+                                hover
+                                and
+                                tooltip”);
+                                }else {
+                                }
+                                1 (ctX.
+                                };
+                                console.log("no
+                                tooltip
+                                instance
+                                on
+                                image");
+                                title === siteTitle) {
+                                found = true;
+                                img.isHover = true;
+                                img.showTooltip();
+                                window.focusSiteTemporarily = focusSiteTemporarily;
+                                window.loadSiteData = loadSiteData;
+                                window.loadIACCSData = loadIACCSData;
+                                //function for MCT and Satcom Data
+                                //
+                                let
+                                selectedGroup
+                                =
+                                'MCT_Vehicle';
+                                let subtypeData
+                                let currentSubtype = "MCT_Vehicle";
+                                =[1;
+                                function loadMCT SatcomDatal()
+                                return [
+                                { name:
+                                { name:
+                                "RESTRICTED_OPS" },
+                                }s
+                                { name:
+                                { name:
+                                { name:
+                                { name:
+                                15
+                                "iteml", data_type:
+                                "item2", data_type:
+                                "item3", data_type:
+                                "item4", data_type:
+                                “item5", data_type:
+                                "itemé6", data_type:
+                                "MCT_Vehicle",
+                                status: "FULLY
+                                OPS"
+                                "MCT_Vehicle",
+                                status:
+                                "MCT_Vehicle",
+                                status: "NON_OPS"
+                                },
+                                "SATCOM", status: "FULLY OPS"
+                                },
+                                "SATCOM", status:
+                                "RESTRICTED
+                                OPS"
+                                "SATCOM", status: "NON_OPS"
+                                }
+                                '
+                                ¥
+                                T
+                                e
+                                P
+                                O
+                                B
+                                e
+                                docu
+                                ¢
+                                ment.getElementById('
+                                .
+                                play
+                                Py
+                                llnonell
+                                ?
+                                llv"
+                                :
+                                IIVa"'
+                                J
+                                1f
+                                (content.style.display
+                                ===
+                                "block")
+                                refreshMCT_Satcombata();
+                                /]
+                                const
+                                1sOpen
+                                =
+                                content.style.display
+                                ===
+                                olock?:
+                                £
+                                content.style.display
+                                =
+                                1sOpen
+                                ?
+                                "none"
+                                .
+                                block”:
+                                /1
+                                if
+                                (lisOpen)
+                                {
+                                /]
+                                setTimeout(()
+                                =>
+                                {
+                                [/
+                                renderMCT_SatcomData(currentSubtype);
+                                /1
+                                R
+                                /1
+                                }
+                                1
+                                async
+                                function
+                                loadMCT_SatcomData()
+                                {
+                                console.log("fetching
+                                data
+                                from
+                                db");
+                                try
+                                {
+                                const
+                                response
+                                =
+                                await
+                                fetch("{%
+                                url
+                                'mct_satcom_india
+                                map®
+                                %)
+                                if
+                                (!response.ok)
+                                throw
+                                new
+                                Error("HTTP
+                                Error
+                                status
+                                ${response.status}‘);
+                                const
+                                data
+                                =
+                                await
+                                response.json();
+                                if
+                                (!Array.isArray(data))
+                                {
+                                console.warn("feched
+                                data
+                                is
+                                not
+                                array
+                                returning
+                                emptry
+                                array");
+                                return
+                                [];
+                                }
+                                return
+                                data.filter(item
+                                =>
+                                item.name
+                                &&
+                                item.data_type
+                                &&
+                                item.status);
+                                }catch (err) {
+                                console.error(err);showAlert("Failed
+                                to
+                                load site
+                                data",
+                                "danger");
+                                return
+                                [];//
+                                subtypeData
+                                =
+                                [];
+                                async function refreshMCT_SatcomData()
+                                {
+                                const
+                                data
+                                =
+                                await
+                                loadMCT
+                                SatcomData();
+                                if (data.length) subtypeData = data;
+                                renderMCT_SatcomData(currentSubtype);
+                                window.loadMCT_SatcomData = loadMCT SatcomData;
+                                function
+                                renderMCT_SatcomData(selectedGroup)
+                                {
+                                const
+                                container
+                                =
+                                document.getElementById('subtype-list');
+                                const
+                                emptyDiv
+                                =
+                                document.getElementById('subtype-empty');
+                                container.innerHTML
+                                =
+                                '';
+                                const
+                                filteredData
+                                =
+                                subtypeData.filter(d
+                                =>
+                                d.data_type
+                                ===
+                                selectedGroup);
+                                if
+                                (filteredData.length
+                                ===
+                                0)
+                                {
+                                emptyDiv.style.display
+                                =
+                                'block';
+                                return;
+                                }
+                                else {
+                                emptyDiv.style.display = 'none';
+                                }
+                                const
+                                statusList
+                                =
+                                ['FULLY_OPS', 'RESTRICTED_OPS',
+                                'NON_OPS'];
+                                statusList.forEach(status
+                                =>
+                                {
+                                const items
+                                =
+                                filteredData.filter(d
+                                =>
+                                d.status
+                                ===
+                                status);
+                                if
+                                (items.length
+                                >
+                                @)
+                                {
+                                const
+                                statusHeader
+                                =
+                                document.createElement('div');
+                                statusHeader.textContent
+                                =
+                                “${status}
+                                (Total
+                                :
+                                ${items.length})";
+                                statusHeader.style.fontWeight
+                                =
+                                '700';
+                                statusHeader.marginTop
+                                =
+                                "10px";
+                                statusHeader.marginBottom
+                                =
+                                "6px";
+                                statusHeader.style.color
+                                =
+                                '#0ff';
+                                statusHeader.style.fontSize
+                                =
+                                "14px";
+                                container.appendChild(statusHeader);
+                                const row = document.createElement('div');
+                                row.style.display = "flex";
+                                row.style.flexWrap = "wrap";
+                                row.style.gap = "6px";
+                                row.style.marginBottom = "1@0px";
+                                items.forEach(item
+                                =>
+                                {
+                                cgnst
+                                div
+                                =
+                                document.createElement('div');
+                                div.textContent
+                                =
+                                item.name;
+                                4FFOOFF, HOOFEEF)": div.style.backgroundImage
+                                =
+                                "linear-gradient(45deg,
+                                div.style.color
+                                =
+                                '#000';
+                                div.style.fontWeight
+                                =
+                                '600";
+                                div.style.padding
+                                =
+                                '4px
+                                10px';
+                                div.style.borderRadius
+                                =
+                                '6px’;
+                                div.style.boxShadow
+                                =
+                                "@
+                                @
+                                8px rgba(e,
+                                255, 255,
+                                0.6)";
+                                div.style.textShadow
+                                =
+                                "@ @
+                                4pX #ooffff";
+                                div.style.fontFamily
+                                =
+                                'monospace’;
+                                div.style.display
+                                =
+                                "inline-block";
+                                row.appendChild(div);
+                                })s
+                                container.appendChild(row);
+                                }
+                                1)
+                                window.containerl
+                                =
+                                container;
+                                }
+                                document.querySelectorAll(".type-btn").forEach(btn
+                                =>
+                                {
+                                btn.addEventListener("click",
+                                ()
+                                =>
+                                {
+                                document.querySelectorAll(“.type-btn“)
+                                .fortach(b
+                                =>
+                                b.classList.remove("active"));btn.classList.add("active");
+                                currentSubtype
+                                =
+                                btn.dataset.type;
+                                renderMCT_SatcomData(currentSubtype);
+                                1)
+                                1)
+                                //
+                                const subtypeContent
+                                =
+                                document.getElementById('subtype-content');
+                                window.refreshMCT_SatcomData
+                                =
+                                refreshMCT_SatcomData;
+                                window.renderMCT_SatcomData
+                                =
+                                renderMCT_SatcomData;
+                                document.addEventListener(“DOMContentLoaded", async
+                                ()
+                                =>
+                                {
+                                await refreshMCT SatcomData();
+                                setInterval(refreshMCT_SatcomData,
+                                12000)
+                                ;
+                                1)
+                                //
+                                const groupButtons
+                                =
+                                document.querySelectorAll( '#subtype-content
+                                .group-btn');
+                                //
+                                groupButtons.forEach(btn
+                                =>
+                                {
+                                /]
+                                btn.addEventListener('click', async
+                                ()
+                                =>
+                                {
+                                /]
+                                const
+                                selectedGroup
+                                =
+                                btn.datsse;bg';:?ff
+                                /]
+                                const data
+                                =
+                                await
+                                loadMCT_5a
+                                cot
+                                dGrou,).
+                                /1
+                                renderMCT
+                                SatcomData(data, selecte
+                                .
+                                D),//
+                                setActiveGroupButton(selectedGroup),
+                                L))
+                                /1
+                                });
+                                //
+                                function
+                                setActiveGroupButton(selectedGroup)
+                                {
+                                /]
+                                groupButtons, forEach(btn
+                                =>
+                                {
+                                /]
+                                btn.classList.toggle('active',
+                                btn.dataset.group
+                                selectedGroup);
+                                //
+                                1)
+                                /]
+                                }
+                                //
+                                window.setActiveGroupButton
+                                =
+                                setActiveGroupButton;
+                                //
+                                window.renderMCT_SatconData
+                                =
+                                renderMCT_SatcomData;
+                                //
+                                window.loadMCT_SatcomData
+                                =
+                                loadMCT SatcomData;
+                                //
+                                const statusMap
+                                =
+                                {
+                                B4
+                                @:
+                                ["green", "green"],// 1:7"[*green®;
+                                "pred"];
+                                //
+                                250
+                                'red”
+                                ;.
+                                "red”]
+                                [}
+                                function loadIACCSData()
+                                {
+                                fetch("{%
+                                url ‘india_map_iaccs_status' %}")
+                                .then(r
+                                =>
+                                r.json())
+                                .then(sitesdata
+                                =>
+                                {
+                                const countByTitle
+                                =
+                                {};
+                                //
+                                const colorByTitle
+                                =
+                                1}
+                                sitesdata.forEach(item
+                                =>
+                                {
+                                countByTitle[item.title]
+                                =
+                                item.count;
+                                });
+                                1tem.color))
+                                cgnsole.log("counttitle
+                                data
+                                is
+                                ",
+                                countByTitle);
+                                51teData.forEach(site
+                                =>
+                                {
+                                const count
+                                =
+                                countByTitle[site.title];
+                                if
+                                (count
+                                !==
+                                undefined)
+                                {
+                                /]
+                                return;
+                                const
+                                totalDots
+                                =
+                                site.status.length;
+                                site.status = site.status.map((dot, index) => {
+                                return index < count ? "red" : "green”;
+s
+}
+console.log(allSitesData);
+const colorByTitle = Object.fromEntries(
+allSitesData.map(item => [item.title.trim(),
+)3
+/] if (count !== undefined && statusMap[count]) {
+/] site.status = statusMap[count];
+/] }
+console.log(site.group);
+console.log(site.title);
+console.log(colorByTitle);
+console.log(colorByTitle[site.title]);
+if
+(site.group
+===
+" group_B") { console.log(site.group, site.title, site.status); console.log(site.title);
+                                    console.log(site.group);console.log(site.status);const
+                                    newColor=colorByTitle[site.title]; if (newColor){ site.status=site.status.map(()=>
+                                    newColor);console.log("new color updated”);
+                                    }
+                                    else {
+                                    console.log("color is not found™);
+                                    ¥
+                                    });
+                                    console.log( updated sitedata
+                                    ${siteData}
+                                    );
+                                    })
+                                    .catch(err => {
+                                    console.error(err);showAlert("Failed to load IACCS data", "danger");
+                                    1)
+                                    //function
+                                    for AECMS,
+                                    OPS,
+                                    TEST groups
+                                    X
+                                    L
+                                    1ist™);
+                                    const
+                                    grouplList
+                                    =
+                                    document.getElementById( group
+                                    f;;szy");
+                                    .
+                                    const
+                                    groupEmpty
+                                    =
+                                    document.getElementById( group
+                                    function renderGroupSites(group)
+                                    {
+                                    const
+                                    filtered
+                                    =
+                                    siteData.filter(s
+                                    =>
+                                    s.group
+                                    ===
+                                    group);
+                                    groupList.innerHTML
+                                    =
+                                    "
+                                    :
+                                    v
+                                    .
+                                    "hlock":
+                                    groupEmpty.style.display
+                                    =
+                                    filtered.length
+                                    ?
+                                    "none
+                                    -
+                                    )
+                                    filtered.forEach(site
+                                    =>
+                                    {
+                                    const div
+                                    =
+                                    document.createElement("div");
+                                    div.className
+                                    =
+                                    "group-site”;
+                                    div.onclick
+                                    = ()
+                                    =>
+                                    {
+                                    zoomToLatLon(site.latitude, site.longitude,
+                                    10);
+                                    setTimeout(()
+                                    =>
+                                    {
+                                    focusSiteTemporarily(site.title,
+                                    5000)
+                                    ,
+                                    }, 600);
+                                    }s
+                                    let dotsHtml = site.status.map((s, index) => {
+                                    let label = s === 'green' ? 'Reachable’ : 'Alert’;
+                                    return “<div class="dot
+bg-${s}" ” data-label="${site.title}
+#${index
++
+1}:
+${label}"></div>";
+                                    }).join("");
+                                    div.innerHTML
+                                    =
+                                    ~
+                                    <span class="city-name">${site.title}</span>
+                                    <div class="status-dots">${dotsHtml}</div>
+                                    grouplList.appendChild(div);
+                                    });
+                                    document.querySelectorAll(".group-btn").forEach(btn
+                                    =>d
+                                    btn.addEventListener("click",
+                                    ()
+                                    =>
+                                    {
+                                    document.querySelectorAll(".group-btn").forEach(b
+                                    =>
+                                    b.classList.remove("active"));
+                                    btn.classList.add("active");
+                                    currentGroup
+                                    =
+                                    btn.dataset.group;
+                                    renderGroupSites(currentGroup);
+                                    });
+                                    ¥
+                                    function
+                                    showIACCSData()
+                                    {
+                                    loadIACCSData();
+                                    renderGroupSites(currentGroup);
+                                    }
+                                    showIACCSData();
+                                    setinterval(showIACCSData,
+                                    120000);
+                                    document.getElementById("group-header").addEventListener("click",
+                                    ()
+                                    =>
+                                    setTimeout(()
+                                    =>
+                                    {
+                                    renderGroupSites(currentGroup);
+                                    }, 0)
+                                    })
+                                    function startPulse(circle)
+                                    {
+                                    if
+                                    (circle._pulseAnim)
+                                    circle.
+                                    pulseAnim.stop();
+                                    circle.scale
+                                    = 1;
+                                    circle.opacity
+                                    =
+                                    PULSE_CONFIG.opacity;
+                                    circle._pulseAnim
+                                    =
+                                    circle.animate([
+                                    { property: "scale", from: 1, to: PULSE CONFIG.maxScale },
+                                    { property: "opacity", from: PULSE_CONFIG.opacity, to: @ }
+                                    ], PULSE_CONFIG.duration);
+                                    circle._pulseAnim.events.on("animationended",
+                                    ()
+                                    =>
+                                    startPulse(circle));
+                                    }
+                                    function stopPulse(circle)
+                                    {
+                                    if
+                                    (circle._pulseAnim)
+                                    circle.
+                                    pulseAnim.stop();
+                                    circle.opacity
+                                    =
+                                    0;
+                                    circle.scale
+                                    = 1;
+                                    }
+                                    function updatePulse(image)
+                                    const data = image.dataltem?.dataContext;
+                                    if (!data) return;
+                                    const ¢ = (data.color || "").toLowerCase().trim();
+                                    if (!Object.values(SITE_COLORS).includes(c)) return;
+                                    const pulse = image.children.getIndex(0);
+                                    const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] ===
+                                    settings[ pulse${key} ] ? startPulse(pulse) : stopPulse(pulse);
+                                    }
+                                    imageSeries.mapImages.template.events.on("inited",
+                                    e
+                                    =>
+                                    updatePulse(e.target));
+                                    imageSeries.mapImages.template.events.on("dataitemchanged",
+                                    e =>
+                                    updatePulse(e.target));
+                                    template.events.on("hit",
+                                    ev =>
+                                    {
+                                    const ctx
+                                    =
+                                    ev.target.dataltem.dataContext;
+                                    const color = (ctx.color || "").toLowerCase().trim();
+                                    if (Object.values(SITE_COLORS).includes(color)) {
+                                    fetch('
+                                    /api/site-contact-info/${encodeURIComponent(ctx.title)}/
+                                    )
+                                    .then(r
+                                    =>
+                                    r.ok
+                                    ?
+                                    r.json()
+                                    :
+                                    [])
+                                    .then(data => {
+                                    document.getElementById("contact-title").textContent =
+                                    cix.title:
+                                    const content =
+                                    document.getElementById("contact-content");
+                                    content.innerHTML
+                                    =
+                                    data.length
+                                    ===
+                                    ?
+                                    "<i style='color:var(--text-muted)'>No contact
+                                        details available</i>"
+                                    :
+                                    <table>${data.map(c
+                                        =>
+                                        °
+                                        <tr>
+                                            <th>Email</th>
+                                            <td>${c.email
+                                                ||
+                                                "-"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone</th>
+                                            <td>${c.phone
+                                                ||
+                                                "-"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Address</th>
+                                            <td>${c.address
+                                                ||
+                                                "-"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>EN Details</th>
+                                            <td><a href="/getnasdetails_india_map/${c.id}/">view
+                                                    EN
+                                                    Details</a>
+                                                “).join("")}
+                                    </table>";
+                                    document.getElementById("contact-panel”).style.display
+                                    "block";
+                                    document.getElementById("contact-content").style.display
+                                    =-"block”;
+                                    })
+                                    catch(() => {
+                                    showAlert("Failed to load contact info", "danger");
+                                    document.getElementById("contact-panel”).style.display =
+                                    "block”s
+                                    });
+                                    }
+                                    });
+                                    chartInstance.seriesContainer.events.on("hit", () => {
+                                    document.getElementById("contact-panel”).style.display = "none";
+                                    });
+                                    // — Data Loading
+                                    let allSitesData = [];
+                                    function loadSiteData()
+                                    {
+                                    fetch("{%
+                                    url 'site-map-api' %}")
+                                    .then(r
+                                    =>
+                                    r.json())
+                                    .then(raw
+                                    =>
+                                    {
+                                    allSitesData
+                                    =
+                                    raw.filter(s
+                                    =>Object.values(SITE_COLORS).includes((s.color
+                                    [|
+                                    "").toLowerCase().trim()));
+                                    imageSeries.data
+                                    =
+                                    allSitesData;
+                                    updateProblemsDisplay(allSitesData);
+                                    refreshAll();
+                                    document.getElementById("last-update-time").textContent
+                                    formatDatelLocal(new Date());
+                                    })
+                                    .catch(err => {
+                                    console.error(err);
+                                    showAlert("Failed to load site data", "danger");
+                                    1)
+                                    function refreshAll() {
+                                    imageSeries.mapImages.each(updatePulse);
+                                    chartInstance.invalidateRawData();
+                                    }
+                                    loadSiteData();
+                                    loadAllSitesHistory();setInterval(loadSiteData,
+                                    120000);
+                                    :
+                                    g
+                                    iy
+                                    g
+                                    //
+                                    —
+                                    Sidebar Collapse
+                                    &
+                                    Contact
+                                    Positioning
+                                    —_—
+                                    const sidebar
+                                    =
+                                    document.getElementById('sidebar-column');
+                                    const
+                                    toggleBtn
+                                    =
+                                    document.getElementById('sidebar-toggle
+                                    )
+                                    5
+                                    const contactPanel
+                                    =
+                                    document.getElementById('contact-panel
+                                    )
+                                    const
+                                    sidebarContent
+                                    =
+                                    document.querySelector('#sidebar-column.sidebar-content');
+                                    function updateContactPosition()
+                                    {
+                                    if
+                                    (sidebar.classList.contains('collapsed'))
+                                    {
+                                    document.body.appendChild(contactPanel);contactPanel.style.position
+                                    =
+                                    "fixed";
+                                    contactPanel.style.bottom
+                                    =
+                                    "100px";
+                                    contactPanel.style.right
+                                    =
+                                    "40px";
+                                    contactPanel.style.width
+                                    =
+                                    "400px";
+                                    contactPanel.style.margin
+                                    =
+                                    "0";
+                                    }
+                                    else
+                                    {
+                                    sidebarContent.appendChild(contactPanel);
+                                    contactPanel.style.position
+                                    == "relative";
+                                    contactPanel.style.bottom = "auto";
+                                    contactPanel.style.right = "auto";
+                                    contactPanel.style.width
+                                    =
+                                    "100%";
+                                    contactPanel.style.maxWidth
+                                    =
+                                    "380px";
+                                    contactPanel.style.margin
+                                    =
+                                    "20px
+                                    0";
+                                    ¥
+                                    if
+                                    (localStorage.getItem('sidebarCollapsed’)
+                                    ==
+                                    sidebar.classlList.add('collapsed’);
+                                    toggleBtn.textContent
+                                    = '«°;)
+                                    toggleBtn.title
+                                    =
+                                    'Expand sidebar’;
+                                    "true) {
+                                    ¥
+                                    updateContactPosition();
+                                    toggleBtn.addEventListener('click',
+                                    ()
+                                    =>
+                                    {
+                                    ' k?x”wEWWE3Wfitfiflwwfiififlflllllllllllll
+                                    const
+                                    collapsed
+                                    =
+                                    sidebar.classList.toggle('collapsed
+                                    );
+                                    toggleBtn.textContent
+                                    =
+                                    collapsed
+                                    ?
+                                    '«'
+                                    :
+                                    ™2 ;
+                                    toggleBtn.title
+                                    =
+                                    collapsed
+                                    ?
+                                    'Expand
+                                    sidebar
+                                    localStorage.setItem('sidebarCollapsed’,
+                                    collapsed);
+                                    updateContactPosition();
+                                    1)
+                                    //
+                                    —
+                                    Site Search
+                                    _—
+                                    const
+                                    searchInput
+                                    =
+                                    document.getElementById("site-search”);
+                                    "
+                                    const
+                                    searchResults
+                                    =
+                                    document.getElementById("search-results
+                                    );
+                                    'Collapse sidebar’;
+                                    searchInput.addEventListener("input", debounce(()
+                                    =>.{
+                                    const
+                                    query
+                                    =
+                                    searchInput.value.toLowerCase().trlm();
+                                    searchResults.innerHTML
+                                    =
+                                    "~
+                                    °;
+                                    searchResults.style.display
+                                    =
+                                    "none”,
+                                    if (query.length < 2) return; const matches=allSitesData.filter(s=>
+                                        s.title.toLowerCase().includes(query.toLowerCase()) ||
+                                        s.address.toLowerCase().includes(query.toLowerCase()));
+                                        if (matches.length === 0) {
+                                        searchResults.innerHTML = '<div class="p-3 text-center
+text-muted”">No matching sites</div>’;
+                                        } else {
+                                        matches.forEach(site => {
+                                        const item = document.createElement("div");
+                                        item.className = "search-item";
+                                        item.textContent = site.title;
+                                        item.onclick = () => {
+                                        zoomToLatLon(site.latitude, site.longitude, 19);
+                                        setTimeout(() => {
+                                        focusSiteTemporarily(site.title, 5000);
+                                        }, 600);
+                                        loadContactInfo(site.title);
+                                        searchInput.value = "";
+                                        searchResults.style.display = "none";
+                                        }s
+                                        searchResults.appendChild(item);
+                                        });
+                                        }
+                                        searchResults.style.display = "block";
+                                        },
+                                        300).);
+                                        document.addEventListener("click",
+                                        e
+                                        =>
+                                        {
+                                        if
+                                        (!searchInput.contains(e.target) &&
+                                        searchResults.contains(e.target))
+                                        {
+                                        searchResults.style.display
+                                        =
+                                        "none";
+                                        }
+                                        });
+                                        //
+                                        —
+                                        Contact Info
+                                        function loadContactInfo(siteName)
+                                        {
+                                        fetch( /api/site-contact-info/${encodeURIComponent(siteName)}/")
+                                        then(r
+                                        =>
+                                        r.ok
+                                        ?
+                                        reysoni)
+                                        3
+                                        ['1)
+                                        .then(data
+                                        =>
+                                        {
+                                        document.getElementById("contact-title").textContent
+                                        =
+                                        siteName;
+                                        const content = document.getElementBylId("contact-content™);
+                                        content.innerHTML = data.length ===
+                                        ? "<i style='color:var(--text-muted)'>No contact details
+                                            available</i»" . <table>${data.map(c => °
+                                            ctr><th>Email</thy<td>${c.email || "="}</td>
+                                                </tr>
+                                                <try>
+                                            <th>Phone</th>
+                                            <td>${c.phone || "="}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Address</ths<td>${c.address || "-"
+                                                    </ftd>
+                                            </tr>
+                                            <tr>
+                                                <th>EN
+                                                    Details</th>
+                                                <td><a href="/getnasdetails
+india map/${c.id}/">view
+                                                        EN
+                                                        Details</a>
+                                                    “).join("")}</table>
+                                                    ;
+                                                    document.getElementById("contact-panel").style.display
+                                                    =
+                                                    “plock™;s
+                                                    document.getElementById(“contact-content").style.display =
+                                                    "block";
+                                                    })
+                                                    .catch(() => {
+                                                    showAlert("Failed to load contact info", "danger");
+                                                    document.getElementById("contact-panel").style.display =
+                                                    “BIOCK™3
+                                                    1) |
+                                                    }
+                                                    document.getElementById("contact-header").onclick = () => {
+                                                    const content = document.getElementById("contact-content™);
+                                                    content.style.display = content.style.display === “none’ .t block,.
+                                                    "none";
+                                                    }s
+                                                    /1= Accordion:{fixed version) ——————""""""""""""\
+                                                    document.querySelectorAll('.panel-header').forkach(header
+                                                    =>
+                                                    {
+                                                    header.addEventListener('click',
+                                                    ()
+                                                    =>
+                                                    {
+                                                    const content
+                                                    =
+                                                    header.nextElementSibling;const isCurrentlyOpen
+                                                    =
+                                                    content.classList.contains('open');
+                                                    //
+                                                    Close all other panels
+                                                    document.querySelectorAll('.panel-content').forEach(c
+                                                    =>
+                                                    {
+                                                    if
+                                                    (c
+                                                    !==
+                                                    content) c.classList.remove('open');
+                                                    });
+                                                    //
+                                                    Reset all arrows
+                                                    document.querySelectorAll('.panel-header
+                                                    span:last-child').forEach(s
+                                                    =>
+                                                    {
+                                                    s.textContent
+                                                    =
+                                                    'Vv';
+                                                    1)//
+                                                    Toggle clicked panel
+                                                    if (isCurrentlyOpen)
+                                                    {
+                                                    content.classList.remove('open');
+                                                    |
+                                                    T —————— iSt o o A
+                                                    i
+                                                    1d"
+                                                    ent
+                                                    =
+                                                    'V,
+                                                    header.querySelector('span:last-child
+                                                    ).
+                                                    textCont
+                                                    }
+                                                    else
+                                                    {
+                                                    '
+                                                    content.classList.add("'open’);
+                                                    4
+                                                    header.querySelector('span:last-child').textContent
+                                                    =
+                                                    }
+                                                    1)
+                                                    1)
+                                                    //
+                                                    —
+                                                    Current Active
+                                                    Issues
+                                                    —m—m—m—mmmmmvmverrrroidooioiooono—
+                                                    let nameSortAsc = true;
+                                                    let colorSortDesc = true;
+                                                    let timeSortNewestFirst = true;
+                                                    function
+                                                    updateProblemsDisplay(sites)
+                                                    {
+                                                    const
+                                                    problematic
+                                                    =
+                                                    sites.filter(s
+                                                    =>
+                                                    ["red",
+                                                    ‘yellow"].includes((s.color
+                                                    ||
+                                                    "").toLowerCase().trim()));
+                                                    const list
+                                                    =
+                                                    document.getElementById("problems-list");
+                                                    const
+                                                    empty
+                                                    =
+                                                    document.getElementById("problems-empty");
+                                                    list.innerHTML
+                                                    = "";
+                                                    if
+                                                    (problematic.length
+                                                    ===
+                                                    9)
+                                                    {
+                                                    empty.style.display
+                                                    =
+                                                    "block";
+                                                    document.getElementById("issues-count").style.display
+                                                    =
+                                                    "none";
+                                                    return;
+                                                    }
+                                                    empty.style.display
+                                                    =
+                                                    "none";
+                                                    document.getElementById("issues-count").textContent
+                                                    =
+                                                    problematic.length;
+                                                    document.getElementById("issues-count").style.display
+                                                    =
+                                                    "inline";
+                                                    problematic.sort((a,
+                                                    b)
+                                                    =>
+                                                    new
+                                                    Date(b.problem since)
+                                                    -
+                                                    new
+                                                    Date(a.problem_since));
+                                                    renderProblemEntries(problematic);
+                                                    }
+                                                    function renderProblemEntries(items)
+                                                    {
+                                                    const list
+                                                    =
+                                                    document.getElementById("problems-list");
+                                                    list.innerHTML
+                                                    = "";
+                                                    items.forEach(site
+                                                    =>
+                                                    {
+                                                    const color
+                                                    =
+                                                    (site.color
+                                                    ||
+                                                    "").toLowerCase().trim();
+                                                    const div
+                                                    =
+                                                    document.createElement("div");
+                                                    div.className
+                                                    =
+                                                    ‘problem-entry ${color
+                                                    ===
+                                                    "pegd"
+                                                    2
+                                                    "red”
+                                                    .
+                                                    :
+                                                    "yellow"}";
+                                                    div.innerHTML
+                                                    =
+                                                    °
+                                                    <div class="problem-site">${site.title}</div>
+                                                    <div class="problem-status">${color === "ped"
+                                                        ?
+                                                        "Unreachable"
+                                                        :
+                                                        "Satcom"}</div>
+                                                    <div class="problem-since">since
+                                                        ${formatDateLocal(site.problem_since)}</div>
+                                                    list.appendChild(div);
+                                                    1)
+                                                    etem
+                                                    mw
+                                                    attachProblemClickListeners();
+                                                    }
+                                                    document.querySelectorAll(
+                                                    '#problems-content .sort-btn').forEach(btn
+                                                    =>
+                                                    btn.addEventListener('click',
+                                                    ()
+                                                    =>
+                                                    {
+                                                    cons; sortType
+                                                    =
+                                                    btn.dataset.sort;
+                                                    :
+                                                    T
+                                                    let items
+                                                    =
+                                                    [...allSitesData].filter(s
+                                                    =>
+                                                    ["red",
+                                                    yellow"].includes((s.color
+                                                    ||
+                                                    "").toLowerCase().trim()));
+                                                    document.querySelectorAll(‘#problems-content
+                                                    .sort-btn').forEach(b
+                                                    =>
+                                                    b.classList.remove('active'));
+                                                    btn.classList.add('active');
+                                                    if
+                                                    (sortType
+                                                    === "time")
+                                                    {
+                                                    timeSortNewestFirst
+                                                    =
+                                                    ltimeSortNewestFirst;
+                                                    btn.textContent
+                                                    =
+                                                    timeSortNewestFirst
+                                                    ?
+                                                    "Newest" "0ldest”;
+                                                    items.sort((a,
+                                                    b)
+                                                    =>
+                                                    {
+                                                    const
+                                                    ta
+                                                    =
+                                                    new
+                                                    Date(a.problem_since);const tb
+                                                    =
+                                                    new
+                                                    Date(b.problem_since);
+                                                    return
+                                                    timeSortNewestFirst
+                                                    ?
+                                                    tb
+                                                    -
+                                                    ta
+                                                    :
+                                                    ta
+                                                    -
+                                                    tb;
+                                                    1)
+                                                    }
+                                                    else
+                                                    if
+                                                    (sortType
+                                                    === "name")
+                                                    {
+                                                    nameSortAsc
+                                                    =
+                                                    !nameSortAsc;items.sort((a,
+                                                    b)
+                                                    =>
+                                                    {
+                                                    const
+                                                    cmp
+                                                    =
+                                                    3.title.localeCompare(b.title);return nameSortAsc
+                                                    ?
+                                                    cmp
+                                                    :
+                                                    -Cmp;
+                                                    1)
+                                                    }
+                                                    else
+                                                    if
+                                                    (sortType
+                                                    === "color")
+                                                    {
+                                                    colorSortDesc
+                                                    =
+                                                    !colorSortDesc;items.sort((a,
+                                                    b)
+                                                    =>
+                                                    {
+                                                    const
+                                                    ca
+                                                    =
+                                                    (a.color
+                                                    ||
+                                                    "").toLowerCase().trim();
+                                                    const
+                                                    cb
+                                                    =
+                                                    (b.color
+                                                    ||
+                                                    "").toLowerCase().trim();
+                                                    const cmp
+                                                    =
+                                                    ca.localeCompare(cb);return colorSortDesc
+                                                    ?
+                                                    -cmp
+                                                    :
+                                                    Cmp;
+                                                    });
+                                                    }
+                                                    renderProblemEntries(items);
+                                                    })s
+                                                    });
+                                                    /]
+                                                    —H
+                                                    ISty
+                                                    =TT
+                                                    T
+                                                    T
+                                                    T
+                                                    e
+                                                    T
+                                                    e
+                                                    T
+                                                    let
+                                                    currentHistorySite
+                                                    =
+                                                    null;
+                                                    function renderHistoryEntries(entries)
+                                                    {
+                                                    const list
+                                                    =
+                                                    document.getElementById('history-list');
+                                                    list.innerHTML
+                                                    = "";
+                                                    if (lentries
+                                                    ||
+                                                    entries.length ===
+                                                    0)
+                                                    {
+                                                    list.innerHTML
+                                                    =
+                                                    '<div
+                                                        style="text-align:center;color:var(--text-muted); padding:50px @;">
+                                                        No history records found</div>';
+                                                    return;
+                                                    entries.forkach(entry
+                                                    =
+                                                    {
+                                                    const div
+                                                    =
+                                                    document.createtlement('div');
+                                                    div.className
+                                                    =
+                                                    'history-entry';
+                                                    div.innerHTML
+                                                    =
+                                                    °
+                                                    i
+                                                    hanged at)}
+                    </div>
+                    class="history-time">${formatDateLoca1(entry.status_c.a ged_
+                    &
+                    <div style="font-weight:600;
+marg1n:4px
+0;
+>
+oy
+${entry.site_ sitename
+||
+entry.sitename
+||
+" - </div>
+                        <divy <span style="color:var(--text-muted);">from</span>
+                            <span>${entry.past_status}</span><span style="color:var(--text-muted);">
+                                »
+                            </span>
+                            <span Style="${/downIunr‘each/i.test
+'color:var(--danger);font-weight:600;'
+:
+'color:var(--success);Font-weight:660;'}">
+                                ${entry.current_status}
+                            </span>
+                    </div>
+                    list.appendChild(div);
+                    });
+                    }
+                    function loadAlISitesHistory(order
+                    =
+                    "desc")
+                    {
+                    fetch("{%
+                    url
+                    'status-history-all-sites’
+                    %}")
+                    .then(r
+                    =>
+                    r.ok
+                    ?
+                    r.yson()
+                    :
+                    [])
+                    .then(data =»
+                    {
+                    data.sort((a,
+                    b)
+                    =>
+                    {
+                    const
+                    ta
+                    =
+                    new
+                    Date(a.status_changed_at);
+                    const
+                    tb
+                    =
+                    new
+                    Date(b.status_changed_at);
+                    return order
+                    === "desc" ?°th -“ta
+                    :
+                    ta
+                    -
+                    tb;1)
+                    renderHistoryEntries(data);
+                    1)
+                    -catch(() => {
+                    showAlert("Failed
+                    to
+                    load history",
+                    document.getElementById('history-list ").innerHTML
+                    =
+                    '<div style="text-align:center; color:var(--text-muted);padding:50px 0;">History unavailable</div>';
+                    b
+                    }
+                    function loadSiteHistory(siteName, order
+                    currentHistorySite
+                    =
+                    siteName;
+                    Fetch(‘/api/status-history/${encodeURIComponent(siteName)}/‘).then(r
+                    =>
+                    r.ok
+                    ?
+                    r.Json()
+                    :
+                    [])
+                    .then(data
+                    =>
+                    {
+                    data.sort((a,
+                    b) =>
+                    {
+                    const ta
+                    =
+                    new Date(a.status_changed_at);
+                    S
+                    UBse™)
+                    'Y
+                    ——————————
+                    YR
+                    const
+                    tb
+                    =
+                    new Date(b
+                    .status_changed
+                    ;
+                    return order
+                    ===
+                    "desc"
+                    ?
+                    tb
+                    -
+                    tag:
+                    E:t?,tb'
+                    1)
+                    X renderHistoryEntries(data);
+                    Jcateh(() => {
+                    ZhowAlert("Failed
+                    to load
+                    site history", "danger");
+                    ocument.getElementById('history-list').innerHTML
+                    =
+                    :
+                    ;
+                    '<div style="color:var(--danger);
+ing:
+@
+;text-align:center;">History
+                        unavailable</div§'; B e })s } // document.getElementById("history-btn").onclick=()=> {
+                        // if (sidebar.classList.contains('collapsed’)) {
+                        A sidebar.classList.remove('collapsed’);
+                        // toggleBtn.textContent = '=';
+                        ;; : locaIStorage.setItem('sidebarCollapsed', 'false');
+                        // document.querySelectorAll('.panel-content').forEach(c =>
+                        c.classList.remove('open'));
+                        'y document.querySelectorAll('.panel-header
+                        span:last—child').forEach(s
+                        =>
+                        s.textContent
+                        =
+                        'V');
+                        //
+                        const historyContent
+                        =
+                        document.getElementById('history-content');
+                        I
+                        historyContent.classList.add('open');
+                        /[
+                        document.getElementById('history—header').querySelector('span:last-child').textC
+                        ontent
+                        =
+                        'A’;//
+                        document.getElementById('history-panel—title').textContent
+                        =
+                        'Status History';
+                        //
+                        document.getElementById('history-panel—subtitle').textContent
+                        =
+                        'Status History';
+                        //
+                        document.getElementById('history-back—btn').style.display
+                        =
+                        'none’; //
+                        1oadAllsitesHistory("desc“);
+                        /]
+                        };
+                        document.getElementById('history-back—btn').addEventListener('click',
+                        )
+                        =>
+                        {
+                        .
+                        1 '
+                        etElementById('history—back-btn').style.dlsplay
+                        = 'none’;
+                        document.g 1—subtit1e').textContent
+                        =
+                        document.getElementById('history-pane'Status History';
+                        currentHistorySite
+                        =
+                        null;
+                        loadAllSitesHistory(“desc");
+                        });
+                        function attachProblemClickListeners()
+                        {
+                        document.querySelectorAll('.problem
+                        el.addEventListener('click',
+                        C)
+                        myt
+                        const site
+                        =
+                        el.querySelector('.problem-site').textContent.trim();
+                        loadSiteHistory(site,
+                        "desc");
+                        document.querySelectorAll('.panel-content’).forEach(c
+                        =)
+                        c.classList.remove('open'));
+                        const
+                        historyContent
+                        =
+                        document.getElementById(
+                        'history-content’);
+                        historyContent.classList.add('open’);
+                        document.getElementById('history-header').querySelector('span:last-child’).textc
+                        ontent
+                        =
+                        'a’;
+                        document.getElementById('history-panel-subtitle').textContent
+                        =
+                        "History:
+                        ${site}";
+                        document.getElementById('history-back-btn').style.display
+                        =
+                        'inline-block’;
+                        if
+                        (sidebar.classlList.contains('collapsed’))
+                        {
+                        sidebar.classList.remove('collapsed’);
+                        toggleBtn.textContent = '»°;
+                        localStorage.setItem('sidebarCollapsed’, 'false’);
+                        }
+                        });
+                        });
+                        }
+                        document.querySelectorAll('#history-content.history-sort-btn').forEach(btn
+                        =>
+                        {
+                        btn.addEventListener('click’,
+                        ()
+                        =>
+                        {
+                        const order
+                        =
+                        btn.dataset.order;
+                        document.querySelectorAll( '#history-content
+                        .history-sort-btn').forEach(b
+                        =>
+                        b.classList.remove(‘active'));
+                        btn.classList.add('active');if
+                        (currentHistorySite)
+                        {
+                        loadSiteHistory(currentHistorySite,
+                        order);
+                        } else {
+                        loadAllSitesHistory(order);
+                        }
+                        });
+                        });
+                        1]
+                        == SerTINES
+                        Ul
+                        io—vie—tmeeses
+                        function syncSettingsUI()
+                        {
+                        [*A"
+                        2B",
+                        *C";,
+                        D",
+                        forEach(k
+                        =2
+                        {
+                        document.getElementById(
+                        show${k} ).checked
+                        =
+                        settings[ show${k}
+                        ];
+                        document
+                        .getElementById(
+                        pulse${k} ).checked
+                        =
+                        settings[ pulse${k}
+                        ];
+                        45
+                        document.getElementById("markerSize").value
+                        =
+                        settings.markerSize,
+                        document.getElementById("pulseSize").value
+                        =
+                        settings.pulseSize;
+                        document.getEle
+                        .
+                        '
+                        men
+                        '
+                        1"
+                        -ttings.markerSize
+                        +
+                        "
+                        px";
+                        tById("markerValue").textContent
+                        =
+                        documen
+                        "
+                        t.getElementById("pulsevalue").textContent
+                        =
+                        n n
+                        ettings.pulseSize
+                        +
+                        "
+                        px";
+                        )
+                        )syncSettingsUI();
+                        Cznsi showkl
+                        =
+                        document.getElementById(‘show${k}‘);
+                        nst
+                        pulseEl
+                        =
+                        document
+                        .
+                        getElementById(
+                        pulse${k}
+                        )
+                        showEl.onchange
+                        =
+                        e
+                        =>
+                        {
+                        §ett1ngs[‘show${k}‘]
+                        =
+                        e.target.checked;
+                        if
+                        (le.target.checked)
+                        {
+                        settings[
+                        pulse${k}
+                        ]
+                        =
+                        false;
+                        pulseEl.checked
+                        =
+                        false,
+                        }
+                        refreshAll();
+                        }s
+                        pulseEl.onchange
+                        = €
+                        =5
+                        {
+                        settings[‘pulse${k}‘]
+                        if
+                        (e.target.checked)
+                        {
+                        settings[‘show${k}‘]
+                        =
+                        true;
+                        showEl.checked
+                        =
+                        true;
+                        =
+                        e.target.checked;
+                        }
+                        refreshAll();
+                        }s
+                        });
+                        document.getElementById("markerSize").oninput
+                        =
+                        let
+                        v
+                        =
+                        parseInt(e.target.value);
+                        if:
+                        (V.2
+                        settings.pulseSize)
+                        {
+                        settings.pulseSize
+                        =V
+                        +
+                        2;
+                        document.getElementById(“pulseSize").value
+                        -
+                        cettings.pulseSize;
+                        document.getElementById("pulseValue").textContent
+                        =
+                        debounce(e
+                        =>
+                        {
+                        settings.pulseSize
+                        +
+                        "
+                        pX')
+                        }
+                        settings.markerSize
+                        =\
+                        V;
+                        document.getElementById("markerValue").textContent
+                        2
+                        PX
+                        refreshAll();
+                        })s
+                        document.getElementById("puls
+                        let
+                        v
+                        =
+                        Math.max(6, parseInt(e.tare.target.value
+                        =V,
+                        if
+                        (v
+                        < settings.markerSize) { settings.markerSize=-V; document.getElementById("markerSize").value=¥
+                            .textContent=Vv # DX, document.getElementById("markerValue") eSize").oninput=debounce(e=>
+                            {
+                            get.value));
+                            ¥
+                            settings.pulseSize =V,
+                            tById("pulseValue").textContent
+                            SN T DXT
+                            document .getElemen
+                            refreshAll();
+                            1)s
+                            B R R R R
+                            -
+                            R
+                            RRO
+                            AN AR
+                            AR
+                            A
+                            ATDz
+                            =i
+                            document
+                            .
+                            getElementById("saveSettings").onclick
+                            =
+                            ()
+                            =>
+                            Lo
+                            e
+                            localStorage.setItem("mapSettings”, JSON.stringify(settings));
+                            window. location.reload();
+                            }s
+                            document.getElementById("settings-btn").onclick
+                            =
+                            ().=>
+                            {
+                            >
+                            G
+                            document.getElementById("settings-panel").classLlst.toggle(
+                            open");
+                            }s
+                            document.getElementById("resetZoomBtn").onclick
+                            =
+                            ()
+                            =>
+                            chartInstance.goHome();
+                            const
+                            darkBtn
+                            =
+                            document.getElementById("dark-mode-btn");
+                            darkBtn.onclick
+                            =
+                            ()
+                            =>
+                            {
+                            const isDark
+                            =
+                            !document.body.classList.contains("dark-mode");localStorage.setItem("mapTheme",
+                            isDark
+                            ?
+                            "dark"
+                            :
+                            "light");
+                            window.location.reload();
+                            };
+                            // Initial load
+                            updateProblemsDisplay([]);
+                            });
+                            </script>
+                            {% if user.is_authenticated %}
+                            <!-- Watermark -->
+                            <script>
+                                // — Watermark for authenticated users
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    const username = "{{ user.username|escapeijs }}";
+                                    const wm = document.createElement("div");
+                                    wm.style.cssText =
+‘position: fixed; inset: O; pointer - events: none; z - index: 999; user—se1ect: none; display
+                                    : grid; grid - template - columns: repeat(auto - fill, 340px); grid - auto - rows: 240px; transfo
+                                    rm: rotate(-32deg); color: rgba(255, 255, 255, 9.62); Font - size: 48px; Font—weight: 909; op
+acitys0.155;
+                                    for (let 1 = 0; i < 60; i++) {
+                                    let t = document.createElement("div");
+                                    t.textContent = username;
+                                    wm.appendChild(t);
+                                }
+                                document.body.appendChild(wm);
+});
+                            </script>
+                            {% endif %}
+                            {% endblock %}
