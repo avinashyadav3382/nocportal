@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from django.forms import modelformset_factory
 from django.contrib import messages
 from django.utils import timezone
-from .models import MCT_SatcomData
+from .models import MCT_SatcomData, AECMSData
 
 # sites/views.py
 from django.shortcuts import render, redirect
@@ -36,7 +36,7 @@ def india_map_view(request):
     """
     sites = Site.objects.all()
 
-    return render(request, "sites/india_map_v3.html", {"sites": sites})
+    return render(request, "sites/test3.html", {"sites": sites})
 
 
 
@@ -210,3 +210,9 @@ def mct_satcom_india_map(request):
             "last_updated": entry.last_updated.isoformat(),
         })
     return JsonResponse(data, safe=False)
+
+def india_map_iaccs_status(request):
+    #only down node names
+    data2 = AECMSData.objects.filter(status='DOWN').values("node_name", "type", "status").values("node_name", "type", "status")
+
+    return JsonResponse(list(data2), safe=False)

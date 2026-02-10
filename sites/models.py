@@ -47,3 +47,11 @@ class MCT_SatcomData(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
 
+class AECMSData(models.Model):
+    type_choices = [
+        ('IACCS', 'IACCS'),
+        ('DC', 'DC'),]
+    node_name = models.CharField(max_length=100, unique=True)
+    status = models.CharField(max_length=20)
+    type = models.CharField(max_length=20, choices=type_choices)
+    

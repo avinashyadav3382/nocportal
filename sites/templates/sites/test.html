@@ -1949,217 +1949,217 @@ hour: ' 2-digit', minute: '2-digit' , hourl2: true }).replace(/,/g, '' ); } func
                                 items.forEach(item
                                 =>
                                 {
-                                cgnst
-                                div
-                                =
-                                document.createElement('div');
-                                div.textContent
-                                =
-                                item.name;
-                                4FFOOFF, HOOFEEF)": div.style.backgroundImage
-                                =
-                                "linear-gradient(45deg,
-                                div.style.color
-                                =
-                                '#000';
-                                div.style.fontWeight
-                                =
-                                '600";
-                                div.style.padding
-                                =
-                                '4px
-                                10px';
-                                div.style.borderRadius
-                                =
-                                '6px’;
-                                div.style.boxShadow
-                                =
-                                "@
-                                @
-                                8px rgba(e,
-                                255, 255,
-                                0.6)";
-                                div.style.textShadow
-                                =
-                                "@ @
-                                4pX #ooffff";
-                                div.style.fontFamily
-                                =
-                                'monospace’;
-                                div.style.display
-                                =
-                                "inline-block";
-                                row.appendChild(div);
-                                })s
-                                container.appendChild(row);
-                                }
-                                1)
-                                window.containerl
-                                =
-                                container;
-                                }
-                                document.querySelectorAll(".type-btn").forEach(btn
-                                =>
-                                {
-                                btn.addEventListener("click",
-                                ()
-                                =>
-                                {
-                                document.querySelectorAll(“.type-btn“)
-                                .fortach(b
-                                =>
-                                b.classList.remove("active"));btn.classList.add("active");
-                                currentSubtype
-                                =
-                                btn.dataset.type;
-                                renderMCT_SatcomData(currentSubtype);
-                                1)
-                                1)
-                                //
-                                const subtypeContent
-                                =
-                                document.getElementById('subtype-content');
-                                window.refreshMCT_SatcomData
-                                =
-                                refreshMCT_SatcomData;
-                                window.renderMCT_SatcomData
-                                =
-                                renderMCT_SatcomData;
-                                document.addEventListener(“DOMContentLoaded", async
-                                ()
-                                =>
-                                {
-                                await refreshMCT SatcomData();
-                                setInterval(refreshMCT_SatcomData,
-                                12000)
-                                ;
-                                1)
-                                //
-                                const groupButtons
-                                =
-                                document.querySelectorAll( '#subtype-content
-                                .group-btn');
-                                //
-                                groupButtons.forEach(btn
-                                =>
-                                {
-                                /]
-                                btn.addEventListener('click', async
-                                ()
-                                =>
-                                {
-                                /]
-                                const
-                                selectedGroup
-                                =
-                                btn.datsse;bg';:?ff
-                                /]
-                                const data
-                                =
-                                await
-                                loadMCT_5a
-                                cot
-                                dGrou,).
-                                /1
-                                renderMCT
-                                SatcomData(data, selecte
-                                .
-                                D),//
-                                setActiveGroupButton(selectedGroup),
-                                L))
-                                /1
-                                });
-                                //
-                                function
-                                setActiveGroupButton(selectedGroup)
-                                {
-                                /]
-                                groupButtons, forEach(btn
-                                =>
-                                {
-                                /]
-                                btn.classList.toggle('active',
-                                btn.dataset.group
-                                selectedGroup);
-                                //
-                                1)
-                                /]
-                                }
-                                //
-                                window.setActiveGroupButton
-                                =
-                                setActiveGroupButton;
-                                //
-                                window.renderMCT_SatconData
-                                =
-                                renderMCT_SatcomData;
-                                //
-                                window.loadMCT_SatcomData
-                                =
-                                loadMCT SatcomData;
-                                //
-                                const statusMap
-                                =
-                                {
-                                B4
-                                @:
-                                ["green", "green"],// 1:7"[*green®;
-                                "pred"];
-                                //
-                                250
-                                'red”
-                                ;.
-                                "red”]
-                                [}
-                                function loadIACCSData()
-                                {
-                                fetch("{%
-                                url ‘india_map_iaccs_status' %}")
-                                .then(r
-                                =>
-                                r.json())
-                                .then(sitesdata
-                                =>
-                                {
-                                const countByTitle
-                                =
-                                {};
-                                //
-                                const colorByTitle
-                                =
-                                1}
-                                sitesdata.forEach(item
-                                =>
-                                {
-                                countByTitle[item.title]
-                                =
-                                item.count;
-                                });
-                                1tem.color))
-                                cgnsole.log("counttitle
-                                data
-                                is
-                                ",
-                                countByTitle);
-                                51teData.forEach(site
-                                =>
-                                {
-                                const count
-                                =
-                                countByTitle[site.title];
-                                if
-                                (count
-                                !==
-                                undefined)
-                                {
-                                /]
-                                return;
-                                const
-                                totalDots
-                                =
-                                site.status.length;
-                                site.status = site.status.map((dot, index) => {
-                                return index < count ? "red" : "green”;
+                                    cgnst
+div
+=
+document.createElement('div');
+div.textContent
+=
+item.name;
+4FFOOFF, HOOFEEF)": div.style.backgroundImage
+=
+"linear-gradient(45deg,
+div.style.color
+=
+'#000';
+div.style.fontWeight
+=
+'600";
+div.style.padding
+=
+'4px
+10px';
+div.style.borderRadius
+=
+'6px’;
+div.style.boxShadow
+=
+"@
+@
+8px rgba(e,
+255, 255,
+0.6)";
+div.style.textShadow
+=
+"@ @
+4pX #ooffff";
+div.style.fontFamily
+=
+'monospace’;
+div.style.display
+=
+"inline-block";
+row.appendChild(div);
+})s
+container.appendChild(row);
+}
+1)
+window.containerl
+=
+container;
+}
+document.querySelectorAll(".type-btn").forEach(btn
+=>
+{
+btn.addEventListener("click",
+()
+=>
+{
+document.querySelectorAll(“.type-btn“)
+.fortach(b
+=>
+b.classList.remove("active"));btn.classList.add("active");
+currentSubtype
+=
+btn.dataset.type;
+renderMCT_SatcomData(currentSubtype);
+1)
+1)
+//
+const subtypeContent
+=
+document.getElementById('subtype-content');
+window.refreshMCT_SatcomData
+=
+refreshMCT_SatcomData;
+window.renderMCT_SatcomData
+=
+renderMCT_SatcomData;
+document.addEventListener(“DOMContentLoaded", async
+()
+=>
+{
+await refreshMCT SatcomData();
+setInterval(refreshMCT_SatcomData,
+12000)
+;
+1)
+//
+const groupButtons
+=
+document.querySelectorAll( '#subtype-content
+.group-btn');
+//
+groupButtons.forEach(btn
+=>
+{
+/]
+btn.addEventListener('click', async
+()
+=>
+{
+/]
+const
+selectedGroup
+=
+btn.datsse;bg';:?ff
+/]
+const data
+=
+await
+loadMCT_5a
+cot
+dGrou,).
+/1
+renderMCT
+SatcomData(data, selecte
+.
+D),//
+setActiveGroupButton(selectedGroup),
+L))
+/1
+});
+//
+function
+setActiveGroupButton(selectedGroup)
+{
+/]
+groupButtons, forEach(btn
+=>
+{
+/]
+btn.classList.toggle('active',
+btn.dataset.group
+selectedGroup);
+//
+1)
+/]
+}
+//
+window.setActiveGroupButton
+=
+setActiveGroupButton;
+//
+window.renderMCT_SatconData
+=
+renderMCT_SatcomData;
+//
+window.loadMCT_SatcomData
+=
+loadMCT SatcomData;
+//
+const statusMap
+=
+{
+B4
+@:
+["green", "green"],// 1:7"[*green®;
+"pred"];
+//
+250
+'red”
+;.
+"red”]
+[}
+function loadIACCSData()
+{
+fetch("{%
+url ‘india_map_iaccs_status' %}")
+.then(r
+=>
+r.json())
+.then(sitesdata
+=>
+{
+const countByTitle
+=
+{};
+//
+const colorByTitle
+=
+1}
+sitesdata.forEach(item
+=>
+{
+countByTitle[item.title]
+=
+item.count;
+});
+1tem.color))
+cgnsole.log("counttitle
+data
+is
+",
+countByTitle);
+51teData.forEach(site
+=>
+{
+const count
+=
+countByTitle[site.title];
+if
+(count
+!==
+undefined)
+{
+/]
+return;
+const
+totalDots
+=
+site.status.length;
+site.status = site.status.map((dot, index) => {
+return index < count ? "red" : "green”;
 s
 }
 console.log(allSitesData);
@@ -2176,864 +2176,862 @@ console.log(colorByTitle[site.title]);
 if
 (site.group
 ===
-" group_B") { console.log(site.group, site.title, site.status); console.log(site.title);
-                                    console.log(site.group);console.log(site.status);const
-                                    newColor=colorByTitle[site.title]; if (newColor){ site.status=site.status.map(()=>
-                                    newColor);console.log("new color updated”);
-                                    }
-                                    else {
-                                    console.log("color is not found™);
-                                    ¥
-                                    });
-                                    console.log( updated sitedata
-                                    ${siteData}
-                                    );
-                                    })
-                                    .catch(err => {
-                                    console.error(err);showAlert("Failed to load IACCS data", "danger");
-                                    1)
-                                    //function
-                                    for AECMS,
-                                    OPS,
-                                    TEST groups
-                                    X
-                                    L
-                                    1ist™);
-                                    const
-                                    grouplList
-                                    =
-                                    document.getElementById( group
-                                    f;;szy");
-                                    .
-                                    const
-                                    groupEmpty
-                                    =
-                                    document.getElementById( group
-                                    function renderGroupSites(group)
-                                    {
-                                    const
-                                    filtered
-                                    =
-                                    siteData.filter(s
-                                    =>
-                                    s.group
-                                    ===
-                                    group);
-                                    groupList.innerHTML
-                                    =
-                                    "
-                                    :
-                                    v
-                                    .
-                                    "hlock":
-                                    groupEmpty.style.display
-                                    =
-                                    filtered.length
-                                    ?
-                                    "none
-                                    -
-                                    )
-                                    filtered.forEach(site
-                                    =>
-                                    {
-                                    const div
-                                    =
-                                    document.createElement("div");
-                                    div.className
-                                    =
-                                    "group-site”;
-                                    div.onclick
-                                    = ()
-                                    =>
-                                    {
-                                    zoomToLatLon(site.latitude, site.longitude,
-                                    10);
-                                    setTimeout(()
-                                    =>
-                                    {
-                                    focusSiteTemporarily(site.title,
-                                    5000)
-                                    ,
-                                    }, 600);
-                                    }s
-                                    let dotsHtml = site.status.map((s, index) => {
-                                    let label = s === 'green' ? 'Reachable’ : 'Alert’;
-                                    return “<div class="dot
-bg-${s}" ” data-label="${site.title}
+"group_B")
+{
+console.log(site.group, site.title, site.status);
+console.log(site.title);
+console.log(site.group);console.log(site.status);const newColor
+=
+colorByTitle[site.title];
+if
+(newColor){
+site.status
+=
+site.status.map(()
+=>
+newColor);console.log("new color updated”);
+}
+else {
+console.log("color is not found™);
+¥
+});
+console.log( updated sitedata
+${siteData}
+);
+})
+.catch(err => {
+console.error(err);showAlert("Failed to load IACCS data", "danger");
+1)
+//function
+for AECMS,
+OPS,
+TEST groups
+X
+L
+1ist™);
+const
+grouplList
+=
+document.getElementById( group
+f;;szy");
+.
+const
+groupEmpty
+=
+document.getElementById( group
+function renderGroupSites(group)
+{
+const
+filtered
+=
+siteData.filter(s
+=>
+s.group
+===
+group);
+groupList.innerHTML
+=
+"
+:
+v
+.
+"hlock":
+groupEmpty.style.display
+=
+filtered.length
+?
+"none
+-
+)
+filtered.forEach(site
+=>
+{
+const div
+=
+document.createElement("div");
+div.className
+=
+"group-site”;
+div.onclick
+= ()
+=>
+{
+zoomToLatLon(site.latitude, site.longitude,
+10);
+setTimeout(()
+=>
+{
+focusSiteTemporarily(site.title,
+5000)
+,
+}, 600);
+}s
+let dotsHtml = site.status.map((s, index) => {
+let label = s === 'green' ? 'Reachable’ : 'Alert’;
+return “<div class="dot
+bg-${s}"”
+data-label="${site.title}
 #${index
 +
 1}:
 ${label}"></div>";
-                                    }).join("");
-                                    div.innerHTML
-                                    =
-                                    ~
-                                    <span class="city-name">${site.title}</span>
-                                    <div class="status-dots">${dotsHtml}</div>
-                                    grouplList.appendChild(div);
-                                    });
-                                    document.querySelectorAll(".group-btn").forEach(btn
-                                    =>d
-                                    btn.addEventListener("click",
-                                    ()
-                                    =>
-                                    {
-                                    document.querySelectorAll(".group-btn").forEach(b
-                                    =>
-                                    b.classList.remove("active"));
-                                    btn.classList.add("active");
-                                    currentGroup
-                                    =
-                                    btn.dataset.group;
-                                    renderGroupSites(currentGroup);
-                                    });
-                                    ¥
-                                    function
-                                    showIACCSData()
-                                    {
-                                    loadIACCSData();
-                                    renderGroupSites(currentGroup);
-                                    }
-                                    showIACCSData();
-                                    setinterval(showIACCSData,
-                                    120000);
-                                    document.getElementById("group-header").addEventListener("click",
-                                    ()
-                                    =>
-                                    setTimeout(()
-                                    =>
-                                    {
-                                    renderGroupSites(currentGroup);
-                                    }, 0)
-                                    })
-                                    function startPulse(circle)
-                                    {
-                                    if
-                                    (circle._pulseAnim)
-                                    circle.
-                                    pulseAnim.stop();
-                                    circle.scale
-                                    = 1;
-                                    circle.opacity
-                                    =
-                                    PULSE_CONFIG.opacity;
-                                    circle._pulseAnim
-                                    =
-                                    circle.animate([
-                                    { property: "scale", from: 1, to: PULSE CONFIG.maxScale },
-                                    { property: "opacity", from: PULSE_CONFIG.opacity, to: @ }
-                                    ], PULSE_CONFIG.duration);
-                                    circle._pulseAnim.events.on("animationended",
-                                    ()
-                                    =>
-                                    startPulse(circle));
-                                    }
-                                    function stopPulse(circle)
-                                    {
-                                    if
-                                    (circle._pulseAnim)
-                                    circle.
-                                    pulseAnim.stop();
-                                    circle.opacity
-                                    =
-                                    0;
-                                    circle.scale
-                                    = 1;
-                                    }
-                                    function updatePulse(image)
-                                    const data = image.dataltem?.dataContext;
-                                    if (!data) return;
-                                    const ¢ = (data.color || "").toLowerCase().trim();
-                                    if (!Object.values(SITE_COLORS).includes(c)) return;
-                                    const pulse = image.children.getIndex(0);
-                                    const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] ===
-                                    settings[ pulse${key} ] ? startPulse(pulse) : stopPulse(pulse);
-                                    }
-                                    imageSeries.mapImages.template.events.on("inited",
-                                    e
-                                    =>
-                                    updatePulse(e.target));
-                                    imageSeries.mapImages.template.events.on("dataitemchanged",
-                                    e =>
-                                    updatePulse(e.target));
-                                    template.events.on("hit",
-                                    ev =>
-                                    {
-                                    const ctx
-                                    =
-                                    ev.target.dataltem.dataContext;
-                                    const color = (ctx.color || "").toLowerCase().trim();
-                                    if (Object.values(SITE_COLORS).includes(color)) {
-                                    fetch('
-                                    /api/site-contact-info/${encodeURIComponent(ctx.title)}/
-                                    )
-                                    .then(r
-                                    =>
-                                    r.ok
-                                    ?
-                                    r.json()
-                                    :
-                                    [])
-                                    .then(data => {
-                                    document.getElementById("contact-title").textContent =
-                                    cix.title:
-                                    const content =
-                                    document.getElementById("contact-content");
-                                    content.innerHTML
-                                    =
-                                    data.length
-                                    ===
-                                    ?
-                                    "<i style='color:var(--text-muted)'>No contact
-                                        details available</i>"
-                                    :
-                                    <table>${data.map(c
-                                        =>
-                                        °
-                                        <tr>
-                                            <th>Email</th>
-                                            <td>${c.email
-                                                ||
-                                                "-"}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Phone</th>
-                                            <td>${c.phone
-                                                ||
-                                                "-"}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Address</th>
-                                            <td>${c.address
-                                                ||
-                                                "-"}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>EN Details</th>
-                                            <td><a href="/getnasdetails_india_map/${c.id}/">view
-                                                    EN
-                                                    Details</a>
-                                                “).join("")}
-                                    </table>";
-                                    document.getElementById("contact-panel”).style.display
-                                    "block";
-                                    document.getElementById("contact-content").style.display
-                                    =-"block”;
-                                    })
-                                    catch(() => {
-                                    showAlert("Failed to load contact info", "danger");
-                                    document.getElementById("contact-panel”).style.display =
-                                    "block”s
-                                    });
-                                    }
-                                    });
-                                    chartInstance.seriesContainer.events.on("hit", () => {
-                                    document.getElementById("contact-panel”).style.display = "none";
-                                    });
-                                    // — Data Loading
-                                    let allSitesData = [];
-                                    function loadSiteData()
-                                    {
-                                    fetch("{%
-                                    url 'site-map-api' %}")
-                                    .then(r
-                                    =>
-                                    r.json())
-                                    .then(raw
-                                    =>
-                                    {
-                                    allSitesData
-                                    =
-                                    raw.filter(s
-                                    =>Object.values(SITE_COLORS).includes((s.color
-                                    [|
-                                    "").toLowerCase().trim()));
-                                    imageSeries.data
-                                    =
-                                    allSitesData;
-                                    updateProblemsDisplay(allSitesData);
-                                    refreshAll();
-                                    document.getElementById("last-update-time").textContent
-                                    formatDatelLocal(new Date());
-                                    })
-                                    .catch(err => {
-                                    console.error(err);
-                                    showAlert("Failed to load site data", "danger");
-                                    1)
-                                    function refreshAll() {
-                                    imageSeries.mapImages.each(updatePulse);
-                                    chartInstance.invalidateRawData();
-                                    }
-                                    loadSiteData();
-                                    loadAllSitesHistory();setInterval(loadSiteData,
-                                    120000);
-                                    :
-                                    g
-                                    iy
-                                    g
-                                    //
-                                    —
-                                    Sidebar Collapse
-                                    &
-                                    Contact
-                                    Positioning
-                                    —_—
-                                    const sidebar
-                                    =
-                                    document.getElementById('sidebar-column');
-                                    const
-                                    toggleBtn
-                                    =
-                                    document.getElementById('sidebar-toggle
-                                    )
-                                    5
-                                    const contactPanel
-                                    =
-                                    document.getElementById('contact-panel
-                                    )
-                                    const
-                                    sidebarContent
-                                    =
-                                    document.querySelector('#sidebar-column.sidebar-content');
-                                    function updateContactPosition()
-                                    {
-                                    if
-                                    (sidebar.classList.contains('collapsed'))
-                                    {
-                                    document.body.appendChild(contactPanel);contactPanel.style.position
-                                    =
-                                    "fixed";
-                                    contactPanel.style.bottom
-                                    =
-                                    "100px";
-                                    contactPanel.style.right
-                                    =
-                                    "40px";
-                                    contactPanel.style.width
-                                    =
-                                    "400px";
-                                    contactPanel.style.margin
-                                    =
-                                    "0";
-                                    }
-                                    else
-                                    {
-                                    sidebarContent.appendChild(contactPanel);
-                                    contactPanel.style.position
-                                    == "relative";
-                                    contactPanel.style.bottom = "auto";
-                                    contactPanel.style.right = "auto";
-                                    contactPanel.style.width
-                                    =
-                                    "100%";
-                                    contactPanel.style.maxWidth
-                                    =
-                                    "380px";
-                                    contactPanel.style.margin
-                                    =
-                                    "20px
-                                    0";
-                                    ¥
-                                    if
-                                    (localStorage.getItem('sidebarCollapsed’)
-                                    ==
-                                    sidebar.classlList.add('collapsed’);
-                                    toggleBtn.textContent
-                                    = '«°;)
-                                    toggleBtn.title
-                                    =
-                                    'Expand sidebar’;
-                                    "true) {
-                                    ¥
-                                    updateContactPosition();
-                                    toggleBtn.addEventListener('click',
-                                    ()
-                                    =>
-                                    {
-                                    ' k?x”wEWWE3Wfitfiflwwfiififlflllllllllllll
-                                    const
-                                    collapsed
-                                    =
-                                    sidebar.classList.toggle('collapsed
-                                    );
-                                    toggleBtn.textContent
-                                    =
-                                    collapsed
-                                    ?
-                                    '«'
-                                    :
-                                    ™2 ;
-                                    toggleBtn.title
-                                    =
-                                    collapsed
-                                    ?
-                                    'Expand
-                                    sidebar
-                                    localStorage.setItem('sidebarCollapsed’,
-                                    collapsed);
-                                    updateContactPosition();
-                                    1)
-                                    //
-                                    —
-                                    Site Search
-                                    _—
-                                    const
-                                    searchInput
-                                    =
-                                    document.getElementById("site-search”);
-                                    "
-                                    const
-                                    searchResults
-                                    =
-                                    document.getElementById("search-results
-                                    );
-                                    'Collapse sidebar’;
-                                    searchInput.addEventListener("input", debounce(()
-                                    =>.{
-                                    const
-                                    query
-                                    =
-                                    searchInput.value.toLowerCase().trlm();
-                                    searchResults.innerHTML
-                                    =
-                                    "~
-                                    °;
-                                    searchResults.style.display
-                                    =
-                                    "none”,
-                                    if (query.length < 2) return; const matches=allSitesData.filter(s=>
-                                        s.title.toLowerCase().includes(query.toLowerCase()) ||
-                                        s.address.toLowerCase().includes(query.toLowerCase()));
-                                        if (matches.length === 0) {
-                                        searchResults.innerHTML = '<div class="p-3 text-center
+}).join("");
+div.innerHTML
+=
+~
+<span
+class="city-name">${site.title}</span>
+<div
+class="status-dots">${dotsHtml}</div>
+grouplList.appendChild(div);
+});
+document.querySelectorAll(".group-btn").forEach(btn
+=>d
+btn.addEventListener("click",
+()
+=>
+{
+document.querySelectorAll(".group-btn").forEach(b
+=>
+b.classList.remove("active"));
+btn.classList.add("active");
+currentGroup
+=
+btn.dataset.group;
+renderGroupSites(currentGroup);
+});
+¥
+function
+showIACCSData()
+{
+loadIACCSData();
+renderGroupSites(currentGroup);
+}
+showIACCSData();
+setinterval(showIACCSData,
+120000);
+document.getElementById("group-header").addEventListener("click",
+()
+=>
+setTimeout(()
+=>
+{
+renderGroupSites(currentGroup);
+}, 0)
+})
+function startPulse(circle)
+{
+if
+(circle._pulseAnim)
+circle.
+pulseAnim.stop();
+circle.scale
+= 1;
+circle.opacity
+=
+PULSE_CONFIG.opacity;
+circle._pulseAnim
+=
+circle.animate([
+{ property: "scale", from: 1, to: PULSE CONFIG.maxScale },
+{ property: "opacity", from: PULSE_CONFIG.opacity, to: @ }
+], PULSE_CONFIG.duration);
+circle._pulseAnim.events.on("animationended",
+()
+=>
+startPulse(circle));
+}
+function stopPulse(circle)
+{
+if
+(circle._pulseAnim)
+circle.
+pulseAnim.stop();
+circle.opacity
+=
+0;
+circle.scale
+= 1;
+}
+function updatePulse(image)
+const data = image.dataltem?.dataContext;
+if (!data) return;
+const ¢ = (data.color || "").toLowerCase().trim();
+if (!Object.values(SITE_COLORS).includes(c)) return;
+const pulse = image.children.getIndex(0);
+const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] ===
+settings[ pulse${key} ] ? startPulse(pulse) : stopPulse(pulse);
+}
+imageSeries.mapImages.template.events.on("inited",
+e
+=>
+updatePulse(e.target));
+imageSeries.mapImages.template.events.on("dataitemchanged",
+e =>
+updatePulse(e.target));
+template.events.on("hit",
+ev =>
+{
+const ctx
+=
+ev.target.dataltem.dataContext;
+const color = (ctx.color || "").toLowerCase().trim();
+if (Object.values(SITE_COLORS).includes(color)) {
+fetch('
+/api/site-contact-info/${encodeURIComponent(ctx.title)}/
+)
+.then(r
+=>
+r.ok
+?
+r.json()
+:
+[])
+.then(data => {
+document.getElementById("contact-title").textContent =
+cix.title:
+const content =
+document.getElementById("contact-content");
+content.innerHTML
+=
+data.length
+===
+?
+"<i
+style='color:var(--text-muted)'>No contact
+details available</i>"
+:
+<table>${data.map(c
+=>
+°
+<tr><th>Email</th><td>${c.email
+||
+"-"}
+</td></tr>
+<tr><th>Phone</th><td>${c.phone
+||
+"-"}
+</td></tr>
+<tr><th>Address</th><td>${c.address
+||
+"-"}
+</td></tr>
+<tr><th>EN Details</th><td><a
+href="/getnasdetails_india_map/${c.id}/">view
+EN
+Details</a>
+“).join("")}</table>";
+document.getElementById("contact-panel”).style.display
+"block";
+document.getElementById("contact-content").style.display
+=-"block”;
+})
+catch(() => {
+showAlert("Failed to load contact info", "danger");
+document.getElementById("contact-panel”).style.display =
+"block”s
+});
+}
+});
+chartInstance.seriesContainer.events.on("hit", () => {
+document.getElementById("contact-panel”).style.display = "none";
+});
+// — Data Loading
+let allSitesData = [];
+function loadSiteData()
+{
+fetch("{%
+url 'site-map-api' %}")
+.then(r
+=>
+r.json())
+.then(raw
+=>
+{
+allSitesData
+=
+raw.filter(s
+=>Object.values(SITE_COLORS).includes((s.color
+[|
+"").toLowerCase().trim()));
+imageSeries.data
+=
+allSitesData;
+updateProblemsDisplay(allSitesData);
+refreshAll();
+document.getElementById("last-update-time").textContent
+formatDatelLocal(new Date());
+})
+.catch(err => {
+console.error(err);
+showAlert("Failed to load site data", "danger");
+1)
+function refreshAll() {
+imageSeries.mapImages.each(updatePulse);
+chartInstance.invalidateRawData();
+}
+loadSiteData();
+loadAllSitesHistory();setInterval(loadSiteData,
+120000);
+:
+g
+iy
+g
+//
+—
+Sidebar Collapse
+&
+Contact
+Positioning
+—_—
+const sidebar
+=
+document.getElementById('sidebar-column');
+const
+toggleBtn
+=
+document.getElementById('sidebar-toggle
+)
+5
+const contactPanel
+=
+document.getElementById('contact-panel
+)
+const
+sidebarContent
+=
+document.querySelector('#sidebar-column.sidebar-content');
+function updateContactPosition()
+{
+if
+(sidebar.classList.contains('collapsed'))
+{
+document.body.appendChild(contactPanel);contactPanel.style.position
+=
+"fixed";
+contactPanel.style.bottom
+=
+"100px";
+contactPanel.style.right
+=
+"40px";
+contactPanel.style.width
+=
+"400px";
+contactPanel.style.margin
+=
+"0";
+}
+else
+{
+sidebarContent.appendChild(contactPanel);
+contactPanel.style.position
+== "relative";
+contactPanel.style.bottom = "auto";
+contactPanel.style.right = "auto";
+contactPanel.style.width
+=
+"100%";
+contactPanel.style.maxWidth
+=
+"380px";
+contactPanel.style.margin
+=
+"20px
+0";
+¥
+if
+(localStorage.getItem('sidebarCollapsed’)
+==
+sidebar.classlList.add('collapsed’);
+toggleBtn.textContent
+= '«°;)
+toggleBtn.title
+=
+'Expand sidebar’;
+"true) {
+¥
+updateContactPosition();
+toggleBtn.addEventListener('click',
+()
+=>
+{
+' k?x”wEWWE3Wfitfiflwwfiififlflllllllllllll
+const
+collapsed
+=
+sidebar.classList.toggle('collapsed
+);
+toggleBtn.textContent
+=
+collapsed
+?
+'«'
+:
+™2 ;
+toggleBtn.title
+=
+collapsed
+?
+'Expand
+sidebar
+localStorage.setItem('sidebarCollapsed’,
+collapsed);
+updateContactPosition();
+1)
+//
+—
+Site Search
+_—
+const
+searchInput
+=
+document.getElementById("site-search”);
+"
+const
+searchResults
+=
+document.getElementById("search-results
+);
+'Collapse sidebar’;
+searchInput.addEventListener("input", debounce(()
+=>.{
+const
+query
+=
+searchInput.value.toLowerCase().trlm();
+searchResults.innerHTML
+=
+"~
+°;
+searchResults.style.display
+=
+"none”,
+if (query.length < 2) return;
+const matches
+=
+allSitesData.filter(s
+=>
+s.title.toLowerCase().includes(query.toLowerCase()) ||
+s.address.toLowerCase().includes(query.toLowerCase()));
+if (matches.length === 0) {
+searchResults.innerHTML = '<div class="p-3 text-center
 text-muted”">No matching sites</div>’;
-                                        } else {
-                                        matches.forEach(site => {
-                                        const item = document.createElement("div");
-                                        item.className = "search-item";
-                                        item.textContent = site.title;
-                                        item.onclick = () => {
-                                        zoomToLatLon(site.latitude, site.longitude, 19);
-                                        setTimeout(() => {
-                                        focusSiteTemporarily(site.title, 5000);
-                                        }, 600);
-                                        loadContactInfo(site.title);
-                                        searchInput.value = "";
-                                        searchResults.style.display = "none";
-                                        }s
-                                        searchResults.appendChild(item);
-                                        });
-                                        }
-                                        searchResults.style.display = "block";
-                                        },
-                                        300).);
-                                        document.addEventListener("click",
-                                        e
-                                        =>
-                                        {
-                                        if
-                                        (!searchInput.contains(e.target) &&
-                                        searchResults.contains(e.target))
-                                        {
-                                        searchResults.style.display
-                                        =
-                                        "none";
-                                        }
-                                        });
-                                        //
-                                        —
-                                        Contact Info
-                                        function loadContactInfo(siteName)
-                                        {
-                                        fetch( /api/site-contact-info/${encodeURIComponent(siteName)}/")
-                                        then(r
-                                        =>
-                                        r.ok
-                                        ?
-                                        reysoni)
-                                        3
-                                        ['1)
-                                        .then(data
-                                        =>
-                                        {
-                                        document.getElementById("contact-title").textContent
-                                        =
-                                        siteName;
-                                        const content = document.getElementBylId("contact-content™);
-                                        content.innerHTML = data.length ===
-                                        ? "<i style='color:var(--text-muted)'>No contact details
-                                            available</i»" . <table>${data.map(c => °
-                                            ctr><th>Email</thy<td>${c.email || "="}</td>
-                                                </tr>
-                                                <try>
-                                            <th>Phone</th>
-                                            <td>${c.phone || "="}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Address</ths<td>${c.address || "-"
-                                                    </ftd>
-                                            </tr>
-                                            <tr>
-                                                <th>EN
-                                                    Details</th>
-                                                <td><a href="/getnasdetails
+} else {
+matches.forEach(site => {
+const item = document.createElement("div");
+item.className = "search-item";
+item.textContent = site.title;
+item.onclick = () => {
+zoomToLatLon(site.latitude, site.longitude, 19);
+setTimeout(() => {
+focusSiteTemporarily(site.title, 5000);
+}, 600);
+loadContactInfo(site.title);
+searchInput.value = "";
+searchResults.style.display = "none";
+}s
+searchResults.appendChild(item);
+});
+}
+searchResults.style.display = "block";
+},
+300).);
+document.addEventListener("click",
+e
+=>
+{
+if
+(!searchInput.contains(e.target) &&
+searchResults.contains(e.target))
+{
+searchResults.style.display
+=
+"none";
+}
+});
+//
+—
+Contact Info
+function loadContactInfo(siteName)
+{
+fetch( /api/site-contact-info/${encodeURIComponent(siteName)}/")
+then(r
+=>
+r.ok
+?
+reysoni)
+3
+['1)
+.then(data
+=>
+{
+document.getElementById("contact-title").textContent
+=
+siteName;
+const content = document.getElementBylId("contact-content™);
+content.innerHTML = data.length ===
+? "<i style='color:var(--text-muted)'>No contact details
+available</i»"
+. <table>${data.map(c => °
+ctr><th>Email</thy<td>${c.email || "="}</td></tr>
+<try><th>Phone</th><td>${c.phone || "="}</td></tr>
+<tr><th>Address</ths<td>${c.address || "-"
+</ftd></tr>
+<tr><th>EN
+Details</th><td><a
+href="/getnasdetails
 india map/${c.id}/">view
-                                                        EN
-                                                        Details</a>
-                                                    “).join("")}</table>
-                                                    ;
-                                                    document.getElementById("contact-panel").style.display
-                                                    =
-                                                    “plock™;s
-                                                    document.getElementById(“contact-content").style.display =
-                                                    "block";
-                                                    })
-                                                    .catch(() => {
-                                                    showAlert("Failed to load contact info", "danger");
-                                                    document.getElementById("contact-panel").style.display =
-                                                    “BIOCK™3
-                                                    1) |
-                                                    }
-                                                    document.getElementById("contact-header").onclick = () => {
-                                                    const content = document.getElementById("contact-content™);
-                                                    content.style.display = content.style.display === “none’ .t block,.
-                                                    "none";
-                                                    }s
-                                                    /1= Accordion:{fixed version) ——————""""""""""""\
-                                                    document.querySelectorAll('.panel-header').forkach(header
-                                                    =>
-                                                    {
-                                                    header.addEventListener('click',
-                                                    ()
-                                                    =>
-                                                    {
-                                                    const content
-                                                    =
-                                                    header.nextElementSibling;const isCurrentlyOpen
-                                                    =
-                                                    content.classList.contains('open');
-                                                    //
-                                                    Close all other panels
-                                                    document.querySelectorAll('.panel-content').forEach(c
-                                                    =>
-                                                    {
-                                                    if
-                                                    (c
-                                                    !==
-                                                    content) c.classList.remove('open');
-                                                    });
-                                                    //
-                                                    Reset all arrows
-                                                    document.querySelectorAll('.panel-header
-                                                    span:last-child').forEach(s
-                                                    =>
-                                                    {
-                                                    s.textContent
-                                                    =
-                                                    'Vv';
-                                                    1)//
-                                                    Toggle clicked panel
-                                                    if (isCurrentlyOpen)
-                                                    {
-                                                    content.classList.remove('open');
-                                                    |
-                                                    T —————— iSt o o A
-                                                    i
-                                                    1d"
-                                                    ent
-                                                    =
-                                                    'V,
-                                                    header.querySelector('span:last-child
-                                                    ).
-                                                    textCont
-                                                    }
-                                                    else
-                                                    {
-                                                    '
-                                                    content.classList.add("'open’);
-                                                    4
-                                                    header.querySelector('span:last-child').textContent
-                                                    =
-                                                    }
-                                                    1)
-                                                    1)
-                                                    //
-                                                    —
-                                                    Current Active
-                                                    Issues
-                                                    —m—m—m—mmmmmvmverrrroidooioiooono—
-                                                    let nameSortAsc = true;
-                                                    let colorSortDesc = true;
-                                                    let timeSortNewestFirst = true;
-                                                    function
-                                                    updateProblemsDisplay(sites)
-                                                    {
-                                                    const
-                                                    problematic
-                                                    =
-                                                    sites.filter(s
-                                                    =>
-                                                    ["red",
-                                                    ‘yellow"].includes((s.color
-                                                    ||
-                                                    "").toLowerCase().trim()));
-                                                    const list
-                                                    =
-                                                    document.getElementById("problems-list");
-                                                    const
-                                                    empty
-                                                    =
-                                                    document.getElementById("problems-empty");
-                                                    list.innerHTML
-                                                    = "";
-                                                    if
-                                                    (problematic.length
-                                                    ===
-                                                    9)
-                                                    {
-                                                    empty.style.display
-                                                    =
-                                                    "block";
-                                                    document.getElementById("issues-count").style.display
-                                                    =
-                                                    "none";
-                                                    return;
-                                                    }
-                                                    empty.style.display
-                                                    =
-                                                    "none";
-                                                    document.getElementById("issues-count").textContent
-                                                    =
-                                                    problematic.length;
-                                                    document.getElementById("issues-count").style.display
-                                                    =
-                                                    "inline";
-                                                    problematic.sort((a,
-                                                    b)
-                                                    =>
-                                                    new
-                                                    Date(b.problem since)
-                                                    -
-                                                    new
-                                                    Date(a.problem_since));
-                                                    renderProblemEntries(problematic);
-                                                    }
-                                                    function renderProblemEntries(items)
-                                                    {
-                                                    const list
-                                                    =
-                                                    document.getElementById("problems-list");
-                                                    list.innerHTML
-                                                    = "";
-                                                    items.forEach(site
-                                                    =>
-                                                    {
-                                                    const color
-                                                    =
-                                                    (site.color
-                                                    ||
-                                                    "").toLowerCase().trim();
-                                                    const div
-                                                    =
-                                                    document.createElement("div");
-                                                    div.className
-                                                    =
-                                                    ‘problem-entry ${color
-                                                    ===
-                                                    "pegd"
-                                                    2
-                                                    "red”
-                                                    .
-                                                    :
-                                                    "yellow"}";
-                                                    div.innerHTML
-                                                    =
-                                                    °
-                                                    <div class="problem-site">${site.title}</div>
-                                                    <div class="problem-status">${color === "ped"
-                                                        ?
-                                                        "Unreachable"
-                                                        :
-                                                        "Satcom"}</div>
-                                                    <div class="problem-since">since
-                                                        ${formatDateLocal(site.problem_since)}</div>
-                                                    list.appendChild(div);
-                                                    1)
-                                                    etem
-                                                    mw
-                                                    attachProblemClickListeners();
-                                                    }
-                                                    document.querySelectorAll(
-                                                    '#problems-content .sort-btn').forEach(btn
-                                                    =>
-                                                    btn.addEventListener('click',
-                                                    ()
-                                                    =>
-                                                    {
-                                                    cons; sortType
-                                                    =
-                                                    btn.dataset.sort;
-                                                    :
-                                                    T
-                                                    let items
-                                                    =
-                                                    [...allSitesData].filter(s
-                                                    =>
-                                                    ["red",
-                                                    yellow"].includes((s.color
-                                                    ||
-                                                    "").toLowerCase().trim()));
-                                                    document.querySelectorAll(‘#problems-content
-                                                    .sort-btn').forEach(b
-                                                    =>
-                                                    b.classList.remove('active'));
-                                                    btn.classList.add('active');
-                                                    if
-                                                    (sortType
-                                                    === "time")
-                                                    {
-                                                    timeSortNewestFirst
-                                                    =
-                                                    ltimeSortNewestFirst;
-                                                    btn.textContent
-                                                    =
-                                                    timeSortNewestFirst
-                                                    ?
-                                                    "Newest" "0ldest”;
-                                                    items.sort((a,
-                                                    b)
-                                                    =>
-                                                    {
-                                                    const
-                                                    ta
-                                                    =
-                                                    new
-                                                    Date(a.problem_since);const tb
-                                                    =
-                                                    new
-                                                    Date(b.problem_since);
-                                                    return
-                                                    timeSortNewestFirst
-                                                    ?
-                                                    tb
-                                                    -
-                                                    ta
-                                                    :
-                                                    ta
-                                                    -
-                                                    tb;
-                                                    1)
-                                                    }
-                                                    else
-                                                    if
-                                                    (sortType
-                                                    === "name")
-                                                    {
-                                                    nameSortAsc
-                                                    =
-                                                    !nameSortAsc;items.sort((a,
-                                                    b)
-                                                    =>
-                                                    {
-                                                    const
-                                                    cmp
-                                                    =
-                                                    3.title.localeCompare(b.title);return nameSortAsc
-                                                    ?
-                                                    cmp
-                                                    :
-                                                    -Cmp;
-                                                    1)
-                                                    }
-                                                    else
-                                                    if
-                                                    (sortType
-                                                    === "color")
-                                                    {
-                                                    colorSortDesc
-                                                    =
-                                                    !colorSortDesc;items.sort((a,
-                                                    b)
-                                                    =>
-                                                    {
-                                                    const
-                                                    ca
-                                                    =
-                                                    (a.color
-                                                    ||
-                                                    "").toLowerCase().trim();
-                                                    const
-                                                    cb
-                                                    =
-                                                    (b.color
-                                                    ||
-                                                    "").toLowerCase().trim();
-                                                    const cmp
-                                                    =
-                                                    ca.localeCompare(cb);return colorSortDesc
-                                                    ?
-                                                    -cmp
-                                                    :
-                                                    Cmp;
-                                                    });
-                                                    }
-                                                    renderProblemEntries(items);
-                                                    })s
-                                                    });
-                                                    /]
-                                                    —H
-                                                    ISty
-                                                    =TT
-                                                    T
-                                                    T
-                                                    T
-                                                    e
-                                                    T
-                                                    e
-                                                    T
-                                                    let
-                                                    currentHistorySite
-                                                    =
-                                                    null;
-                                                    function renderHistoryEntries(entries)
-                                                    {
-                                                    const list
-                                                    =
-                                                    document.getElementById('history-list');
-                                                    list.innerHTML
-                                                    = "";
-                                                    if (lentries
-                                                    ||
-                                                    entries.length ===
-                                                    0)
-                                                    {
-                                                    list.innerHTML
-                                                    =
-                                                    '<div
-                                                        style="text-align:center;color:var(--text-muted); padding:50px @;">
-                                                        No history records found</div>';
-                                                    return;
-                                                    entries.forkach(entry
-                                                    =
-                                                    {
-                                                    const div
-                                                    =
-                                                    document.createtlement('div');
-                                                    div.className
-                                                    =
-                                                    'history-entry';
-                                                    div.innerHTML
-                                                    =
-                                                    °
-                                                    i
-                                                    hanged at)}
-                    </div>
-                    class="history-time">${formatDateLoca1(entry.status_c.a ged_
-                    &
-                    <div style="font-weight:600;
+EN
+Details</a>
+“).join("")}</table>
+;
+document.getElementById("contact-panel").style.display
+=
+“plock™;s
+document.getElementById(“contact-content").style.display =
+"block";
+})
+.catch(() => {
+showAlert("Failed to load contact info", "danger");
+document.getElementById("contact-panel").style.display =
+“BIOCK™3
+1) |
+}
+document.getElementById("contact-header").onclick = () => {
+const content = document.getElementById("contact-content™);
+content.style.display = content.style.display === “none’ .t block,.
+"none";
+}s
+/1= Accordion:{fixed version) ——————""""""""""""\
+document.querySelectorAll('.panel-header').forkach(header
+=>
+{
+header.addEventListener('click',
+()
+=>
+{
+const content
+=
+header.nextElementSibling;const isCurrentlyOpen
+=
+content.classList.contains('open');
+//
+Close all other panels
+document.querySelectorAll('.panel-content').forEach(c
+=>
+{
+if
+(c
+!==
+content) c.classList.remove('open');
+});
+//
+Reset all arrows
+document.querySelectorAll('.panel-header
+span:last-child').forEach(s
+=>
+{
+s.textContent
+=
+'Vv';
+1)//
+Toggle clicked panel
+if (isCurrentlyOpen)
+{
+content.classList.remove('open');
+|
+T —————— iSt o o A
+i
+1d"
+ent
+=
+'V,
+header.querySelector('span:last-child
+).
+textCont
+}
+else
+{
+'
+content.classList.add("'open’);
+4
+header.querySelector('span:last-child').textContent
+=
+}
+1)
+1)
+//
+—
+Current Active
+Issues
+—m—m—m—mmmmmvmverrrroidooioiooono—
+let nameSortAsc = true;
+let colorSortDesc = true;
+let timeSortNewestFirst = true;
+function
+updateProblemsDisplay(sites)
+{
+const
+problematic
+=
+sites.filter(s
+=>
+["red",
+‘yellow"].includes((s.color
+||
+"").toLowerCase().trim()));
+const list
+=
+document.getElementById("problems-list");
+const
+empty
+=
+document.getElementById("problems-empty");
+list.innerHTML
+= "";
+if
+(problematic.length
+===
+9)
+{
+empty.style.display
+=
+"block";
+document.getElementById("issues-count").style.display
+=
+"none";
+return;
+}
+empty.style.display
+=
+"none";
+document.getElementById("issues-count").textContent
+=
+problematic.length;
+document.getElementById("issues-count").style.display
+=
+"inline";
+problematic.sort((a,
+b)
+=>
+new
+Date(b.problem since)
+-
+new
+Date(a.problem_since));
+renderProblemEntries(problematic);
+}
+function renderProblemEntries(items)
+{
+const list
+=
+document.getElementById("problems-list");
+list.innerHTML
+= "";
+items.forEach(site
+=>
+{
+const color
+=
+(site.color
+||
+"").toLowerCase().trim();
+const div
+=
+document.createElement("div");
+div.className
+=
+‘problem-entry ${color
+===
+"pegd"
+2
+"red”
+.
+:
+"yellow"}";
+div.innerHTML
+=
+°
+<div class="problem-site">${site.title}</div><div class="problem-status">${color === "ped"
+?
+"Unreachable"
+:
+"Satcom"}</div>
+<div class="problem-since">since
+${formatDateLocal(site.problem_since)}</div>
+list.appendChild(div);
+1)
+etem
+mw
+attachProblemClickListeners();
+}
+document.querySelectorAll(
+'#problems-content .sort-btn').forEach(btn
+=>
+btn.addEventListener('click',
+()
+=>
+{
+cons; sortType
+=
+btn.dataset.sort;
+:
+T
+let items
+=
+[...allSitesData].filter(s
+=>
+["red",
+yellow"].includes((s.color
+||
+"").toLowerCase().trim()));
+document.querySelectorAll(‘#problems-content
+.sort-btn').forEach(b
+=>
+b.classList.remove('active'));
+btn.classList.add('active');
+if
+(sortType
+=== "time")
+{
+timeSortNewestFirst
+=
+ltimeSortNewestFirst;
+btn.textContent
+=
+timeSortNewestFirst
+?
+"Newest" "0ldest”;
+items.sort((a,
+b)
+=>
+{
+const
+ta
+=
+new
+Date(a.problem_since);const tb
+=
+new
+Date(b.problem_since);
+return
+timeSortNewestFirst
+?
+tb
+-
+ta
+:
+ta
+-
+tb;
+1)
+}
+else
+if
+(sortType
+=== "name")
+{
+nameSortAsc
+=
+!nameSortAsc;items.sort((a,
+b)
+=>
+{
+const
+cmp
+=
+3.title.localeCompare(b.title);return nameSortAsc
+?
+cmp
+:
+-Cmp;
+1)
+}
+else
+if
+(sortType
+=== "color")
+{
+colorSortDesc
+=
+!colorSortDesc;items.sort((a,
+b)
+=>
+{
+const
+ca
+=
+(a.color
+||
+"").toLowerCase().trim();
+const
+cb
+=
+(b.color
+||
+"").toLowerCase().trim();
+const cmp
+=
+ca.localeCompare(cb);return colorSortDesc
+?
+-cmp
+:
+Cmp;
+});
+}
+renderProblemEntries(items);
+})s
+});
+/]
+—H
+ISty
+=TT
+T
+T
+T
+e
+T
+e
+T
+let
+currentHistorySite
+=
+null;
+function renderHistoryEntries(entries)
+{
+const list
+=
+document.getElementById('history-list');
+list.innerHTML
+= "";
+if (lentries
+||
+entries.length ===
+0)
+{
+list.innerHTML
+=
+'<div style="text-align:center;color:var(--text-muted); padding:50px @;">No history records found</div>';
+return;
+entries.forkach(entry
+=
+{
+const div
+=
+document.createtlement('div');
+div.className
+=
+'history-entry';
+div.innerHTML
+=
+°
+i
+hanged at)}</div>
+class="history-time">${formatDateLoca1(entry.status_c.a ged_
+&
+<div
+style="font-weight:600;
 marg1n:4px
 0;
 >
@@ -3042,478 +3040,505 @@ ${entry.site_ sitename
 ||
 entry.sitename
 ||
-" - </div>
-                        <divy <span style="color:var(--text-muted);">from</span>
-                            <span>${entry.past_status}</span><span style="color:var(--text-muted);">
-                                »
-                            </span>
-                            <span Style="${/downIunr‘each/i.test
+"-
+</div><divy
+<span
+style="color:var(--text-muted);">from</span>
+<span>${entry.past_status}</span><span
+style="color:var(--text-muted);">
+»
+</span>
+<span
+Style="${/downIunr‘each/i.test
 'color:var(--danger);font-weight:600;'
 :
 'color:var(--success);Font-weight:660;'}">
-                                ${entry.current_status}
-                            </span>
-                    </div>
-                    list.appendChild(div);
-                    });
-                    }
-                    function loadAlISitesHistory(order
-                    =
-                    "desc")
-                    {
-                    fetch("{%
-                    url
-                    'status-history-all-sites’
-                    %}")
-                    .then(r
-                    =>
-                    r.ok
-                    ?
-                    r.yson()
-                    :
-                    [])
-                    .then(data =»
-                    {
-                    data.sort((a,
-                    b)
-                    =>
-                    {
-                    const
-                    ta
-                    =
-                    new
-                    Date(a.status_changed_at);
-                    const
-                    tb
-                    =
-                    new
-                    Date(b.status_changed_at);
-                    return order
-                    === "desc" ?°th -“ta
-                    :
-                    ta
-                    -
-                    tb;1)
-                    renderHistoryEntries(data);
-                    1)
-                    -catch(() => {
-                    showAlert("Failed
-                    to
-                    load history",
-                    document.getElementById('history-list ").innerHTML
-                    =
-                    '<div style="text-align:center; color:var(--text-muted);padding:50px 0;">History unavailable</div>';
-                    b
-                    }
-                    function loadSiteHistory(siteName, order
-                    currentHistorySite
-                    =
-                    siteName;
-                    Fetch(‘/api/status-history/${encodeURIComponent(siteName)}/‘).then(r
-                    =>
-                    r.ok
-                    ?
-                    r.Json()
-                    :
-                    [])
-                    .then(data
-                    =>
-                    {
-                    data.sort((a,
-                    b) =>
-                    {
-                    const ta
-                    =
-                    new Date(a.status_changed_at);
-                    S
-                    UBse™)
-                    'Y
-                    ——————————
-                    YR
-                    const
-                    tb
-                    =
-                    new Date(b
-                    .status_changed
-                    ;
-                    return order
-                    ===
-                    "desc"
-                    ?
-                    tb
-                    -
-                    tag:
-                    E:t?,tb'
-                    1)
-                    X renderHistoryEntries(data);
-                    Jcateh(() => {
-                    ZhowAlert("Failed
-                    to load
-                    site history", "danger");
-                    ocument.getElementById('history-list').innerHTML
-                    =
-                    :
-                    ;
-                    '<div style="color:var(--danger);
+${entry.current_status}
+</span>
+</div>
+list.appendChild(div);
+});
+}
+function loadAlISitesHistory(order
+=
+"desc")
+{
+fetch("{%
+url
+'status-history-all-sites’
+%}")
+.then(r
+=>
+r.ok
+?
+r.yson()
+:
+[])
+.then(data =»
+{
+data.sort((a,
+b)
+=>
+{
+const
+ta
+=
+new
+Date(a.status_changed_at);
+const
+tb
+=
+new
+Date(b.status_changed_at);
+return order
+=== "desc" ?°th -“ta
+:
+ta
+-
+tb;1)
+renderHistoryEntries(data);
+1)
+-catch(() => {
+showAlert("Failed
+to
+load history",
+document.getElementById('history-list ").innerHTML
+=
+'<div
+style="text-align:center; color:var(--text-muted);padding:50px 0;">History unavailable</div>';
+b
+}
+function loadSiteHistory(siteName, order
+currentHistorySite
+=
+siteName;
+Fetch(‘/api/status-history/${encodeURIComponent(siteName)}/‘).then(r
+=>
+r.ok
+?
+r.Json()
+:
+[])
+.then(data
+=>
+{
+data.sort((a,
+b) =>
+{
+const ta
+=
+new Date(a.status_changed_at);
+S
+UBse™)
+'Y
+——————————
+YR
+const
+tb
+=
+new Date(b
+.status_changed
+;
+return order
+===
+"desc"
+?
+tb
+-
+tag:
+E:t?,tb'
+1)
+X renderHistoryEntries(data);
+Jcateh(() => {
+ZhowAlert("Failed
+to load
+site history", "danger");
+ocument.getElementById('history-list').innerHTML
+=
+:
+;
+'<div
+style="color:var(--danger);
 ing:
 @
 ;text-align:center;">History
-                        unavailable</div§'; B e })s } // document.getElementById("history-btn").onclick=()=> {
-                        // if (sidebar.classList.contains('collapsed’)) {
-                        A sidebar.classList.remove('collapsed’);
-                        // toggleBtn.textContent = '=';
-                        ;; : locaIStorage.setItem('sidebarCollapsed', 'false');
-                        // document.querySelectorAll('.panel-content').forEach(c =>
-                        c.classList.remove('open'));
-                        'y document.querySelectorAll('.panel-header
-                        span:last—child').forEach(s
-                        =>
-                        s.textContent
-                        =
-                        'V');
-                        //
-                        const historyContent
-                        =
-                        document.getElementById('history-content');
-                        I
-                        historyContent.classList.add('open');
-                        /[
-                        document.getElementById('history—header').querySelector('span:last-child').textC
-                        ontent
-                        =
-                        'A’;//
-                        document.getElementById('history-panel—title').textContent
-                        =
-                        'Status History';
-                        //
-                        document.getElementById('history-panel—subtitle').textContent
-                        =
-                        'Status History';
-                        //
-                        document.getElementById('history-back—btn').style.display
-                        =
-                        'none’; //
-                        1oadAllsitesHistory("desc“);
-                        /]
-                        };
-                        document.getElementById('history-back—btn').addEventListener('click',
-                        )
-                        =>
-                        {
-                        .
-                        1 '
-                        etElementById('history—back-btn').style.dlsplay
-                        = 'none’;
-                        document.g 1—subtit1e').textContent
-                        =
-                        document.getElementById('history-pane'Status History';
-                        currentHistorySite
-                        =
-                        null;
-                        loadAllSitesHistory(“desc");
-                        });
-                        function attachProblemClickListeners()
-                        {
-                        document.querySelectorAll('.problem
-                        el.addEventListener('click',
-                        C)
-                        myt
-                        const site
-                        =
-                        el.querySelector('.problem-site').textContent.trim();
-                        loadSiteHistory(site,
-                        "desc");
-                        document.querySelectorAll('.panel-content’).forEach(c
-                        =)
-                        c.classList.remove('open'));
-                        const
-                        historyContent
-                        =
-                        document.getElementById(
-                        'history-content’);
-                        historyContent.classList.add('open’);
-                        document.getElementById('history-header').querySelector('span:last-child’).textc
-                        ontent
-                        =
-                        'a’;
-                        document.getElementById('history-panel-subtitle').textContent
-                        =
-                        "History:
-                        ${site}";
-                        document.getElementById('history-back-btn').style.display
-                        =
-                        'inline-block’;
-                        if
-                        (sidebar.classlList.contains('collapsed’))
-                        {
-                        sidebar.classList.remove('collapsed’);
-                        toggleBtn.textContent = '»°;
-                        localStorage.setItem('sidebarCollapsed’, 'false’);
-                        }
-                        });
-                        });
-                        }
-                        document.querySelectorAll('#history-content.history-sort-btn').forEach(btn
-                        =>
-                        {
-                        btn.addEventListener('click’,
-                        ()
-                        =>
-                        {
-                        const order
-                        =
-                        btn.dataset.order;
-                        document.querySelectorAll( '#history-content
-                        .history-sort-btn').forEach(b
-                        =>
-                        b.classList.remove(‘active'));
-                        btn.classList.add('active');if
-                        (currentHistorySite)
-                        {
-                        loadSiteHistory(currentHistorySite,
-                        order);
-                        } else {
-                        loadAllSitesHistory(order);
-                        }
-                        });
-                        });
-                        1]
-                        == SerTINES
-                        Ul
-                        io—vie—tmeeses
-                        function syncSettingsUI()
-                        {
-                        [*A"
-                        2B",
-                        *C";,
-                        D",
-                        forEach(k
-                        =2
-                        {
-                        document.getElementById(
-                        show${k} ).checked
-                        =
-                        settings[ show${k}
-                        ];
-                        document
-                        .getElementById(
-                        pulse${k} ).checked
-                        =
-                        settings[ pulse${k}
-                        ];
-                        45
-                        document.getElementById("markerSize").value
-                        =
-                        settings.markerSize,
-                        document.getElementById("pulseSize").value
-                        =
-                        settings.pulseSize;
-                        document.getEle
-                        .
-                        '
-                        men
-                        '
-                        1"
-                        -ttings.markerSize
-                        +
-                        "
-                        px";
-                        tById("markerValue").textContent
-                        =
-                        documen
-                        "
-                        t.getElementById("pulsevalue").textContent
-                        =
-                        n n
-                        ettings.pulseSize
-                        +
-                        "
-                        px";
-                        )
-                        )syncSettingsUI();
-                        Cznsi showkl
-                        =
-                        document.getElementById(‘show${k}‘);
-                        nst
-                        pulseEl
-                        =
-                        document
-                        .
-                        getElementById(
-                        pulse${k}
-                        )
-                        showEl.onchange
-                        =
-                        e
-                        =>
-                        {
-                        §ett1ngs[‘show${k}‘]
-                        =
-                        e.target.checked;
-                        if
-                        (le.target.checked)
-                        {
-                        settings[
-                        pulse${k}
-                        ]
-                        =
-                        false;
-                        pulseEl.checked
-                        =
-                        false,
-                        }
-                        refreshAll();
-                        }s
-                        pulseEl.onchange
-                        = €
-                        =5
-                        {
-                        settings[‘pulse${k}‘]
-                        if
-                        (e.target.checked)
-                        {
-                        settings[‘show${k}‘]
-                        =
-                        true;
-                        showEl.checked
-                        =
-                        true;
-                        =
-                        e.target.checked;
-                        }
-                        refreshAll();
-                        }s
-                        });
-                        document.getElementById("markerSize").oninput
-                        =
-                        let
-                        v
-                        =
-                        parseInt(e.target.value);
-                        if:
-                        (V.2
-                        settings.pulseSize)
-                        {
-                        settings.pulseSize
-                        =V
-                        +
-                        2;
-                        document.getElementById(“pulseSize").value
-                        -
-                        cettings.pulseSize;
-                        document.getElementById("pulseValue").textContent
-                        =
-                        debounce(e
-                        =>
-                        {
-                        settings.pulseSize
-                        +
-                        "
-                        pX')
-                        }
-                        settings.markerSize
-                        =\
-                        V;
-                        document.getElementById("markerValue").textContent
-                        2
-                        PX
-                        refreshAll();
-                        })s
-                        document.getElementById("puls
-                        let
-                        v
-                        =
-                        Math.max(6, parseInt(e.tare.target.value
-                        =V,
-                        if
-                        (v
-                        < settings.markerSize) { settings.markerSize=-V; document.getElementById("markerSize").value=¥
-                            .textContent=Vv # DX, document.getElementById("markerValue") eSize").oninput=debounce(e=>
-                            {
-                            get.value));
-                            ¥
-                            settings.pulseSize =V,
-                            tById("pulseValue").textContent
-                            SN T DXT
-                            document .getElemen
-                            refreshAll();
-                            1)s
-                            B R R R R
-                            -
-                            R
-                            RRO
-                            AN AR
-                            AR
-                            A
-                            ATDz
-                            =i
-                            document
-                            .
-                            getElementById("saveSettings").onclick
-                            =
-                            ()
-                            =>
-                            Lo
-                            e
-                            localStorage.setItem("mapSettings”, JSON.stringify(settings));
-                            window. location.reload();
-                            }s
-                            document.getElementById("settings-btn").onclick
-                            =
-                            ().=>
-                            {
-                            >
-                            G
-                            document.getElementById("settings-panel").classLlst.toggle(
-                            open");
-                            }s
-                            document.getElementById("resetZoomBtn").onclick
-                            =
-                            ()
-                            =>
-                            chartInstance.goHome();
-                            const
-                            darkBtn
-                            =
-                            document.getElementById("dark-mode-btn");
-                            darkBtn.onclick
-                            =
-                            ()
-                            =>
-                            {
-                            const isDark
-                            =
-                            !document.body.classList.contains("dark-mode");localStorage.setItem("mapTheme",
-                            isDark
-                            ?
-                            "dark"
-                            :
-                            "light");
-                            window.location.reload();
-                            };
-                            // Initial load
-                            updateProblemsDisplay([]);
-                            });
-                            </script>
-                            {% if user.is_authenticated %}
-                            <!-- Watermark -->
-                            <script>
-                                // — Watermark for authenticated users
-                                document.addEventListener("DOMContentLoaded", () => {
-                                    const username = "{{ user.username|escapeijs }}";
-                                    const wm = document.createElement("div");
-                                    wm.style.cssText =
-‘position: fixed; inset: O; pointer - events: none; z - index: 999; user—se1ect: none; display
-                                    : grid; grid - template - columns: repeat(auto - fill, 340px); grid - auto - rows: 240px; transfo
-                                    rm: rotate(-32deg); color: rgba(255, 255, 255, 9.62); Font - size: 48px; Font—weight: 909; op
-acitys0.155;
-                                    for (let 1 = 0; i < 60; i++) {
-                                    let t = document.createElement("div");
-                                    t.textContent = username;
-                                    wm.appendChild(t);
-                                }
-                                document.body.appendChild(wm);
+unavailable</div§';
+B
+e
+})s
+}
+// document.getElementById("history-btn").onclick = () => {
+// if (sidebar.classList.contains('collapsed’)) {
+A sidebar.classList.remove('collapsed’);
+// toggleBtn.textContent = '=';
+;; : locaIStorage.setItem('sidebarCollapsed', 'false');
+// document.querySelectorAll('.panel-content').forEach(c =>
+c.classList.remove('open'));
+'y document.querySelectorAll('.panel-header
+span:last—child').forEach(s
+=>
+s.textContent
+=
+'V');
+//
+const historyContent
+=
+document.getElementById('history-content');
+I
+historyContent.classList.add('open');
+/[
+document.getElementById('history—header').querySelector('span:last-child').textC
+ontent
+=
+'A’;//
+document.getElementById('history-panel—title').textContent
+=
+'Status History';
+//
+document.getElementById('history-panel—subtitle').textContent
+=
+'Status History';
+//
+document.getElementById('history-back—btn').style.display
+=
+'none’; //
+1oadAllsitesHistory("desc“);
+/]
+};
+document.getElementById('history-back—btn').addEventListener('click',
+)
+=>
+{
+.
+1 '
+etElementById('history—back-btn').style.dlsplay
+= 'none’;
+document.g 1—subtit1e').textContent
+=
+document.getElementById('history-pane'Status History';
+currentHistorySite
+=
+null;
+loadAllSitesHistory(“desc");
 });
-                            </script>
-                            {% endif %}
-                            {% endblock %}
+function attachProblemClickListeners()
+{
+document.querySelectorAll('.problem
+el.addEventListener('click',
+C)
+myt
+const site
+=
+el.querySelector('.problem-site').textContent.trim();
+loadSiteHistory(site,
+"desc");
+document.querySelectorAll('.panel-content’).forEach(c
+=)
+c.classList.remove('open'));
+const
+historyContent
+=
+document.getElementById(
+'history-content’);
+historyContent.classList.add('open’);
+document.getElementById('history-header').querySelector('span:last-child’).textc
+ontent
+=
+'a’;
+document.getElementById('history-panel-subtitle').textContent
+=
+"History:
+${site}";
+document.getElementById('history-back-btn').style.display
+=
+'inline-block’;
+if
+(sidebar.classlList.contains('collapsed’))
+{
+sidebar.classList.remove('collapsed’);
+toggleBtn.textContent = '»°;
+localStorage.setItem('sidebarCollapsed’, 'false’);
+}
+});
+});
+}
+document.querySelectorAll('#history-content.history-sort-btn').forEach(btn
+=>
+{
+btn.addEventListener('click’,
+()
+=>
+{
+const order
+=
+btn.dataset.order;
+document.querySelectorAll( '#history-content
+.history-sort-btn').forEach(b
+=>
+b.classList.remove(‘active'));
+btn.classList.add('active');if
+(currentHistorySite)
+{
+loadSiteHistory(currentHistorySite,
+order);
+} else {
+loadAllSitesHistory(order);
+}
+});
+});
+1]
+== SerTINES
+Ul
+io—vie—tmeeses
+function syncSettingsUI()
+{
+[*A"
+2B",
+*C";,
+D",
+forEach(k
+=2
+{
+document.getElementById(
+show${k} ).checked
+=
+settings[ show${k}
+];
+document
+.getElementById(
+pulse${k} ).checked
+=
+settings[ pulse${k}
+];
+45
+document.getElementById("markerSize").value
+=
+settings.markerSize,
+document.getElementById("pulseSize").value
+=
+settings.pulseSize;
+document.getEle
+.
+'
+men
+'
+1"
+-ttings.markerSize
++
+"
+px";
+tById("markerValue").textContent
+=
+documen
+"
+t.getElementById("pulsevalue").textContent
+=
+n n
+ettings.pulseSize
++
+"
+px";
+)
+)syncSettingsUI();
+Cznsi showkl
+=
+document.getElementById(‘show${k}‘);
+nst
+pulseEl
+=
+document
+.
+getElementById(
+pulse${k}
+)
+showEl.onchange
+=
+e
+=>
+{
+§ett1ngs[‘show${k}‘]
+=
+e.target.checked;
+if
+(le.target.checked)
+{
+settings[
+pulse${k}
+]
+=
+false;
+pulseEl.checked
+=
+false,
+}
+refreshAll();
+}s
+pulseEl.onchange
+= €
+=5
+{
+settings[‘pulse${k}‘]
+if
+(e.target.checked)
+{
+settings[‘show${k}‘]
+=
+true;
+showEl.checked
+=
+true;
+=
+e.target.checked;
+}
+refreshAll();
+}s
+});
+document.getElementById("markerSize").oninput
+=
+let
+v
+=
+parseInt(e.target.value);
+if:
+(V.2
+settings.pulseSize)
+{
+settings.pulseSize
+=V
++
+2;
+document.getElementById(“pulseSize").value
+-
+cettings.pulseSize;
+document.getElementById("pulseValue").textContent
+=
+debounce(e
+=>
+{
+settings.pulseSize
++
+"
+pX')
+}
+settings.markerSize
+=\
+V;
+document.getElementById("markerValue").textContent
+2
+PX
+refreshAll();
+})s
+document.getElementById("puls
+let
+v
+=
+Math.max(6, parseInt(e.tare.target.value
+=V,
+if
+(v
+<
+settings.markerSize)
+{
+settings.markerSize
+=-V;
+document.getElementById("markerSize").value
+=
+¥
+.textContent
+=
+Vv
+#
+DX,
+document.getElementById("markerValue")
+eSize").oninput
+=
+debounce(e
+=>
+{
+get.value));
+¥
+settings.pulseSize =V,
+tById("pulseValue").textContent
+SN T DXT
+document .getElemen
+refreshAll();
+1)s
+B R R R R
+-
+R
+RRO
+AN AR
+AR
+A
+ATDz
+=i
+document
+.
+getElementById("saveSettings").onclick
+=
+()
+=>
+Lo
+e
+localStorage.setItem("mapSettings”, JSON.stringify(settings));
+window. location.reload();
+}s
+document.getElementById("settings-btn").onclick
+=
+().=>
+{
+>
+G
+document.getElementById("settings-panel").classLlst.toggle(
+open");
+}s
+document.getElementById("resetZoomBtn").onclick
+=
+()
+=>
+chartInstance.goHome();
+const
+darkBtn
+=
+document.getElementById("dark-mode-btn");
+darkBtn.onclick
+=
+()
+=>
+{
+const isDark
+=
+!document.body.classList.contains("dark-mode");localStorage.setItem("mapTheme",
+isDark
+?
+"dark"
+:
+"light");
+window.location.reload();
+};
+// Initial load
+updateProblemsDisplay([]);
+});
+</script>
+{% if user.is_authenticated %}
+<!-- Watermark -->
+<script>
+// — Watermark for authenticated users
+document.addEventListener("DOMContentLoaded", () => {
+const username = "{{ user.username|escapeijs }}";
+const wm = document.createElement("div");
+wm.style.cssText =
+‘position:fixed;inset:O;pointer-events:none;z-index:999;user—se1ect:none;display
+:grid;grid-template-columns:repeat(auto-fill, 340px);grid-auto-rows:240px;transfo
+rm:rotate(-32deg);color:rgba(255,255,255,9.62);Font-size:48px;Font—weight:909;op
+acitys0.155;
+for (let 1 = 0; i < 60; i++) {
+let t = document.createElement("div");
+t.textContent = username;
+wm.appendChild(t);
+}
+document.body.appendChild(wm);
+});
+</script>
+{% endif %}
+{% endblock %}

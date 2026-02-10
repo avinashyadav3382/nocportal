@@ -1,0 +1,1117 @@
+{% extends 'sites/base_global_dashboard.html' %}
+{% block content %}
+{% load static %}
+<!-- Libraries -->
+<link rel="stylesheet" href="{% static 'css/india_map_css.css' %}">
+<script src="{% static 'amcharts/core.js' %}"></script>
+<script src="{% static 'amcharts/maps.js' %}"></script>
+<script src="{% static 'amcharts/india2020High.js' %}"></script>
+<script src="{% static 'amcharts/animated.js' %}"></script>
+
+<div id="main-content-wrapper">
+    <div id="map-column">
+        <div id="chartdiv"></div>
+        <button id="resetZoomBtn" class="control-btn"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset View</button>
+        <button id="settings-btn" class="control-btn"><i class="bi bi-gear me-2"></i> Settings</button>
+        <button id="dark-mode-btn" class="control-btn">
+            <i class="bi bi-brightness-high me-2"></i><span>Dark Mode</span>
+        </button>
+        <div id="legend">
+            <b>Legend</b><br>
+            <div><span style="color:green; font-size:22px">●</span> AFNET Site</div>
+            <div><span style="color: yellow; font-size:22px">●</span> Site on Satcom</div>
+            <div><span style="color:red; font-size:22px">●</span>Unreachable</div>
+            <div><span style="color:orange; font-size:22px">●</span> IACCS Nodes</div>
+        </div>
+        <div id="last-updated">
+            Last updated: <span id="last-update-time">-</span>
+        </div>
+    </div>
+    <div id="sidebar-column">
+        <button id="sidebar-toggle" title="Collapse sidebar">→</button>
+        <div class="sidebar-content">
+            <!-- Site Search -->
+            <div class="mb-4 position-relative">
+                <input type="text" id="site-search" placeholder="Search sites (e.g. MCC)" autocomplete="off">
+                <div id="search-results"></div>
+            </div>
+            <!-- Site Groups -->
+            <div class="panel-header" id="group-header">
+                <span>Site Groups</span><span>▼</span>
+            </div>
+            <div class="panel-content" id="group-content">
+                <div class="btn-group btn-group-sm w-100 mb-3">
+                    <button class="btn btn-outline-light group-btn active" data-group="iaccs">IACCS</button>
+                    <button class="btn btn-outline-light group-btn" data-group="dc">DC</button>
+                </div>
+                <div id="group-sites-list" class="city-container"></div>
+                <div id="group-empty" style="text-align:center; color:var(--text-muted); padding:30px 0; display:none;">
+                    No sites in this group
+                </div>
+            </div>
+            <!-- MCT and Satcom -->
+            <div class="panel-header" id="subtype-header">
+                <span>MCT & Satcom</span>
+                <span id="subtype-arrow">▼</span>
+            </div>
+            <div class="panel-content" id="subtype-content">
+                <div class="btn-group btn-group-sm w-100 mb-3">
+                    <button class="btn btn-outline-light type-btn active" data-type="MCT_Vehicle">MCT</button>
+                    <button class="btn btn-outline-light type-btn" data-type="SATCOM">SATCOM</button>
+                </div>
+                <div id="subtype-list"></div>
+                <div id="subtype-empty" style="text-align:center; color:var(--text-muted); padding:30px 0; display:none;">
+                    No Data in this group
+                </div>
+            </div>
+            <!-- Current Active Issues -->
+            <div class="panel-header" id="problems-header">
+                <span>Current Active Issues</span><span>▼</span>
+            </div>
+            <div class="panel-content" id="problems-content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">
+                        Current Active Issues
+                        <span id="issues-count" class="badge bg-danger ms-2" style="font-size:0.8rem; display:none;">0</span>
+                    </h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-light sort-btn active" data-sort="time">Newest</button>
+                        <button class="btn btn-outline-light sort-btn" data-sort="name">Name</button>
+                        <button class="btn btn-outline-light sort-btn" data-sort="color">Color</button>
+                    </div>
+                </div>
+                <div id="problems-list"></div>
+                <div id="problems-empty" style="text-align:center; color:var(--text-muted); padding:50px 0; display:none;">
+                    No active issues detected
+                </div>
+            </div>
+            <!-- Status History -->
+            <div class="panel-header" id="history-header">
+                <span id="history-panel-title">Status History</span><span>▼</span>
+            </div>
+            <div class="panel-content" id="history-content">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h6 class="mb-0" id="history-panel-subtitle">Status History</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="history-back-btn" style="display:none;" class="btn btn-outline-light btn-sm">Back</button>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-light history-sort-btn active" data-order="desc">Newest first</button>
+                            <button class="btn btn-outline-light history-sort-btn" data-order="asc">Oldest first</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="history-list" style="height: 300px; overflow-y:auto;"></div>
+            </div>
+            <!-- Contact Panel -->
+            <div id="contact-panel" style="display:none;">
+                <div id="contact-header">
+                    <span id="contact-title">Site Details</span>
+                    <span id="contact-arrow">▼</span>
+                </div>
+                <div id="contact-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Panel -->
+<div id="settings-panel">
+    <div class="settings-title">Visibility</div>
+    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="showA" checked><span class="slider"></span></label></div>
+    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="showB" checked><span class="slider"></span></label></div>
+    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label></div>
+    <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="showD" checked><span class="slider"></span></label></div>
+   
+    <div class="settings-title">Pulse Animation</div>
+    <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="pulseA"></label></div>
+    <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="pulseB"></label></div>
+    <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="pulseC" checked><span class="slider"></span></label></div>
+    <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="pulseD"></label></div>
+   
+    <div class="settings-title">Marker Sizes</div>
+    <div class="settings-row">
+        Marker <span id="markerValue" class="size-label">6 px</span>
+        <input type="range" id="markerSize" min="3" max="16" value="6">
+    </div>
+    <div class="settings-row">
+        Pulse ring <span id="pulseValue" class="size-label">10 px</span>
+        <input type="range" id="pulseSize" min="6" max="19" value="10">
+    </div>
+    <button id="saveSettings">Save Settings</button>
+</div>
+
+<div id="alert-container"></div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// Shared Utilities
+// ──────────────────────────────────────────────────────────────
+const Utils = {
+    formatDateLocal(dt) {
+        return new Date(dt).toLocaleString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        }).replace(/,/g, '');
+    },
+    showAlert(message, type = "danger") {
+        const container = document.getElementById("alert-container");
+        const alert = document.createElement("div");
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
+    },
+    debounce(fn, delay = 200) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+};
+
+// ──────────────────────────────────────────────────────────────
+// Settings Module
+// ──────────────────────────────────────────────────────────────
+const SettingsModule = (function() {
+    const MAP_THEME = {
+        light: { background: "#f1f5f9", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" },
+        dark:  { background: "#0b1121", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" }
+    };
+    let settings = JSON.parse(localStorage.getItem("mapSettings")) || {
+        showA: true, showB: true, showC: true, showD: true,
+        pulseA: false, pulseB: false, pulseC: true, pulseD: false,
+        markerSize: 6, pulseSize: 10
+    };
+    let currentTheme = localStorage.getItem("mapTheme") || "dark";
+    let theme = MAP_THEME[currentTheme];
+
+    function applyTheme() {
+        const root = document.documentElement;
+        document.body.classList.toggle("dark-mode", currentTheme === "dark");
+        root.style.setProperty("--bg-color", currentTheme === "dark" ? "#0f172a" : "#e8f0f2");
+    }
+
+    function syncUI() {
+        ["A","B","C","D"].forEach(k => {
+            document.getElementById(`show${k}`).checked  = settings[`show${k}`];
+            document.getElementById(`pulse${k}`).checked = settings[`pulse${k}`];
+        });
+        document.getElementById("markerSize").value = settings.markerSize;
+        document.getElementById("pulseSize").value   = settings.pulseSize;
+        document.getElementById("markerValue").textContent = settings.markerSize + " px";
+        document.getElementById("pulseValue").textContent  = settings.pulseSize  + " px";
+    }
+
+    function init() {
+        applyTheme();
+        syncUI();
+
+        ["A","B","C","D"].forEach(k => {
+            document.getElementById(`show${k}`).onchange = e => {
+                settings[`show${k}`] = e.target.checked;
+                if (!e.target.checked) {
+                    settings[`pulse${k}`] = false;
+                    document.getElementById(`pulse${k}`).checked = false;
+                }
+                MapModule.refreshMarkersVisibilityAndPulse();
+            };
+            document.getElementById(`pulse${k}`).onchange = e => {
+                settings[`pulse${k}`] = e.target.checked;
+                if (e.target.checked) {
+                    settings[`show${k}`] = true;
+                    document.getElementById(`show${k}`).checked = true;
+                }
+                MapModule.refreshMarkersVisibilityAndPulse();
+            };
+        });
+
+        document.getElementById("markerSize").oninput = Utils.debounce(e => {
+            let v = parseInt(e.target.value);
+            if (v > settings.pulseSize) {
+                settings.pulseSize = v + 2;
+                document.getElementById("pulseSize").value = settings.pulseSize;
+                document.getElementById("pulseValue").textContent = settings.pulseSize + " px";
+            }
+            settings.markerSize = v;
+            document.getElementById("markerValue").textContent = v + " px";
+            MapModule.updateMarkerAndPulseSizes();
+        }, 150);
+
+        document.getElementById("pulseSize").oninput = Utils.debounce(e => {
+            let v = Math.max(6, parseInt(e.target.value));
+            e.target.value = v;
+            if (v < settings.markerSize) {
+                settings.markerSize = v;
+                document.getElementById("markerSize").value = v;
+                document.getElementById("markerValue").textContent = v + " px";
+            }
+            settings.pulseSize = v;
+            document.getElementById("pulseValue").textContent = v + " px";
+            MapModule.updateMarkerAndPulseSizes();
+        }, 150);
+
+        document.getElementById("saveSettings").onclick = () => {
+            localStorage.setItem("mapSettings", JSON.stringify(settings));
+            window.location.reload();
+        };
+
+        document.getElementById("settings-btn").onclick = () => {
+            document.getElementById("settings-panel").classList.toggle("open");
+        };
+
+        document.getElementById("dark-mode-btn").onclick = () => {
+            currentTheme = currentTheme === "light" ? "dark" : "light";
+            localStorage.setItem("mapTheme", currentTheme);
+            theme = MAP_THEME[currentTheme];
+            applyTheme();
+            MapModule.applyThemeToChart();
+        };
+    }
+
+    return {
+        init,
+        getSettings: () => settings,
+        getTheme: () => theme,
+        getCurrentThemeName: () => currentTheme
+    };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// Map Module
+// ──────────────────────────────────────────────────────────────
+const MapModule = (function() {
+    const SITE_COLORS = { A: "green", B: "yellow", C: "red", D: "orange" };
+    const PULSE_CONFIG = { opacity: 0.45, maxScale: 5.5, duration: 1800 };
+
+    let chart, imageSeries, polygonSeries;
+
+    function createChart() {
+        am4core.useTheme(am4themes_animated);
+        chart = am4core.create("chartdiv", am4maps.MapChart);
+        chart.geodata = am4geodata_india2020High;
+        chart.projection = new am4maps.projections.Miller();
+        chart.zoomControl = new am4maps.ZoomControl();
+
+        polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+        polygonSeries.useGeodata = true;
+        const poly = polygonSeries.mapPolygons.template;
+        poly.fill = am4core.color(SettingsModule.getTheme().polygonFill);
+        poly.stroke = am4core.color(SettingsModule.getTheme().polygonStroke);
+        poly.strokeOpacity = 0.35;
+        poly.tooltipText = "{name}";
+        poly.states.create("hover").properties.fill = am4core.color(SettingsModule.getTheme().polygonHover);
+
+        imageSeries = chart.series.push(new am4maps.MapImageSeries());
+        const template = imageSeries.mapImages.template;
+        template.propertyFields.latitude = "latitude";
+        template.propertyFields.longitude = "longitude";
+        template.tooltipText = "{title} - {address}";
+
+        const pulse = template.createChild(am4core.Circle);
+        pulse.adapter.add("radius", () => SettingsModule.getSettings().pulseSize);
+        pulse.nonScaling = true;
+        pulse.propertyFields.fill = "color";
+        pulse.opacity = PULSE_CONFIG.opacity;
+        pulse.zIndex = 0;
+
+        const marker = template.createChild(am4core.Circle);
+        marker.adapter.add("radius", () => SettingsModule.getSettings().markerSize);
+        marker.nonScaling = true;
+        marker.propertyFields.fill = "color";
+        marker.zIndex = 1;
+
+        marker.adapter.add("opacity", (_, target) => {
+            const c = (target.dataItem?.dataContext?.color || "").toLowerCase().trim();
+            if (!Object.values(SITE_COLORS).includes(c)) return 0;
+            const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
+            return SettingsModule.getSettings()[`show${key}`] ? 1 : 0;
+        });
+
+        template.events.on("inited", e => updatePulse(e.target));
+        template.events.on("dataitemchanged", e => updatePulse(e.target));
+
+        chart.background.fill = am4core.color(SettingsModule.getTheme().background);
+        chart.tooltip.background.fill = am4core.color(SettingsModule.getTheme().tooltipBg);
+        chart.tooltip.label.fill = am4core.color(SettingsModule.getTheme().tooltipText);
+    }
+
+    function updatePulse(image) {
+        const data = image.dataItem?.dataContext;
+        if (!data) return;
+        const c = (data.color || "").toLowerCase().trim();
+        if (!Object.values(SITE_COLORS).includes(c)) return;
+
+        const pulse = image.children.getIndex(0);
+        const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
+        const shouldPulse = SettingsModule.getSettings()[`pulse${key}`];
+
+        if (shouldPulse) {
+            startPulse(pulse);
+        } else {
+            stopPulse(pulse);
+        }
+    }
+
+    function startPulse(circle) {
+        if (circle._pulseAnim) circle._pulseAnim.stop();
+        circle.scale = 1;
+        circle.opacity = PULSE_CONFIG.opacity;
+        circle._pulseAnim = circle.animate([
+            { property: "scale", from: 1, to: PULSE_CONFIG.maxScale },
+            { property: "opacity", from: PULSE_CONFIG.opacity, to: 0 }
+        ], PULSE_CONFIG.duration);
+        circle._pulseAnim.events.on("animationended", () => startPulse(circle));
+    }
+
+    function stopPulse(circle) {
+        if (circle._pulseAnim) circle._pulseAnim.stop();
+        circle.opacity = 0;
+        circle.scale = 1;
+    }
+
+    function zoomToLatLon(lat, lon, zoomLevel = 8, animate = true) {
+        if (!chart) return;
+        chart.zoomToGeoPoint({ latitude: lat, longitude: lon }, zoomLevel, animate);
+    }
+
+    function focusSiteTemporarily(siteTitle, duration = 5000) {
+        let found = false;
+        imageSeries.mapImages.each(img => {
+            if (found) return;
+            const ctx = img.dataItem?.dataContext;
+            if (!ctx || ctx.title !== siteTitle) return;
+            found = true;
+            img.isHover = true;
+            if (img.tooltip) img.showTooltip();
+        });
+    }
+
+    function applyThemeToChart() {
+        if (!chart) return;
+        chart.background.fill = am4core.color(SettingsModule.getTheme().background);
+        polygonSeries.mapPolygons.template.fill = am4core.color(SettingsModule.getTheme().polygonFill);
+        polygonSeries.mapPolygons.template.stroke = am4core.color(SettingsModule.getTheme().polygonStroke);
+        polygonSeries.mapPolygons.template.states.getKey("hover").properties.fill = am4core.color(SettingsModule.getTheme().polygonHover);
+        chart.tooltip.background.fill = am4core.color(SettingsModule.getTheme().tooltipBg);
+        chart.tooltip.label.fill = am4core.color(SettingsModule.getTheme().tooltipText);
+        chart.invalidateRawData();
+    }
+
+    function updateMarkerAndPulseSizes() {
+        imageSeries.mapImages.each(img => {
+            if (img.children.length >= 2) {
+                img.children.getIndex(0).invalidate();
+                img.children.getIndex(1).invalidate();
+            }
+        });
+    }
+
+    function refreshMarkersVisibilityAndPulse() {
+        imageSeries.mapImages.each(img => {
+            const marker = img.children.getIndex(1);
+            if (marker) marker.invalidateProperty("opacity");
+            updatePulse(img);
+        });
+    }
+
+    function setData(data) {
+        imageSeries.data = data;
+    }
+
+    function init() {
+        createChart();
+        document.getElementById("resetZoomBtn").onclick = () => chart?.goHome();
+
+        imageSeries.mapImages.template.events.on("hit", ev => {
+            const ctx = ev.target.dataItem?.dataContext;
+            if (ctx) ContactsModule.showContactPanel(ctx.title);
+        });
+
+        chart.seriesContainer.events.on("hit", () => {
+            document.getElementById("contact-panel").style.display = "none";
+        });
+    }
+
+    return {
+        init,
+        setData,
+        zoomToLatLon,
+        focusSiteTemporarily,
+        applyThemeToChart,
+        updateMarkerAndPulseSizes,
+        refreshMarkersVisibilityAndPulse,
+        getChart: () => chart
+    };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// MCT / SATCOM Module
+// ──────────────────────────────────────────────────────────────
+const MCTModule = (function() {
+    let subtypeData = [];
+    let currentSubtype = "MCT_Vehicle";
+
+    async function loadData() {
+        try {
+            const resp = await fetch("{% url 'mct_satcom_india_map' %}");
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            const data = await resp.json();
+            if (!Array.isArray(data)) return [];
+            return data.filter(item => item.name && item.data_type && item.status);
+        } catch (err) {
+            console.error(err);
+            Utils.showAlert("Failed to load MCT/Satcom data", "danger");
+            return [];
+        }
+    }
+
+    function render(selectedType) {
+        const container = document.getElementById('subtype-list');
+        const emptyDiv = document.getElementById('subtype-empty');
+        container.innerHTML = '';
+
+        const filtered = subtypeData.filter(d => d.data_type === selectedType);
+        if (filtered.length === 0) {
+            emptyDiv.style.display = 'block';
+            return;
+        }
+        emptyDiv.style.display = 'none';
+
+        const statuses = ['FULLY_OPS', 'RESTRICTED_OPS', 'NON_OPS'];
+        statuses.forEach(status => {
+            const items = filtered.filter(d => d.status === status);
+            if (items.length === 0) return;
+
+            const header = document.createElement('div');
+            header.textContent = `${status} (Total: ${items.length})`;
+            header.style.fontWeight = '700';
+            header.style.margin = "10px 0 6px";
+            header.style.fontSize = "14px";
+            container.appendChild(header);
+
+            const row = document.createElement('div');
+            row.style.display = "flex";
+            row.style.flexWrap = "wrap";
+            row.style.gap = "6px";
+            row.style.marginBottom = "10px";
+
+            items.forEach(item => {
+                const tag = document.createElement('div');
+                tag.textContent = item.name;
+                tag.style.cssText = `
+                    background: linear-gradient(45deg, #ff00ff, #00ffff);
+                    color: #000;
+                    font-weight: 600;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    box-shadow: 0 0 8px rgba(0,255,255,0.6);
+                    text-shadow: 0 0 4px #00ffff;
+                    font-family: monospace;
+                    display: inline-block;
+                `;
+                row.appendChild(tag);
+            });
+            container.appendChild(row);
+        });
+    }
+
+    async function refresh() {
+        subtypeData = await loadData();
+        render(currentSubtype);
+    }
+
+    function init() {
+        document.querySelectorAll(".type-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentSubtype = btn.dataset.type;
+                render(currentSubtype);
+            });
+        });
+
+        document.getElementById('subtype-header').addEventListener('click', () => {
+            const content = document.getElementById('subtype-content');
+            const visible = content.style.display !== "none";
+            content.style.display = visible ? "none" : "block";
+            document.getElementById("subtype-arrow").textContent = visible ? "▼" : "▲";
+            if (!visible) refresh();
+        });
+
+        refresh();
+        setInterval(refresh, 120000);
+    }
+
+    return { init };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// IACCS & DC Groups Module
+// ──────────────────────────────────────────────────────────────
+const GroupsModule = (function() {
+    let groupNodes = [
+        { title: "IACCS_Node_1", type: "IACCS", sub_type: "OG", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_2", type: "IACCS", sub_type: "OG", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_3", type: "IACCS", sub_type: "OG", node_location: "CHENNAI",   latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_4", type: "IACCS", sub_type: "OG", node_location: "KOLKATA",   latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_5", type: "IACCS", sub_type: "OG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_6", type: "IACCS", sub_type: "OG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_7", type: "IACCS", sub_type: "UG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_8", type: "IACCS", sub_type: "UG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
+
+        { title: "DELHI",     type: "DC", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "MUMBAI",    type: "DC", node_location: "MUMBAI",    latitude: 19.0760, longitude: 72.8777, color: "orange", status: ["green"] },
+        { title: "CHENNAI",   type: "DC", node_location: "CHENNAI",   latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
+        { title: "KOLKATA",   type: "DC", node_location: "KOLKATA",   latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
+        { title: "BANGALORE", type: "DC", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
+    ];
+
+    let currentGroup = "iaccs";
+
+    function normalizeTitle(title) {
+        return (title || "").trim().toUpperCase();
+    }
+
+    function renderGroupSites() {
+        const list = document.getElementById("group-sites-list");
+        const empty = document.getElementById("group-empty");
+        list.innerHTML = "";
+
+        const nodes = currentGroup === "iaccs"
+            ? groupNodes.filter(n => n.type === "IACCS")
+            : groupNodes.filter(n => n.type === "DC");
+
+        if (nodes.length === 0) {
+            empty.style.display = "block";
+            return;
+        }
+        empty.style.display = "none";
+
+        if (currentGroup === "dc") {
+            // DC nodes - simple list (unchanged)
+            nodes.forEach(node => {
+                const div = document.createElement("div");
+                div.className = "group-site";
+                div.onclick = () => {
+                    MapModule.zoomToLatLon(node.latitude, node.longitude, 10);
+                    setTimeout(() => MapModule.focusSiteTemporarily(node.title, 5000), 600);
+                };
+                const dotsHtml = node.status.map(s => `<div class="dot bg-${s}"></div>`).join('');
+                div.innerHTML = `
+                    <span class="city-name">${node.title}</span>
+                    <div class="status-dots">${dotsHtml}</div>
+                `;
+                list.appendChild(div);
+            });
+            return;
+        }
+
+        // IACCS → group by location, show dots only
+        const grouped = {};
+        nodes.forEach(node => {
+            const loc = (node.node_location || "Unknown").toUpperCase();
+            if (!grouped[loc]) grouped[loc] = [];
+            grouped[loc].push(node);
+        });
+
+        Object.keys(grouped).sort().forEach(location => {
+            const locationNodes = grouped[location];
+
+            // Location name
+            const locDiv = document.createElement("div");
+            locDiv.className = "location-name";
+            locDiv.textContent = location;
+            list.appendChild(locDiv);
+
+            // One container with all dots for this location
+            const dotsContainer = document.createElement("div");
+            dotsContainer.className = "location-dots-container";
+
+            locationNodes.forEach(node => {
+                const dot = document.createElement("div");
+                dot.className = `dot bg-${node.status[0] || "gray"}`;
+                dot.title = `${node.title} (${node.sub_type || "?"})`;
+                dot.style.cursor = "pointer";
+
+                dot.onclick = (e) => {
+                    e.stopPropagation();
+                    MapModule.zoomToLatLon(node.latitude, node.longitude, 10);
+                    setTimeout(() => MapModule.focusSiteTemporarily(node.title, 5000), 600);
+                };
+
+                dotsContainer.appendChild(dot);
+            });
+
+            list.appendChild(dotsContainer);
+        });
+    }
+
+    async function updateNodeStatuses() {
+        try {
+            const resp = await fetch("{% url 'india_map_iaccs_status' %}");
+            if (!resp.ok) throw new Error("Status fetch failed");
+            const downItems = await resp.json();
+
+            const downIaccs = new Set(
+                downItems.filter(item => item.type === "IACCS")
+                    .map(item => normalizeTitle(item.node_name))
+            );
+            const downDc = new Set(
+                downItems.filter(item => item.type === "DC")
+                    .map(item => normalizeTitle(item.node_name))
+            );
+
+            groupNodes.forEach(node => {
+                const normTitle = normalizeTitle(node.title);
+                if (node.type === "IACCS") {
+                    node.status = downIaccs.has(normTitle) ? ["red"] : ["green"];
+                } else if (node.type === "DC") {
+                    node.status = downDc.has(normTitle) ? ["red"] : ["green"];
+                }
+            });
+
+            renderGroupSites();
+        } catch (err) {
+            console.error("Failed to update IACCS/DC status", err);
+        }
+    }
+
+    function init() {
+        document.querySelectorAll(".group-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".group-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentGroup = btn.dataset.group;
+                renderGroupSites();
+            });
+        });
+
+        document.getElementById("group-header").addEventListener("click", () => {
+            setTimeout(renderGroupSites, 10);
+        });
+
+        updateNodeStatuses();
+        setInterval(updateNodeStatuses, 60000);
+    }
+
+    return {
+        init,
+        renderGroupSites
+    };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// Main Map Data Module
+// ──────────────────────────────────────────────────────────────
+const MainMapDataModule = (function() {
+    let mapSitesData = [];
+
+    async function loadAndUpdate() {
+        try {
+            const resp = await fetch("{% url 'site-map-api' %}");
+            if (!resp.ok) throw new Error();
+            const raw = await resp.json();
+            mapSitesData = raw.filter(s =>
+                ["green","yellow","red","orange"].includes((s.color || "").toLowerCase().trim())
+            );
+            MapModule.setData(mapSitesData);
+            ProblemsModule.updateProblemsDisplay(mapSitesData);
+            document.getElementById("last-update-time").textContent = Utils.formatDateLocal(new Date());
+        } catch (err) {
+            console.error(err);
+            Utils.showAlert("Failed to load main map data", "danger");
+        }
+    }
+
+    function init() {
+        loadAndUpdate();
+        setInterval(loadAndUpdate, 120000);
+    }
+
+    return {
+        init,
+        getMapSitesData: () => mapSitesData
+    };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// Contacts, Problems, History, UIController modules (kept mostly unchanged)
+// ──────────────────────────────────────────────────────────────
+const ContactsModule = (function() {
+    const panel = document.getElementById("contact-panel");
+    const titleEl = document.getElementById("contact-title");
+    const contentEl = document.getElementById("contact-content");
+    const arrowEl = document.getElementById("contact-arrow");
+    const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
+
+    async function loadContactInfo(siteName) {
+        try {
+            const resp = await fetch(`/api/site-contact-info/${encodeURIComponent(siteName)}/`);
+            if (!resp.ok) throw new Error();
+            const data = await resp.json();
+            titleEl.textContent = siteName;
+            contentEl.innerHTML = data.length === 0
+                ? "<i style='color:var(--text-muted)'>No contact details available</i>"
+                : `<table>${data.map(c => `
+                    <tr><th>Email</th><td>${c.email || "-"}</td></tr>
+                    <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
+                    <tr><th>Address</th><td>${c.address || "-"}</td></tr>
+                    <tr><th>EN Details</th><td><a href="/getnasdetails_india_map/${c.id}/">view EN Details</a></td></tr>
+                `).join("")}</table>`;
+        } catch (err) {
+            Utils.showAlert("Failed to load contact info", "danger");
+            contentEl.innerHTML = "<i style='color:var(--danger)'>Error loading contact information</i>";
+        }
+    }
+
+    function showContactPanel(siteName) {
+        loadContactInfo(siteName);
+        panel.style.display = "block";
+        contentEl.style.display = "block";
+        arrowEl.textContent = "▲";
+        if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
+            if (panel.parentElement !== document.body) document.body.appendChild(panel);
+            panel.style.cssText = `position:fixed; bottom:100px; right:40px; width:400px; z-index:1000;`;
+        } else {
+            if (panel.parentElement !== sidebarContent) sidebarContent.appendChild(panel);
+            panel.style.cssText = `position:relative; width:100%; max-width:380px; margin:20px 0;`;
+        }
+    }
+
+    function init() {
+        MapModule.getChart()?.seriesContainer.events.on("hit", () => {
+            panel.style.display = "none";
+        });
+    }
+
+    return { init, showContactPanel };
+})();
+
+const ProblemsModule = (function() {
+    let nameSortAsc = true;
+    let colorSortDesc = true;
+    let timeSortNewestFirst = true;
+
+    function renderEntries(items) {
+        const list = document.getElementById("problems-list");
+        list.innerHTML = "";
+        items.forEach(site => {
+            const color = (site.color || "").toLowerCase().trim();
+            const div = document.createElement("div");
+            div.className = `problem-entry ${color === "red" ? "red" : "yellow"}`;
+            div.innerHTML = `
+                <div class="problem-site">${site.title}</div>
+                <div class="problem-status">${color === "red" ? "Unreachable" : "Satcom"}</div>
+                <div class="problem-since">since ${Utils.formatDateLocal(site.problem_since)}</div>
+            `;
+            list.appendChild(div);
+        });
+        attachClickListeners();
+    }
+
+    function attachClickListeners() {
+        document.querySelectorAll('.problem-entry').forEach(el => {
+            el.addEventListener('click', () => {
+                const site = el.querySelector('.problem-site').textContent.trim();
+                HistoryModule.loadSiteHistory(site, "desc");
+                UIController.openPanel('history');
+                if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
+                    UIController.toggleSidebar();
+                }
+            });
+        });
+    }
+
+    function updateProblemsDisplay(sites) {
+        const problematic = sites.filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+        const list = document.getElementById("problems-list");
+        const empty = document.getElementById("problems-empty");
+        const countEl = document.getElementById("issues-count");
+
+        problematic.sort((a,b) => new Date(b.problem_since) - new Date(a.problem_since));
+        renderEntries(problematic);
+
+        if (problematic.length === 0) {
+            empty.style.display = "block";
+            countEl.style.display = "none";
+            list.innerHTML = "";
+            return;
+        }
+
+        empty.style.display = "none";
+        countEl.textContent = problematic.length;
+        countEl.style.display = "inline";
+    }
+
+    function init() {
+        document.querySelectorAll('#problems-content .sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.sort;
+                document.querySelectorAll('#problems-content .sort-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                let items = [...MainMapDataModule.getMapSitesData()]
+                    .filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+
+                if (type === "time") {
+                    timeSortNewestFirst = !timeSortNewestFirst;
+                    btn.textContent = timeSortNewestFirst ? "Newest" : "Oldest";
+                    items.sort((a,b) => timeSortNewestFirst
+                        ? new Date(b.problem_since) - new Date(a.problem_since)
+                        : new Date(a.problem_since) - new Date(b.problem_since));
+                } else if (type === "name") {
+                    nameSortAsc = !nameSortAsc;
+                    items.sort((a,b) => nameSortAsc
+                        ? a.title.localeCompare(b.title)
+                        : b.title.localeCompare(a.title));
+                } else if (type === "color") {
+                    colorSortDesc = !colorSortDesc;
+                    items.sort((a,b) => {
+                        const ca = (a.color||"").toLowerCase().trim();
+                        const cb = (b.color||"").toLowerCase().trim();
+                        const cmp = ca.localeCompare(cb);
+                        return colorSortDesc ? -cmp : cmp;
+                    });
+                }
+
+                renderEntries(items);
+            });
+        });
+    }
+
+    return { init, updateProblemsDisplay };
+})();
+
+const HistoryModule = (function() {
+    let currentHistorySite = null;
+
+    function renderEntries(entries) {
+        const list = document.getElementById('history-list');
+        list.innerHTML = "";
+        if (!entries || entries.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">No history records found</div>';
+            return;
+        }
+
+        entries.forEach(entry => {
+            const div = document.createElement('div');
+            div.className = 'history-entry';
+            div.innerHTML = `
+                <div class="history-time">${Utils.formatDateLocal(entry.status_changed_at)}</div>
+                <div style="font-weight:600; margin:4px 0;">
+                    ${entry.site__name || entry.site_name || "—"}
+                </div>
+                <div>
+                    <span style="color:var(--text-muted);">from</span>
+                    <span>${entry.past_status}</span>
+                    <span style="color:var(--text-muted);"> → </span>
+                    <span style="${/down|unreach/i.test(entry.current_status) ? 'color:var(--danger);font-weight:600;' : 'color:var(--success);font-weight:600;'}">
+                        ${entry.current_status}
+                    </span>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    async function loadAllHistory(order = "desc") {
+        try {
+            const resp = await fetch("{% url 'status-history-all-sites' %}");
+            if (!resp.ok) throw new Error();
+            let data = await resp.json();
+            data.sort((a,b) => {
+                const ta = new Date(a.status_changed_at);
+                const tb = new Date(b.status_changed_at);
+                return order === "desc" ? tb - ta : ta - tb;
+            });
+            renderEntries(data);
+        } catch (e) {
+            Utils.showAlert("Failed to load history", "danger");
+            document.getElementById('history-list').innerHTML =
+                '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">History unavailable</div>';
+        }
+    }
+
+    async function loadSiteHistory(siteName, order = "desc") {
+        currentHistorySite = siteName;
+        try {
+            const resp = await fetch(`/api/status-history/${encodeURIComponent(siteName)}/`);
+            if (!resp.ok) throw new Error();
+            let data = await resp.json();
+            data.sort((a,b) => {
+                const ta = new Date(a.status_changed_at);
+                const tb = new Date(b.status_changed_at);
+                return order === "desc" ? tb - ta : ta - tb;
+            });
+            renderEntries(data);
+        } catch (e) {
+            Utils.showAlert("Failed to load site history", "danger");
+            document.getElementById('history-list').innerHTML =
+                '<div style="color:var(--danger);padding:30px 0;text-align:center;">History unavailable</div>';
+        }
+    }
+
+    function init() {
+        document.getElementById('history-back-btn').onclick = () => {
+            document.getElementById('history-back-btn').style.display = 'none';
+            document.getElementById('history-panel-subtitle').textContent = 'Status History';
+            currentHistorySite = null;
+            loadAllHistory("desc");
+        };
+
+        document.querySelectorAll('#history-content .history-sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const order = btn.dataset.order;
+                document.querySelectorAll('#history-content .history-sort-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (currentHistorySite) {
+                    loadSiteHistory(currentHistorySite, order);
+                } else {
+                    loadAllHistory(order);
+                }
+            });
+        });
+
+        loadAllHistory("desc");
+    }
+
+    return { init, loadSiteHistory };
+})();
+
+const UIController = (function() {
+    const sidebar = document.getElementById('sidebar-column');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const contactPanel = document.getElementById('contact-panel');
+    const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
+
+    function updateContactPosition() {
+        if (sidebar.classList.contains('collapsed')) {
+            document.body.appendChild(contactPanel);
+            contactPanel.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 40px;
+                width: 400px;
+                margin: 0;
+            `;
+        } else {
+            sidebarContent.appendChild(contactPanel);
+            contactPanel.style.cssText = `
+                position: relative;
+                bottom: auto;
+                right: auto;
+                width: 100%;
+                max-width: 380px;
+                margin: 20px 0;
+            `;
+        }
+    }
+
+    function toggleSidebar() {
+        const collapsed = sidebar.classList.toggle('collapsed');
+        toggleBtn.textContent = collapsed ? '»' : '→';
+        toggleBtn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        localStorage.setItem('sidebarCollapsed', collapsed);
+        updateContactPosition();
+    }
+
+    function openPanel(panelId) {
+        document.querySelectorAll('.panel-content').forEach(c => {
+            if (c.id !== panelId + '-content') c.classList.remove('open');
+        });
+        document.querySelectorAll('.panel-header span:last-child').forEach(s => s.textContent = '▼');
+
+        const content = document.getElementById(panelId + '-content');
+        const header = document.getElementById(panelId + '-header');
+        content.classList.add('open');
+        header.querySelector('span:last-child').textContent = '▲';
+    }
+
+    function init() {
+        if (localStorage.getItem('sidebarCollapsed') === "true") {
+            sidebar.classList.add('collapsed');
+            toggleBtn.textContent = '»';
+            toggleBtn.title = 'Expand sidebar';
+            updateContactPosition();
+        }
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+
+        document.querySelectorAll('.panel-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const panelId = header.id.replace('-header','');
+                const isOpen = content.classList.contains('open');
+                if (isOpen) {
+                    content.classList.remove('open');
+                    header.querySelector('span:last-child').textContent = '▼';
+                } else {
+                    openPanel(panelId);
+                }
+            });
+        });
+
+        const searchInput = document.getElementById("site-search");
+        const searchResults = document.getElementById("search-results");
+
+        searchInput.addEventListener("input", Utils.debounce(() => {
+            const query = searchInput.value.toLowerCase().trim();
+            searchResults.innerHTML = "";
+            searchResults.style.display = "none";
+            if (query.length < 2) return;
+
+            const allSites = MainMapDataModule.getMapSitesData();
+            const matches = allSites.filter(s =>
+                s.title.toLowerCase().includes(query) ||
+                (s.address || "").toLowerCase().includes(query)
+            );
+
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="p-3 text-center text-muted">No matching sites</div>';
+            } else {
+                matches.forEach(site => {
+                    const item = document.createElement("div");
+                    item.className = "search-item";
+                    item.textContent = site.title;
+                    item.onclick = () => {
+                        MapModule.zoomToLatLon(site.latitude, site.longitude, 10);
+                        setTimeout(() => MapModule.focusSiteTemporarily(site.title, 5000), 600);
+                        searchInput.value = "";
+                        searchResults.style.display = "none";
+                    };
+                    searchResults.appendChild(item);
+                });
+            }
+            searchResults.style.display = "block";
+        }, 300));
+
+        document.addEventListener("click", e => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = "none";
+            }
+        });
+    }
+
+    return { init, toggleSidebar, openPanel };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// App Orchestration
+// ──────────────────────────────────────────────────────────────
+am4core.ready(function() {
+    SettingsModule.init();
+    MapModule.init();
+    MCTModule.init();
+    GroupsModule.init();
+    MainMapDataModule.init();
+    ProblemsModule.init();
+    HistoryModule.init();
+    ContactsModule.init();
+    UIController.init();
+
+    document.getElementById("last-update-time").textContent = Utils.formatDateLocal(new Date());
+});
+</script>
+
+{% endblock %}
