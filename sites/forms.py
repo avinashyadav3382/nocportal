@@ -1,57 +1,108 @@
-# sites/forms.py
 from django import forms
-from .models import MCT_SatcomData
+from .models import MCT_Data
 
-class MCTSatcomEditForm(forms.ModelForm):
+
+class MountAbuUpdateForm(forms.ModelForm):
     class Meta:
-        model = MCT_SatcomData
-        fields = ['status']
+        model = MCT_Data
+        fields = [
+            'total_counter',
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter',
+        ]
         widgets = {
-            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'total_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fully_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'restricted_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'non_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'misc_counter': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-class MCTSatcomAdminAddForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        total = cleaned_data.get('total_counter', 0)
+        ops_sum = sum(cleaned_data.get(f, 0) for f in [
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter'
+        ])
+        if ops_sum != total:
+            raise forms.ValidationError(
+                "Sum of counters must equal total units."
+            )
+        return cleaned_data
+
+
+class KasauliUpdateForm(forms.ModelForm):
     class Meta:
-        model = MCT_SatcomData
-        fields = ['name', 'data_type', 'status']
+        model = MCT_Data
+        fields = [
+            'total_counter',
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter',
+        ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter unique name'}),
-            'data_type': forms.Select(attrs={'class': 'form-select'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
+            'total_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fully_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'restricted_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'non_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'misc_counter': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        if MCT_SatcomData.objects.filter(name__iexact=name).exists():
-            raise forms.ValidationError("This name already exists.")
-        return name
+    
 
-class MCTAddForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        total = cleaned_data.get('total_counter', 0)
+        ops_sum = sum(cleaned_data.get(f, 0) for f in [
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter'
+        ])
+        if ops_sum != total:
+            raise forms.ValidationError(
+                "Sum of counters must equal total units."
+            )
+        return cleaned_data
+
+
+class AdminMCTUpdateForm(forms.ModelForm):
     class Meta:
-        model = MCT_SatcomData
-        fields = ['name', 'status']
+        model = MCT_Data
+        fields = [
+            'total_counter',
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter',
+        ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter unique name'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
+            'total_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fully_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'restricted_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'non_ops_counter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'misc_counter': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        if MCT_SatcomData.objects.filter(name__iexact=name).exists():
-            raise forms.ValidationError("This name already exists.")
-        return name
-
-class SatcomAddForm(forms.ModelForm):
-    class Meta:
-        model = MCT_SatcomData
-        fields = ['name', 'status']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter unique name'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-        }
-
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        if MCT_SatcomData.objects.filter(name__iexact=name).exists():
-            raise forms.ValidationError("This name already exists.")
-        return name
+    def clean(self):
+        cleaned_data = super().clean()
+        print("Cleaned data in form:", cleaned_data)  # Debugging statement
+        total = cleaned_data.get('total_counter', 0)
+        ops_sum = sum(cleaned_data.get(f, 0) for f in [
+            'fully_ops_counter',
+            'restricted_ops_counter',
+            'non_ops_counter',
+            'misc_counter'
+        ])
+        print(f"Total: {total}, Sum of ops: {ops_sum}")  # Debugging statement
+        if ops_sum != total:
+            raise forms.ValidationError(
+                "Sum of counters must equal total units."
+            )
+        return cleaned_data

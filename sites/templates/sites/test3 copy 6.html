@@ -7,6 +7,741 @@
 <script src="{% static 'amcharts/maps.js' %}"></script>
 <script src="{% static 'amcharts/india2020High.js' %}"></script>
 <script src="{% static 'amcharts/animated.js' %}"></script>
+<style>
+    :root {
+        --bg-dark: #0b1121;
+        --bg-darker: #060617;
+        --panel-glass: rgba(15, 23, 42, 0.88);
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #60a5fa;
+        --accent-glow: rgba(96, 165, 250, 0.24);
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --success: #34d399;
+        --border: rgba(96, 165, 250, 0.30);
+        --shadow-sm: 0 6px 20px 6px rgba(0, 0, 0, 0.55);
+        --shadow-md: 0 16px 40px 12px rgba(0, 0, 0, 0.65);
+        --transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        --status-green: #28a745;
+        --status-red: #ef4444;
+        --bg-color: #e8f0f2;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+    }
+
+    body.dark-mode {
+        background: var(--bg-darker);
+        color: var(--text);
+    }
+
+    #main-content-wrapper {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+    }
+
+    #map-column {
+        flex: 1;
+        position: relative;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+    }
+
+
+    #last-updated {
+        position: absolute;
+        bottom: 16px;
+        right: 32px;
+        color: var(--text-muted);
+        font-size: 13px;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .control-btn {
+        position: absolute;
+        left: 32px;
+        background: rgba(2, 43, 92, 0.80);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: white;
+        padding: 12px 18px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        width: 190px;
+        z-index: 1002;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+
+    .control-btn:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 16px 40px 12px var(--accent-glow);
+        border-color: var(--accent);
+        background: rgba(2, 43, 92, 0.94);
+    }
+
+    #resetZoomBtn {
+        top: 32px;
+    }
+
+    #settingsBtn {
+        top: 92px;
+    }
+
+    #darkModeBtn {
+        top: 157px;
+    }
+
+    #legend {
+        position: absolute;
+        bottom: 40px;
+        left: 32px;
+        backdrop-filter: blur(16px);
+        background: var(--panel-glass);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 24px;
+        font-size: 14px;
+        box-shadow: var(--shadow-md);
+        z-index: 1001;
+        transition: var(--transition);
+        color: var(--text);
+    }
+
+    #legend:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px 12px var(--accent-glow);
+    }
+
+    #legend b {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+
+    /* BOX LIMITED TO CONTENT --- */
+
+    .city-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+    }
+
+    .city-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-color);
+        white-space: nowrap;
+    }
+
+    /* Status Dot Hover */
+
+    .status-dots {
+        display: flex;
+        gap: 5px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: transform 0.25;
+    }
+
+    .dot:hover {
+        transform: scale(1.4);
+        z-index: 10;
+    }
+
+    .dot::after {
+        content: attr(data-label);
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 10px;
+        border-radius: 4px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.2s;
+    }
+
+    .dot:hover::after {
+        opacity: 1;
+    }
+
+    .bg-green {
+        background-color: var(--status-green);
+    }
+
+    .bg-red {
+        background-color: var(--status-red);
+    }
+
+    #sidebar-column {
+        width: 420px;
+        min-width: 420px;
+        background: var(--panel-glass);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid var(--border);
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: width 0.45s cubic-bezier (0.22, 1, 0.36, 1);
+        position: relative;
+        z-index: 1000;
+    }
+
+    #sidebar-column.collapsed {
+        width: 64px;
+        min-width: 64px;
+    }
+
+    #sidebar-column.collapsed .sidebar-content {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    #sidebar-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(2, 43, 92, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+        cursor: pointer;
+        z-index: 1010;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    #sidebar-toggle:hover {
+        transform: scale(1.14) rotate(180deg);
+        background: var(--accent);
+    }
+
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 20px;
+        transition: opacity 0.45s ease;
+    }
+
+    .sidebar-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-content::-webkit-scrollbar-track {
+        background: rgba(30, 41, 59, 0.4);
+        border-radius: 10px;
+    }
+
+
+    .sidebar-content::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 10px;
+    }
+
+    .panel-header {
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.88), rgba(59, 130, 246, 0.38));
+        color: white;
+        padding: 16px 20px;
+        font-size: 15.5px;
+        font-weight: 600;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+
+    .panel-header:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px 12px var(--accent-glow);
+    }
+
+    .panel-content {
+        background: rgba(15, 23, 42, 0.68);
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        margin-bottom: 20px;
+        display: none;
+        animation: fadeInUp 0.45s ease-out;
+    }
+
+    .panel-content.open {
+        display: block;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .problem-entry {
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+        background: rgba(30, 41, 59, 0.62);
+        border-left: 5px solid var(--danger);
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+    }
+
+    .problem-entry.yellow {
+        border-left-color: var(--warning);
+    }
+
+    .problem-entry:hover {
+        transform: translateX(8px) scale(1.02);
+        box-shadow: 0 12px 36px 8px rgba(239, 68, 68, 0.42);
+    }
+
+    .problem-site {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .problem-status {
+        font-size: 13.5px;
+        font-weight: 700;
+        margin: 4px 0;
+    }
+
+
+    .problem-since {
+        font-size: 12.5px;
+        color: var(--text-muted);
+    }
+
+
+    .history-entry {
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        background: rgba(30, 41, 59, 0.62);
+        border-radius: 12px;
+        font-size: 13.8px;
+        transition: var(--transition);
+    }
+
+    .history-entry:hover {
+        background: rgba(96, 165, 250, 0.15);
+        transform: translateX(4px);
+    }
+
+    .history-time {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+
+
+    #alert-container {
+        position: fixed;
+        top: 24px;
+        right: 460px;
+        z-index: 2000;
+        max-width: 420px;
+    }
+
+
+    .alert {
+        padding: 16px 22px;
+        margin-bottom: 14px;
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+        animation: slideInRight 0.45s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(140%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.92);
+        border-color: #fca5a5;
+    }
+
+    .alert-success {
+        border-color: #6ee7b7;
+        background: rgba(16, 185, 129, 0.92);
+
+    }
+
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.92);
+        border-color: #fcd34d;
+    }
+
+    .sort-btn.active,
+    .history-sort-btn.active {
+        background: var(--accent);
+        color: white !important;
+        border-color: var(--accent);
+    }
+
+
+    #site-search {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: rgba(30, 41, 59, 0.8);
+        color: var(--text);
+        font-size: 14px;
+    }
+
+    #site-search::placeholder {
+        color: var(--text-muted);
+    }
+
+    #search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        max-height: 300px;
+        right: 0;
+        overflow-y: auto;
+        background: var(--panel-glass);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-top: 6px;
+        z-index: 1002;
+        box-shadow: var(--shadow-md);
+        display: none;
+    }
+
+    #search-results.search-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        color: var(--text);
+    }
+
+    #search-results .search-item:hover,
+    .search-item.active {
+        background: rgba(96, 165, 250, 0.3);
+    }
+
+
+    #contact-panel {
+        background: var(--panel-glass);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-md);
+        color: var(--text);
+        margin: 20px 0;
+        width: 100%;
+        max-width: 380px;
+        position: relative;
+        z-index: 1001;
+    }
+
+    #contact-panel {
+        display: none;
+    }
+
+    #contact-panel.open {
+        display: block;
+    }
+
+    #contact-header {
+        background: linear-gradient(135deg, rgba(2, 43, 92, 0.9), rgba(30, 58, 138, 0.7));
+        color: white;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 14px 14px 0 0;
+    }
+
+    #contact-content {
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    /* Floating contact panel when sidebar is collapsed */
+    body.sidebar-collapsed #contact-panel.open {
+        position: fixed;
+        bottom: 100px;
+        right: 40px;
+        width: 400px;
+        max-width: 400px;
+        margin: 0;
+        z-index: 9999;
+    }
+
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 10px 0;
+        color: var(--text-muted);
+        width: 35%;
+    }
+
+    td {
+        padding: 10px 0;
+    }
+
+    #settings-panel,
+    #history-panel {
+        position: fixed;
+        top: 100px;
+        right: -340px;
+        max-height: 80vh;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        padding: 16px;
+        transition: right 0.3s ease;
+        z-index: 1002;
+    }
+
+    body.dark-mode #settings-panel,
+    body.dark-mode #history-panel {
+        background: #1e293b;
+        color: #e2e8f0;
+    }
+
+    #settings-panel {
+        width: 300px;
+        z-index: 1002;
+    }
+
+
+    #history-panel {
+        width: 340px;
+        z-index: 1003;
+        font-size: 13px;
+    }
+
+    #settings-panel.open,
+    #history-panel.open {
+        right: 24px;
+    }
+
+    .settings-title {
+        font-weight: 600;
+        margin: 16px 0 10px;
+        color: #cbd5e1;
+    }
+
+    body.dark-mode.settings-title {
+        color: #cbd5e1;
+    }
+
+    .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+    }
+
+    .switch {
+        position: relative;
+        width: 38px;
+        height: 20px;
+    }
+
+    .switch input {
+        display: none;
+    }
+
+    .slider {
+        position: absolute;
+        inset: 0;
+        background: #ccc;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.35;
+    }
+
+    .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 2px;
+        bottom: 2px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+
+    input:checked+.slider {
+        background: #4caf50;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(18px);
+    }
+
+    input[type=range] {
+        width: 130px;
+        accent-color: #002b5c;
+    }
+
+    .size-label {
+        min-width: 70px;
+        text-align: right;
+        color: #555;
+        font-size: 13px;
+    }
+
+    #saveSettings {
+        margin-top: 20px;
+        width: 100%;
+        padding: 10px;
+        background: #002b5c;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .group-site {
+        background: rgba(30, 41, 59, 0.62);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        width: 100px;
+    }
+
+    .group-site:hover {
+        transform: translateX(6px);
+        box-shadow: 0 12px 36px 8px var(--accent-glow);
+    }
+
+    .group-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14.5px;
+    }
+
+    .status-dots {
+        display: flex;
+        gap: 6px;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .status-dot.green {
+        background: #22c55e;
+    }
+
+    .status-dot.yellow {
+        background: #fbbf24;
+    }
+
+    .status-dot.red {
+        background: #ef4444;
+    }
+
+    .status-dot.blue {
+        background: #3b82f6;
+    }
+
+    .status-dot.orange {
+        background: #a855f7;
+    }
+
+    .location-name {
+        font-weight: 700;
+        font-size: 14px;
+        margin: 12px 0 6px 0;
+        color: var(--text-primary);
+    }
+
+    .location-dots-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        margin-bottom: 8px;
+    }
+
+    .location-dots-container .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        transition: transform 0.15s ease;
+    }
+
+    .location-dots-container .dot:hover {
+        transform: scale(1.4);
+    }
+</style>
 
 <div id="main-content-wrapper">
     <div id="map-column">
@@ -36,7 +771,6 @@
                 <input type="text" id="site-search" placeholder="Search sites (e.g. MCC)" autocomplete="off">
                 <div id="search-results"></div>
             </div>
-
             <!-- Site Groups -->
             <div class="panel-header" id="group-header">
                 <span>Site Groups</span><span>▼</span>
@@ -51,16 +785,15 @@
                     No sites in this group
                 </div>
             </div>
-
             <!-- MCT and Satcom -->
             <div class="panel-header" id="subtype-header">
-                <span>Mount Abu & Kasauli</span>
+                <span>MCT & Satcom</span>
                 <span id="subtype-arrow">▼</span>
             </div>
             <div class="panel-content" id="subtype-content">
                 <div class="btn-group btn-group-sm w-100 mb-3">
-                    <button class="btn btn-outline-light type-btn active" data-type="Mount Abu">Mount Abu</button>
-                    <button class="btn btn-outline-light type-btn" data-type="Kasauli">Kasauli</button>
+                    <button class="btn btn-outline-light type-btn active" data-type="MCT_Vehicle">MCT</button>
+                    <button class="btn btn-outline-light type-btn" data-type="SATCOM">SATCOM</button>
                 </div>
                 <div id="subtype-list"></div>
                 <div id="subtype-empty"
@@ -68,7 +801,6 @@
                     No Data in this group
                 </div>
             </div>
-
             <!-- Current Active Issues -->
             <div class="panel-header" id="problems-header">
                 <span>Current Active Issues</span><span>▼</span>
@@ -92,7 +824,6 @@
                     No active issues detected
                 </div>
             </div>
-
             <!-- Status History -->
             <div class="panel-header" id="history-header">
                 <span id="history-panel-title">Status History</span><span>▼</span>
@@ -113,7 +844,6 @@
                 </div>
                 <div id="history-list" style="height: 300px; overflow-y:auto;"></div>
             </div>
-
             <!-- Contact Panel -->
             <div id="contact-panel" style="display:none;">
                 <div id="contact-header">
@@ -137,12 +867,14 @@
                 class="slider"></span></label></div>
     <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="showD" checked><span
                 class="slider"></span></label></div>
+
     <div class="settings-title">Pulse Animation</div>
     <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="pulseA"></label></div>
     <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="pulseB"></label></div>
     <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="pulseC" checked><span
                 class="slider"></span></label></div>
     <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="pulseD"></label></div>
+
     <div class="settings-title">Marker Sizes</div>
     <div class="settings-row">
         Marker <span id="markerValue" class="size-label">6 px</span>
@@ -296,6 +1028,86 @@
     // ──────────────────────────────────────────────────────────────
     // Contacts Module
     // ──────────────────────────────────────────────────────────────
+    // const ContactsModule = (function() {
+    //     const panel = document.getElementById("contact-panel");
+    //     const titleEl = document.getElementById("contact-title");
+    //     const contentEl = document.getElementById("contact-content");
+    //     const arrowEl = document.getElementById("contact-arrow");
+    //     const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
+
+    //     async function loadContactInfo(siteName) {
+    //         console.log("Loading contact info for:", siteName);
+    //         try {
+    //             const resp = await fetch(`/api/site-contact-info/${encodeURIComponent(siteName)}/`);
+    //             if (!resp.ok) {
+    //                 throw new Error(`HTTP ${resp.status}`);
+    //             }
+    //             const data = await resp.json();
+    //             console.log("Contact data received:", data);
+    //             titleEl.textContent = siteName;
+    //             contentEl.innerHTML = data.length === 0
+    //                 ? "<i style='color:var(--text-muted)'>No contact details available</i>"
+    //                 : `<table>${data.map(c => `
+    //                     <tr><th>Email</th><td>${c.email || "-"}</td></tr>
+    //                     <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
+    //                     <tr><th>Address</th><td>${c.address || "-"}</td></tr>
+    //                     <tr><th>EN Details</th><td><a href="/getnasdetails_india_map/${c.id}/">view EN Details</a></td></tr>
+    //                 `).join("")}</table>`;
+    //         } catch (err) {
+    //             console.error("Contact fetch error:", err);
+    //             Utils.showAlert("Failed to load contact info", "danger");
+    //             contentEl.innerHTML = "<i style='color:var(--danger)'>Error loading contact information</i>";
+    //         }
+    //     }
+
+    //     function showContactPanel(siteName) {
+    //         console.log("showContactPanel called for:", siteName);
+    //         loadContactInfo(siteName);
+
+    //         // Force visibility and positioning
+    //         panel.style.display = "block !important";
+    //         panel.style.visibility = "visible !important";
+    //         panel.style.opacity = "1 !important";
+    //         panel.style.zIndex = "9999 !important";
+
+    //         contentEl.style.display = "block !important";
+    //         arrowEl.textContent = "▲";
+
+    //         if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
+    //             document.body.appendChild(panel);
+    //             panel.style.position = "fixed";
+    //             panel.style.bottom = "100px";
+    //             panel.style.right = "40px";
+    //             panel.style.width = "400px";
+    //             panel.style.zIndex = "9999";
+    //         } else {
+    //             if (panel.parentElement !== sidebarContent) {
+    //                 sidebarContent.appendChild(panel);
+    //             }
+    //             panel.style.position = "relative";
+    //             panel.style.width = "100%";
+    //             panel.style.maxWidth = "380px";
+    //             panel.style.margin = "20px 0";
+    //             panel.style.zIndex = "auto";
+    //         }
+
+    //         // Scroll to panel if in sidebar
+    //         if (!sidebar.classList.contains('collapsed')) {
+    //             panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    //         }
+    //     }
+
+    //     function hideContactPanel() {
+    //         panel.style.display = "none";
+    //     }
+
+    //     function init() {
+    //         // No additional init needed
+    //     }
+
+    //     return { init, showContactPanel, hideContactPanel };
+    // })();
+
     const ContactsModule = (function () {
         const panel = document.getElementById("contact-panel");
         const titleEl = document.getElementById("contact-title");
@@ -322,34 +1134,40 @@
                 contentEl.innerHTML = "<i style='color:var(--danger)'>Error loading contact information</i>";
             }
         }
+function showContactPanel(siteName) {
+    console.log("showContactPanel called for:", siteName);
+    loadContactInfo(siteName);
 
-        function showContactPanel(siteName) {
-            console.log("showContactPanel called for:", siteName);
-            loadContactInfo(siteName);
-            panel.classList.add("open");
-            panel.style.display = "block";
-            arrowEl.textContent = "▲";
+    panel.classList.add("open");
+    panel.style.display = "block";
+    
+    arrowEl.textContent = "▲";
 
-            if (sidebar.classList.contains("collapsed")) {
-                document.body.appendChild(panel);
-            } else {
-                if (panel.parentElement !== sidebarContent) {
-                    sidebarContent.appendChild(panel);
-                }
-                panel.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
+    if (sidebar.classList.contains("collapsed")) {
+        document.body.appendChild(panel);
+    } else {
+        if (panel.parentElement !== sidebarContent) {
+            sidebarContent.appendChild(panel);
         }
+        panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
 
-        function hideContactPanel() {
-            panel.style.display = "none";
-        }
+function hideContactPanel() {
+    panel.style.display = "none";
+    // panel.classList.remove("open");
+}
+
+
+
 
         function init() {
             // No additional init needed
         }
 
-        return { showContactPanel, hideContactPanel, init };
+        return { showContactPanel, hideContactPanel, showContactPanel };
     })();
+
 
     // ──────────────────────────────────────────────────────────────
     // Map Module
@@ -357,6 +1175,7 @@
     const MapModule = (function () {
         const SITE_COLORS = { A: "green", B: "yellow", C: "red", D: "orange" };
         const PULSE_CONFIG = { opacity: 0.45, maxScale: 5.5, duration: 1800 };
+
         let chart, imageSeries, polygonSeries;
 
         function createChart() {
@@ -414,9 +1233,11 @@
             if (!data) return;
             const c = (data.color || "").toLowerCase().trim();
             if (!Object.values(SITE_COLORS).includes(c)) return;
+
             const pulse = image.children.getIndex(0);
             const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
             const shouldPulse = SettingsModule.getSettings()[`pulse${key}`];
+
             if (shouldPulse) {
                 startPulse(pulse);
             } else {
@@ -494,6 +1315,7 @@
             createChart();
             document.getElementById("resetZoomBtn").onclick = () => chart?.goHome();
 
+
             polygonSeries.mapPolygons.template.events.on("hit", ev => {
                 console.log("Map background clicked, checking to hide contact panel");
                 const contactPanel = document.getElementById("contact-panel");
@@ -530,79 +1352,19 @@
     })();
 
     // ──────────────────────────────────────────────────────────────
-    // Panel Polling Manager
-    // ──────────────────────────────────────────────────────────────
-    const PanelPollingManager = (function () {
-        const intervals = new Map();           // panelId → interval ID
-        const fetchFunctions = new Map();      // panelId → async fetch function
-
-        function startPolling(panelId) {
-            if (intervals.has(panelId)) return;
-
-            const fetchFn = fetchFunctions.get(panelId);
-            if (!fetchFn) return;
-
-            fetchFn();  // immediate fetch on open
-
-            const intervalId = setInterval(() => {
-                fetchFn();
-            }, 120000);  // 2 minutes
-
-            intervals.set(panelId, intervalId);
-        }
-
-        function stopPolling(panelId) {
-            const intervalId = intervals.get(panelId);
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervals.delete(panelId);
-            }
-        }
-
-        function registerPanel(panelId, fetchFunction) {
-            fetchFunctions.set(panelId, fetchFunction);
-        }
-
-        function init() {
-            // Register all polling-enabled panels (except main map)
-            registerPanel('group', GroupsModule.updateNodeStatuses);
-            registerPanel('subtype', MCTModule.refresh);
-            registerPanel('history', HistoryModule.loadAllHistory);
-            // Problems are derived from main map data → no separate polling
-        }
-
-        return { init, startPolling, stopPolling };
-    })();
-
-
-
-    // ──────────────────────────────────────────────────────────────
-    // MCT / Satcom Module (Updated for new aggregated data)
+    // MCT / SATCOM Module
     // ──────────────────────────────────────────────────────────────
     const MCTModule = (function () {
-        let mctData = [];           // Full data from API
-        let currentLocation = "Mount Abu";
-
-        // Format date for display
-        function formatDate(dt) {
-            if (!dt) return "-";
-            return new Date(dt).toLocaleString('en-IN', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            }).replace(/,/g, '');
-        }
+        let subtypeData = [];
+        let currentSubtype = "MCT_Vehicle";
 
         async function loadData() {
             try {
-                const resp = await fetch("{% url 'mct_india_map' %}");
+                const resp = await fetch("{% url 'mct_satcom_india_map' %}");
                 if (!resp.ok) throw new Error("HTTP " + resp.status);
                 const data = await resp.json();
-                console.log("Raw MCT/Satcom data received:", data);
-                return Array.isArray(data) ? data : [];
+                if (!Array.isArray(data)) return [];
+                return data.filter(item => item.name && item.data_type && item.status);
             } catch (err) {
                 console.error(err);
                 Utils.showAlert("Failed to load MCT/Satcom data", "danger");
@@ -610,99 +1372,77 @@
             }
         }
 
-        function render() {
+        function render(selectedType) {
             const container = document.getElementById('subtype-list');
             const emptyDiv = document.getElementById('subtype-empty');
             container.innerHTML = '';
 
-            // Filter data for selected location and sort by data_type for consistent display
-            const filtered = mctData.filter(item => item.location === currentLocation).sort((a, b) => a.data_type.localeCompare(b.data_type));
-            console.log(`Rendering MCT/Satcom for ${currentLocation}:`, filtered);
+            const filtered = subtypeData.filter(d => d.data_type === selectedType);
             if (filtered.length === 0) {
                 emptyDiv.style.display = 'block';
                 return;
             }
-
             emptyDiv.style.display = 'none';
 
-            // Group by type (MCT, MCT LSV, etc.)
-            const groupedByType = {};
-            filtered.forEach(item => {
-                if (!groupedByType[item.data_type]) groupedByType[item.data_type] = [];
-                groupedByType[item.data_type].push(item);
-            });
-            Object.keys(groupedByType).forEach(data_type => {
-                const item = groupedByType[data_type][0]; //fetch as per index 
+            const statuses = ['FULLY_OPS', 'RESTRICTED_OPS', 'NON_OPS'];
+            statuses.forEach(status => {
+                const items = filtered.filter(d => d.status === status);
+                if (items.length === 0) return;
 
-                // Type Header
-                const typeBlock = document.createElement('div');
-                typeBlock.className = 'type-block mb-4';
+                const header = document.createElement('div');
+                header.textContent = `${status} (Total: ${items.length})`;
+                header.style.fontWeight = '700';
+                header.style.margin = "10px 0 6px";
+                header.style.fontSize = "14px";
+                container.appendChild(header);
 
-                typeBlock.innerHTML = `
-                <div class="type-header">
-                    <strong>${item.data_type}</strong>
-                    <span class="total-units">Total: <strong>${item.total_counter}</strong></span>
-                    <span class="last-updated">Last updated: ${formatDate(item.last_updated)}</span>
-                </div>
-            `;
-
-                // Four status rows using .mct-container as requested
-                const statusContainer = document.createElement('div');
-                statusContainer.className = 'status-row'; // parent row container
-
-                const statuses = [
-                    { key: 'fully_ops_counter', label: 'Fully Ops', className: 'fully-ops' },
-                    { key: 'restricted_ops_counter', label: 'Restricted Ops', className: 'restricted-ops' },
-                    { key: 'non_ops_counter', label: 'Non Ops', className: 'non-ops' },
-                    { key: 'misc_counter', label: 'Misc', className: 'misc' }
-                ];
-
-                statuses.forEach(status => {
-                    const count = item[status.key] || 0;
-                    const div = document.createElement('div');
-                    div.className = `status-item ${status.className}`;
-                    div.innerHTML = `
-        <span>${status.label}</span>
-        <span class="status-count">${count}</span>
-    `;
-                    statusContainer.appendChild(div);
+                const row = document.createElement('div');
+                row.className = 'city-container';
+                items.forEach(item => {
+                    const tag = document.createElement('div');
+                    tag.classList.add("group-site");
+                    const span = document.createElement('span');
+                    span.classList.add("city-name");
+                    span.textContent = item.name;
+                    tag.appendChild(span);
+                    row.appendChild(tag);
                 });
-
-                typeBlock.appendChild(statusContainer);
-                container.appendChild(typeBlock);
-
-
+                container.appendChild(row);
             });
         }
 
         async function refresh() {
-            mctData = await loadData();
-            render();
+            subtypeData = await loadData();
+            render(currentSubtype);
         }
 
         function init() {
-            // Button click handler (Mount Abu / Kasauli)
             document.querySelectorAll(".type-btn").forEach(btn => {
                 btn.addEventListener("click", () => {
                     document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
                     btn.classList.add("active");
-                    currentLocation = btn.dataset.type;   // "Mount Abu" or "Kasauli"
-                    render();
+                    currentSubtype = btn.dataset.type;
+                    render(currentSubtype);
                 });
             });
 
-            // Initial fetch once (on page load)
+            // document.getElementById('subtype-header').addEventListener('click', () => {
+            //     const content = document.getElementById('subtype-content');
+            //     const visible = content.style.display !== "none";
+            //     content.style.display = visible ? "none" : "block";
+            //     document.getElementById("subtype-arrow").textContent = visible ? "▼" : "▲";
+            //     if (!visible) refresh();
+            // });
+
             refresh();
+            setInterval(refresh, 120000);
         }
 
-        return {
-            init,
-            refresh          // This is used by PanelPollingManager when panel is opened
-        };
+        return { init };
     })();
 
     // ──────────────────────────────────────────────────────────────
-    // IACCS & DC Groups Module  (now lazy + on-panel-open polling)
+    // IACCS & DC Groups Module
     // ──────────────────────────────────────────────────────────────
     const GroupsModule = (function () {
         let groupNodes = [
@@ -740,7 +1480,6 @@
                 empty.style.display = "block";
                 return;
             }
-
             empty.style.display = "none";
 
             if (currentGroup === "dc") {
@@ -770,6 +1509,7 @@
 
             Object.keys(grouped).sort().forEach(location => {
                 const locationNodes = grouped[location];
+
                 const groupSite = document.createElement("div");
                 groupSite.className = "group-site";
 
@@ -786,6 +1526,7 @@
                     dot.className = `dot bg-${node.status[0] || "gray"}`;
                     dot.title = `${node.title} (${node.sub_type || "?"})`;
                     dot.style.cursor = "pointer";
+
                     dot.onclick = (e) => {
                         e.stopPropagation();
                         MapModule.zoomToLatLon(node.latitude, node.longitude, 10);
@@ -794,6 +1535,7 @@
                             ContactsModule.showContactPanel(node.title);
                         }, 600);
                     };
+
                     statusDots.appendChild(dot);
                 });
 
@@ -842,19 +1584,22 @@
                 });
             });
 
-            // Initial fetch once
+            document.getElementById("group-header").addEventListener("click", () => {
+                setTimeout(renderGroupSites, 10);
+            });
+
             updateNodeStatuses();
+            setInterval(updateNodeStatuses, 60000);
         }
 
         return {
             init,
-            renderGroupSites,
-            updateNodeStatuses
+            renderGroupSites
         };
     })();
 
     // ──────────────────────────────────────────────────────────────
-    // Main Map Data Module  → always polling (unchanged)
+    // Main Map Data Module
     // ──────────────────────────────────────────────────────────────
     const MainMapDataModule = (function () {
         let mapSitesData = [];
@@ -887,6 +1632,7 @@
         };
     })();
 
+
     // ──────────────────────────────────────────────────────────────
     // Problems Module
     // ──────────────────────────────────────────────────────────────
@@ -910,6 +1656,7 @@
                 list.appendChild(div);
             });
             attachClickListeners();
+
         }
 
         function attachClickListeners() {
@@ -925,6 +1672,8 @@
                 });
             });
         }
+
+
 
         function updateProblemsDisplay(sites) {
             const problematic = sites.filter(s => ["red", "yellow"].includes((s.color || "").toLowerCase().trim()));
@@ -995,7 +1744,6 @@
         function renderEntries(entries) {
             const list = document.getElementById('history-list');
             list.innerHTML = "";
-
             if (!entries || entries.length === 0) {
                 list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">No history records found</div>';
                 return;
@@ -1020,8 +1768,8 @@
             `;
                 list.appendChild(div);
             });
-
             allSitesProblemClickListener();
+
         }
 
         function allSitesProblemClickListener() {
@@ -1042,9 +1790,7 @@
         async function loadAllHistory(order = "desc") {
             currentHistorySite = null;
             document.getElementById('history-back-btn').style.display = 'none';
-            document.getElementById('history-panel-subtitle').innerHTML =
-                '<a href="/view_past_history" class="text-decoration-none text-primary">Status History</a>';
-
+            document.getElementById('history-panel-subtitle').textContent = 'Status History';
 
             try {
                 const resp = await fetch("{% url 'status-history-all-sites' %}");
@@ -1067,8 +1813,6 @@
             currentHistorySite = siteName;
             document.getElementById('history-back-btn').style.display = 'inline-block';
             document.getElementById('history-panel-subtitle').textContent = `Status History - ${siteName}`;
-            document.getElementById('history-panel-subtitle').innerHTML =
-                '<a href="/view_past_history" class="text-decoration-none text-primary">Status History - ' + siteName + '</a>';
 
             try {
                 const resp = await fetch(`/api/status-history/${encodeURIComponent(siteName)}/`);
@@ -1090,8 +1834,7 @@
         function init() {
             document.getElementById('history-back-btn').onclick = () => {
                 document.getElementById('history-back-btn').style.display = 'none';
-                document.getElementById('history-panel-subtitle').innerHTML =
-                    '<a href="/view_past_history" class="text-decoration-none text-primary">Status History</a>';
+                document.getElementById('history-panel-subtitle').textContent = 'Status History';
                 currentHistorySite = null;
                 loadAllHistory("desc");
             };
@@ -1101,7 +1844,6 @@
                     const order = btn.dataset.order;
                     document.querySelectorAll('#history-content .history-sort-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-
                     if (currentHistorySite) {
                         loadSiteHistory(currentHistorySite, order);
                     } else {
@@ -1113,7 +1855,7 @@
             loadAllHistory("desc");
         }
 
-        return { init, loadSiteHistory, loadAllHistory };
+        return { init, loadSiteHistory };
     })();
 
     // ──────────────────────────────────────────────────────────────
@@ -1128,12 +1870,14 @@
         function updateContactPosition() {
             const collapsed = sidebar.classList.contains("collapsed");
             document.body.classList.toggle("sidebar-collapsed", collapsed);
+
             if (collapsed) {
                 document.body.appendChild(contactPanel);
             } else {
                 sidebarContent.appendChild(contactPanel);
             }
         }
+
 
         function toggleSidebar() {
             const collapsed = sidebar.classList.toggle('collapsed');
@@ -1149,7 +1893,6 @@
                     c.classList.remove('open');
                 }
             });
-
             document.querySelectorAll('.panel-header span:last-child').forEach(s => {
                 s.textContent = '▼';
             });
@@ -1160,11 +1903,9 @@
             if (content.classList.contains('open')) {
                 content.classList.remove('open');
                 header.querySelector('span:last-child').textContent = '▼';
-                PanelPollingManager.stopPolling(panelId);
             } else {
                 content.classList.add('open');
                 header.querySelector('span:last-child').textContent = '▲';
-                PanelPollingManager.startPolling(panelId);
             }
         }
 
@@ -1172,10 +1913,6 @@
             console.log("Closing all panels");
             document.querySelectorAll('.panel-content').forEach(c => c.classList.remove('open'));
             document.querySelectorAll('.panel-header span:last-child').forEach(s => s.textContent = '▼');
-
-            // Stop polling for all controlled panels when closing everything
-            PanelPollingManager.stopPolling('group');
-            PanelPollingManager.stopPolling('subtype');
             console.log("All panels closed");
         }
 
@@ -1191,11 +1928,12 @@
 
             toggleBtn.addEventListener('click', toggleSidebar);
 
+
+
             document.querySelectorAll('.panel-header').forEach(header => {
                 header.addEventListener('click', () => {
                     const panelId = header.id.replace('-header', '');
                     const content = document.getElementById(panelId + '-content');
-
                     if (content.classList.contains('open')) {
                         closeAllPanels();
                     } else {
@@ -1212,7 +1950,6 @@
                 const query = searchInput.value.toLowerCase().trim();
                 searchResults.innerHTML = "";
                 searchResults.style.display = "none";
-
                 if (query.length < 2) return;
 
                 const allSites = MainMapDataModule.getMapSitesData();
@@ -1240,7 +1977,6 @@
                         searchResults.appendChild(item);
                     });
                 }
-
                 searchResults.style.display = "block";
             }, 300));
 
@@ -1251,6 +1987,7 @@
             });
 
             let selectedIndex = -1;
+
             searchInput.addEventListener("keydown", e => {
                 const items = searchResults.querySelectorAll(".search-item");
                 if (!items.length || searchResults.style.display === "none") return;
@@ -1260,17 +1997,20 @@
                     selectedIndex = (selectedIndex + 1) % items.length;
                     updateActiveItem(items);
                 }
+
                 if (e.key === "ArrowUp") {
                     e.preventDefault();
                     selectedIndex = (selectedIndex - 1 + items.length) % items.length;
                     updateActiveItem(items);
                 }
+
                 if (e.key === "Enter") {
                     e.preventDefault();
                     if (selectedIndex >= 0 && items[selectedIndex]) {
-                        items[selectedIndex].click();
+                        items[selectedIndex].click(); // 🔥 treat as click
                     }
                 }
+
                 if (e.key === "Escape") {
                     searchResults.style.display = "none";
                     selectedIndex = -1;
@@ -1281,10 +2021,12 @@
                 items.forEach((el, i) => {
                     el.classList.toggle("active", i === selectedIndex);
                 });
+
                 items[selectedIndex]?.scrollIntoView({
                     block: "nearest"
                 });
             }
+
         }
 
         return { init, toggleSidebar, openPanel, closeAllPanels };
@@ -1296,16 +2038,17 @@
     am4core.ready(function () {
         SettingsModule.init();
         MapModule.init();
-        ContactsModule.init();
         MCTModule.init();
         GroupsModule.init();
         MainMapDataModule.init();
         ProblemsModule.init();
         HistoryModule.init();
-        PanelPollingManager.init();
+        // ContactsModule.init();
         UIController.init();
 
         document.getElementById("last-update-time").textContent = Utils.formatDateLocal(new Date());
     });
+
+
 </script>
 {% endblock %}

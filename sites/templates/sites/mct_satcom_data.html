@@ -3,199 +3,205 @@
 
 {% block content %}
 
-<!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
 <style>
-    .status-badge {
-        font-size: 0.9rem;
-        padding: 0.4em 0.8em;
-        border-radius: 1rem;
-        display: inline-block;
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
     }
 
-    .status-FULLY_OPS {
-        background: #198754;
-        color: white;
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
     }
 
-    .status-RESTRICTED_OPS {
-        background: #fd7e14;
-        color: white;
+    .table tbody td {
+        border: 1px solid #dee2e6;
+        padding: 12px 14px;
+        text-align: center;
+        vertical-align: middle;
+        background-color: #ffffff;
     }
 
-    .status-NON_OPS {
-        background: #dc3545;
-        color: white;
+    tr.has-error td {
+        border-color: #dc3545 !important;
+        background-color: #fff5f5;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: rgba(96, 165, 250, 0.08);
+    .display-value {
+        display: inline;
+        font-weight: 500;
     }
 
-    .status-cell select {
-        display: none;
-        width: 180px;
-    }
-
-    .edit-mode .status-cell select {
-        display: inline-block;
-    }
-
-    .edit-mode .status-cell .status-badge {
+    .edit-value {
         display: none;
     }
 
-    .modal-content {
-        border-radius: 12px;
+    .edit-mode .display-value {
+        display: none;
+    }
+
+    .edit-mode .edit-value {
+        display: inline;
+    }
+
+    .edit-value input {
+        width: 90px;
+        padding: 6px;
+        text-align: center;
+    }
+
+    input[readonly] {
+        background-color: #e9ecef;
+        cursor: not-allowed;
     }
 </style>
 
 <div class="container-fluid py-4">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">MCT / Satcom Status Management</h2>
+        <h2 class="mb-0">MCT Status Management</h2>
         <div>
-            <button id="editBtn" class="btn btn-primary me-2">Edit Mode</button>
-            <button type="submit" form="editForm" id="saveBtn" class="btn btn-success me-2" style="display:none;">
+            <button id="editBtn" class="btn btn-primary">Edit Mode</button>
+            <button type="submit" form="editForm" id="saveBtn" class="btn btn-success ms-2" style="display:none;">
                 Save Changes
             </button>
-            <button id="cancelBtn" class="btn btn-outline-secondary me-2" style="display:none;"
+            <button id="cancelBtn" class="btn btn-outline-secondary ms-2" style="display:none;"
                 onclick="location.reload();">
                 Cancel
-            </button>
-            <button type="button" class="btn btn-info"
-                onclick="window.location.href='{% url 'add_mct_satcom_entry' %}'">
-                Add New Entry
             </button>
         </div>
     </div>
 
     {% if messages %}
-    <div class="mb-3">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    {% endfor %}
     {% endif %}
 
-    <!-- Edit Form (existing records) -->
-    <div class="card shadow mb-4">
-        <div class="card-body p-0">
-            <form id="editForm" method="post">
-                {% csrf_token %}
-                {{ edit_formset.management_form }}
+    <form id="editForm" method="post">
+        {% csrf_token %}
+        {{ edit_formset.management_form }}
 
-                <table id="dataTable" class="table table-hover table-striped align-middle mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Name</th>
-                            <th>Data Type</th>
-                            <th>Status</th>
-                            <th>Last Updated By</th>
-                            <th>Last Updated</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for form in edit_formset %}
-                        <tr>
-                            <td class="fw-medium">{{ form.instance.name }}</td>
-                            <td>{{ form.instance.get_data_type_display }}</td>
-                            <td class="status-cell">
-                                {{ form.id }} <!-- hidden field - very important! -->
-                                {{ form.status }}
-                                <span class="status-badge status-{{ form.instance.status }}">
-                                    {{ form.instance.get_status_display }}
-                                </span>
-                            </td>
-                            <td>{{ form.instance.last_updated_by|default:"—" }}</td>
-                            <td>{{ form.instance.last_updated|date:"Y-m-d H:i:s" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-5">No records found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
-        </div>
-    </div>
+        <table id="dataTable" class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Data Type</th>
+                    <th>Total</th>
+                    <th>Fully Ops</th>
+                    <th>Restricted Ops</th>
+                    <th>Non Ops</th>
+                    <th>Misc</th>
+                    <th>Last Updated By</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in edit_formset %}
+                <tr class="{% if form.errors %}has-error{% endif %}">
+                    {{ form.id }}
 
-    <!-- Modal for Adding New Entry -->
-    <div class="modal fade" id="addNewModal" tabindex="-1" aria-labelledby="addNewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addNewModalLabel">Add New MCT/Satcom Entry</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add_new">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Name <span class="text-danger">*</span></label>
-                            {{ add_form.name }}
-                            {% if add_form.name.errors %}
-                            <div class="text-danger small">{{ add_form.name.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Data Type <span class="text-danger">*</span></label>
-                            {{ add_form.data_type }}
-                            {% if add_form.data_type.errors %}
-                            <div class="text-danger small">{{ add_form.data_type.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Status <span class="text-danger">*</span></label>
-                            {{ add_form.status }}
-                            {% if add_form.status.errors %}
-                            <div class="text-danger small">{{ add_form.status.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save New Entry</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                    <td>
+                        <span class="display-value">{{ form.instance.location }}</span>
+                        <span class="edit-value">{{ form.instance.location }}</span>
+                    </td>
+                    <td>
+                        <span class="display-value">{{ form.instance.get_data_type_display }}</span>
+                        <span class="edit-value">{{ form.instance.get_data_type_display }}</span>
+                    </td>
+                    <td>
+                        <span class="display-value">{{ form.instance.total_counter }}</span>
+                        <span class="edit-value">
+                            {{ form.total_counter }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="display-value">{{ form.instance.fully_ops_counter }}</span>
+                        <span class="edit-value">{{ form.fully_ops_counter }}</span>
+                    </td>
+
+                    <td>
+                        <span class="display-value">{{ form.instance.restricted_ops_counter }}</span>
+                        <span class="edit-value">{{ form.restricted_ops_counter }}</span>
+                    </td>
+
+                    <td>
+                        <span class="display-value">{{ form.instance.non_ops_counter }}</span>
+                        <span class="edit-value">{{ form.non_ops_counter }}</span>
+                    </td>
+
+                    <td>
+                        <span class="display-value">{{ form.instance.misc_counter }}</span>
+                        <span class="edit-value">{{ form.misc_counter }}</span>
+                    </td>
+
+                    <td>{{ form.instance.last_updated_by|default:"—" }}</td>
+                    <td>{{ form.instance.last_updated|date:"Y-m-d H:i:s" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
 </div>
 
-<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        $('#dataTable').DataTable({
-            responsive: true,
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            order: [[4, 'desc']],
-            columnDefs: [
-                { orderable: false, targets: 2 } // disable sorting on status
-            ]
-        });
+$(document).ready(function () {
 
-        // Edit mode toggle (just visual)
-        $('#editBtn').click(function () {
-            $('body').addClass('edit-mode');
-            $('#editBtn').hide();
-            $('#saveBtn, #cancelBtn').show();
-        });
+    $('#dataTable').DataTable({
+        pageLength: 10,
+        ordering: true
     });
+
+    $('#editBtn').on('click', function () {
+        $('body').addClass('edit-mode');
+        $('#editBtn').hide();
+        $('#saveBtn, #cancelBtn').show();
+    });
+
+    {% if edit_formset.errors %}
+        $('body').addClass('edit-mode');
+        $('#editBtn').hide();
+        $('#saveBtn, #cancelBtn').show();
+    {% endif %}
+
+    function recalcTotal(row) {
+        let fully = parseInt(row.find('[name$="fully_ops_counter"]').val()) || 0;
+        let restricted = parseInt(row.find('[name$="restricted_ops_counter"]').val()) || 0;
+        let non = parseInt(row.find('[name$="non_ops_counter"]').val()) || 0;
+        let misc = parseInt(row.find('[name$="misc_counter"]').val()) || 0;
+
+        let total = fully + restricted + non + misc;
+        row.find('[name$="total_counter"]').val(total);
+    }
+
+    $('tbody tr').each(function () {
+        let row = $(this);
+        row.find('[name$="total_counter"]').prop('readonly', true);
+
+        row.find('[name$="fully_ops_counter"], [name$="restricted_ops_counter"], [name$="non_ops_counter"], [name$="misc_counter"]')
+            .on('input', function () {
+                recalcTotal(row);
+            });
+    });
+
+});
 </script>
 
 {% endblock %}

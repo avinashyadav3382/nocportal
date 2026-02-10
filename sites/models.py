@@ -31,18 +31,22 @@ class SiteStatusHistory(models.Model):
     def __str__(self):
         return f"{self.site.sitename}: {self.past_status} → {self.current_status}"
 
-class MCT_SatcomData(models.Model):
+class MCT_Data(models.Model):
     type_choices = [
-        ('MCT_Vehicle', 'MCT_Vehicle'),
-        ('SATCOM', 'SATCOM'),]
-    status_choices = [
-        ('FULLY_OPS', 'FULLY_OPS'),
-        ('RESTRICTED_OPS', 'RESTRICTED_OPS'),
-        ('NON_OPS', 'NON_OPS')]
+        ('MCT', 'MCT'),
+        ('MCT LSV', 'MCT LSV'),]
     
-    name = models.CharField(max_length=100, unique=True)
+    location_choices = [
+        ('Mount Abu', 'Mount Abu'),
+        ('Kasauli', 'Kasauli')
+    ]
+    location = models.CharField(max_length=100, choices=location_choices)
     data_type = models.CharField(max_length=20, choices=type_choices)
-    status = models.CharField(max_length=20, choices=status_choices)
+    total_counter = models.IntegerField()
+    fully_ops_counter = models.IntegerField(default=0)
+    restricted_ops_counter = models.IntegerField(default=0)
+    non_ops_counter = models.IntegerField(default=0)
+    misc_counter = models.IntegerField(default=0)
     last_updated_by = models.CharField(max_length=100, blank=True)
     last_updated = models.DateTimeField(auto_now=True)
 

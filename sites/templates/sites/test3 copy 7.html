@@ -12,8 +12,8 @@
     <div id="map-column">
         <div id="chartdiv"></div>
         <button id="resetZoomBtn" class="control-btn"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset View</button>
-        <button id="settings-btn" class="control-btn"><i class="bi bi-gear me-2"></i> Settings</button>
-        <button id="dark-mode-btn" class="control-btn">
+        <button id="settingsBtn" class="control-btn"><i class="bi bi-gear me-2"></i> Settings</button>
+        <button id="darkModeBtn" class="control-btn">
             <i class="bi bi-brightness-high me-2"></i><span>Dark Mode</span>
         </button>
         <div id="legend">
@@ -35,6 +35,7 @@
                 <input type="text" id="site-search" placeholder="Search sites (e.g. MCC)" autocomplete="off">
                 <div id="search-results"></div>
             </div>
+
             <!-- Site Groups -->
             <div class="panel-header" id="group-header">
                 <span>Site Groups</span><span>▼</span>
@@ -49,21 +50,23 @@
                     No sites in this group
                 </div>
             </div>
+
             <!-- MCT and Satcom -->
             <div class="panel-header" id="subtype-header">
-                <span>MCT & Satcom</span>
+                <span>MABU & KSL</span>
                 <span id="subtype-arrow">▼</span>
             </div>
             <div class="panel-content" id="subtype-content">
                 <div class="btn-group btn-group-sm w-100 mb-3">
-                    <button class="btn btn-outline-light type-btn active" data-type="MCT_Vehicle">MCT</button>
-                    <button class="btn btn-outline-light type-btn" data-type="SATCOM">SATCOM</button>
+                    <button class="btn btn-outline-light type-btn active" data-type="MCT_Vehicle">Mount Abu</button>
+                    <button class="btn btn-outline-light type-btn" data-type="SATCOM">Kasauli</button>
                 </div>
                 <div id="subtype-list"></div>
                 <div id="subtype-empty" style="text-align:center; color:var(--text-muted); padding:30px 0; display:none;">
                     No Data in this group
                 </div>
             </div>
+
             <!-- Current Active Issues -->
             <div class="panel-header" id="problems-header">
                 <span>Current Active Issues</span><span>▼</span>
@@ -85,6 +88,7 @@
                     No active issues detected
                 </div>
             </div>
+
             <!-- Status History -->
             <div class="panel-header" id="history-header">
                 <span id="history-panel-title">Status History</span><span>▼</span>
@@ -102,6 +106,7 @@
                 </div>
                 <div id="history-list" style="height: 300px; overflow-y:auto;"></div>
             </div>
+
             <!-- Contact Panel -->
             <div id="contact-panel" style="display:none;">
                 <div id="contact-header">
@@ -121,13 +126,11 @@
     <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="showB" checked><span class="slider"></span></label></div>
     <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="showC" checked><span class="slider"></span></label></div>
     <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="showD" checked><span class="slider"></span></label></div>
-   
     <div class="settings-title">Pulse Animation</div>
     <div class="settings-row">AFNET Sites <label class="switch"><input type="checkbox" id="pulseA"></label></div>
     <div class="settings-row">Satcom Sites <label class="switch"><input type="checkbox" id="pulseB"></label></div>
     <div class="settings-row">Unreachable <label class="switch"><input type="checkbox" id="pulseC" checked><span class="slider"></span></label></div>
     <div class="settings-row">IACCS Sites <label class="switch"><input type="checkbox" id="pulseD"></label></div>
-   
     <div class="settings-title">Marker Sizes</div>
     <div class="settings-row">
         Marker <span id="markerValue" class="size-label">6 px</span>
@@ -173,10 +176,10 @@ const Utils = {
 // ──────────────────────────────────────────────────────────────
 // Settings Module
 // ──────────────────────────────────────────────────────────────
-const SettingsModule = (function() {
+const SettingsModule = (function () {
     const MAP_THEME = {
         light: { background: "#f1f5f9", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" },
-        dark:  { background: "#0b1121", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" }
+        dark: { background: "#0b1121", polygonFill: "#60a5fa", polygonHover: "#93c5fd", polygonStroke: "#e2e8f0", tooltipBg: "#ffffff", tooltipText: "#0f172a" }
     };
     let settings = JSON.parse(localStorage.getItem("mapSettings")) || {
         showA: true, showB: true, showC: true, showD: true,
@@ -193,21 +196,21 @@ const SettingsModule = (function() {
     }
 
     function syncUI() {
-        ["A","B","C","D"].forEach(k => {
-            document.getElementById(`show${k}`).checked  = settings[`show${k}`];
+        ["A", "B", "C", "D"].forEach(k => {
+            document.getElementById(`show${k}`).checked = settings[`show${k}`];
             document.getElementById(`pulse${k}`).checked = settings[`pulse${k}`];
         });
         document.getElementById("markerSize").value = settings.markerSize;
-        document.getElementById("pulseSize").value   = settings.pulseSize;
+        document.getElementById("pulseSize").value = settings.pulseSize;
         document.getElementById("markerValue").textContent = settings.markerSize + " px";
-        document.getElementById("pulseValue").textContent  = settings.pulseSize  + " px";
+        document.getElementById("pulseValue").textContent = settings.pulseSize + " px";
     }
 
     function init() {
         applyTheme();
         syncUI();
 
-        ["A","B","C","D"].forEach(k => {
+        ["A", "B", "C", "D"].forEach(k => {
             document.getElementById(`show${k}`).onchange = e => {
                 settings[`show${k}`] = e.target.checked;
                 if (!e.target.checked) {
@@ -256,11 +259,12 @@ const SettingsModule = (function() {
             window.location.reload();
         };
 
-        document.getElementById("settings-btn").onclick = () => {
+        document.getElementById("settingsBtn").onclick = () => {
             document.getElementById("settings-panel").classList.toggle("open");
+            UIController.closeAllPanels();
         };
 
-        document.getElementById("dark-mode-btn").onclick = () => {
+        document.getElementById("darkModeBtn").onclick = () => {
             currentTheme = currentTheme === "light" ? "dark" : "light";
             localStorage.setItem("mapTheme", currentTheme);
             theme = MAP_THEME[currentTheme];
@@ -278,12 +282,69 @@ const SettingsModule = (function() {
 })();
 
 // ──────────────────────────────────────────────────────────────
+// Contacts Module
+// ──────────────────────────────────────────────────────────────
+const ContactsModule = (function () {
+    const panel = document.getElementById("contact-panel");
+    const titleEl = document.getElementById("contact-title");
+    const contentEl = document.getElementById("contact-content");
+    const arrowEl = document.getElementById("contact-arrow");
+    const sidebar = document.getElementById("sidebar-column");
+    const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
+
+    async function loadContactInfo(siteName) {
+        try {
+            const resp = await fetch(`/api/site-contact-info/${encodeURIComponent(siteName)}/`);
+            if (!resp.ok) throw new Error();
+            const data = await resp.json();
+            titleEl.textContent = siteName;
+            contentEl.innerHTML = data.length === 0
+                ? "<i style='color:var(--text-muted)'>No contact details available</i>"
+                : `<table>${data.map(c => `
+                    <tr><th>Email</th><td>${c.email || "-"}</td></tr>
+                    <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
+                    <tr><th>Address</th><td>${c.address || "-"}</td></tr>
+                    <tr><th>EN Details</th><td><a href="/getnasdetails_india_map/${c.id}/">view EN Details</a></td></tr>
+                `).join("")}</table>`;
+        } catch {
+            contentEl.innerHTML = "<i style='color:var(--danger)'>Error loading contact information</i>";
+        }
+    }
+
+    function showContactPanel(siteName) {
+        console.log("showContactPanel called for:", siteName);
+        loadContactInfo(siteName);
+        panel.classList.add("open");
+        panel.style.display = "block";
+        arrowEl.textContent = "▲";
+
+        if (sidebar.classList.contains("collapsed")) {
+            document.body.appendChild(panel);
+        } else {
+            if (panel.parentElement !== sidebarContent) {
+                sidebarContent.appendChild(panel);
+            }
+            panel.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    function hideContactPanel() {
+        panel.style.display = "none";
+    }
+
+    function init() {
+        // No additional init needed
+    }
+
+    return { showContactPanel, hideContactPanel, init };
+})();
+
+// ──────────────────────────────────────────────────────────────
 // Map Module
 // ──────────────────────────────────────────────────────────────
-const MapModule = (function() {
+const MapModule = (function () {
     const SITE_COLORS = { A: "green", B: "yellow", C: "red", D: "orange" };
     const PULSE_CONFIG = { opacity: 0.45, maxScale: 5.5, duration: 1800 };
-
     let chart, imageSeries, polygonSeries;
 
     function createChart() {
@@ -341,11 +402,9 @@ const MapModule = (function() {
         if (!data) return;
         const c = (data.color || "").toLowerCase().trim();
         if (!Object.values(SITE_COLORS).includes(c)) return;
-
         const pulse = image.children.getIndex(0);
         const key = Object.keys(SITE_COLORS).find(k => SITE_COLORS[k] === c);
         const shouldPulse = SettingsModule.getSettings()[`pulse${key}`];
-
         if (shouldPulse) {
             startPulse(pulse);
         } else {
@@ -423,13 +482,26 @@ const MapModule = (function() {
         createChart();
         document.getElementById("resetZoomBtn").onclick = () => chart?.goHome();
 
-        imageSeries.mapImages.template.events.on("hit", ev => {
-            const ctx = ev.target.dataItem?.dataContext;
-            if (ctx) ContactsModule.showContactPanel(ctx.title);
+        polygonSeries.mapPolygons.template.events.on("hit", ev => {
+            console.log("Map background clicked, checking to hide contact panel");
+            const contactPanel = document.getElementById("contact-panel");
+            if (contactPanel && contactPanel.style.display === "block") {
+                console.log("Hiding contact panel due to map background click");
+                ContactsModule.hideContactPanel();
+            }
         });
 
-        chart.seriesContainer.events.on("hit", () => {
-            document.getElementById("contact-panel").style.display = "none";
+        imageSeries.mapImages.template.events.on("hit", ev => {
+            ev.event.stopPropagation();
+            const ctx = ev.target.dataItem?.dataContext;
+            if (ctx && ctx.title) {
+                ContactsModule.showContactPanel(ctx.title);
+                const contactpanel = document.getElementById("contact-panel");
+                if (contactpanel) {
+                    contactpanel.style.display = "block";
+                    contactpanel.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
         });
     }
 
@@ -446,9 +518,54 @@ const MapModule = (function() {
 })();
 
 // ──────────────────────────────────────────────────────────────
-// MCT / SATCOM Module
+// Panel Polling Manager
 // ──────────────────────────────────────────────────────────────
-const MCTModule = (function() {
+const PanelPollingManager = (function() {
+    const intervals = new Map();           // panelId → interval ID
+    const fetchFunctions = new Map();      // panelId → async fetch function
+
+    function startPolling(panelId) {
+        if (intervals.has(panelId)) return;
+
+        const fetchFn = fetchFunctions.get(panelId);
+        if (!fetchFn) return;
+
+        fetchFn();  // immediate fetch on open
+
+        const intervalId = setInterval(() => {
+            fetchFn();
+        }, 30000);  // 2 minutes
+
+        intervals.set(panelId, intervalId);
+    }
+
+    function stopPolling(panelId) {
+        const intervalId = intervals.get(panelId);
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervals.delete(panelId);
+        }
+    }
+
+    function registerPanel(panelId, fetchFunction) {
+        fetchFunctions.set(panelId, fetchFunction);
+    }
+
+    function init() {
+        // Register all polling-enabled panels (except main map)
+        registerPanel('group', GroupsModule.updateNodeStatuses);
+        registerPanel('subtype', MCTModule.refresh);
+        registerPanel('history', HistoryModule.loadAllHistory);
+        // Problems & History are derived from main map data → no separate polling
+    }
+
+    return { init, startPolling, stopPolling };
+})();
+
+// ──────────────────────────────────────────────────────────────
+// MCT / SATCOM Module  (now lazy + on-panel-open polling)
+// ──────────────────────────────────────────────────────────────
+const MCTModule = (function () {
     let subtypeData = [];
     let currentSubtype = "MCT_Vehicle";
 
@@ -470,12 +587,13 @@ const MCTModule = (function() {
         const container = document.getElementById('subtype-list');
         const emptyDiv = document.getElementById('subtype-empty');
         container.innerHTML = '';
-
         const filtered = subtypeData.filter(d => d.data_type === selectedType);
+
         if (filtered.length === 0) {
             emptyDiv.style.display = 'block';
             return;
         }
+
         emptyDiv.style.display = 'none';
 
         const statuses = ['FULLY_OPS', 'RESTRICTED_OPS', 'NON_OPS'];
@@ -491,25 +609,14 @@ const MCTModule = (function() {
             container.appendChild(header);
 
             const row = document.createElement('div');
-            row.style.display = "flex";
-            row.style.flexWrap = "wrap";
-            row.style.gap = "6px";
-            row.style.marginBottom = "10px";
-
+            row.className = 'city-container';
             items.forEach(item => {
                 const tag = document.createElement('div');
-                tag.textContent = item.name;
-                tag.style.cssText = `
-                    background: linear-gradient(45deg, #ff00ff, #00ffff);
-                    color: #000;
-                    font-weight: 600;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    box-shadow: 0 0 8px rgba(0,255,255,0.6);
-                    text-shadow: 0 0 4px #00ffff;
-                    font-family: monospace;
-                    display: inline-block;
-                `;
+                tag.classList.add("group-site");
+                const span = document.createElement('span');
+                span.classList.add("city-name");
+                span.textContent = item.name;
+                tag.appendChild(span);
                 row.appendChild(tag);
             });
             container.appendChild(row);
@@ -531,39 +638,30 @@ const MCTModule = (function() {
             });
         });
 
-        document.getElementById('subtype-header').addEventListener('click', () => {
-            const content = document.getElementById('subtype-content');
-            const visible = content.style.display !== "none";
-            content.style.display = visible ? "none" : "block";
-            document.getElementById("subtype-arrow").textContent = visible ? "▼" : "▲";
-            if (!visible) refresh();
-        });
-
+        // Initial fetch once
         refresh();
-        setInterval(refresh, 120000);
     }
 
-    return { init };
+    return { init, refresh };
 })();
 
 // ──────────────────────────────────────────────────────────────
-// IACCS & DC Groups Module
+// IACCS & DC Groups Module  (now lazy + on-panel-open polling)
 // ──────────────────────────────────────────────────────────────
-const GroupsModule = (function() {
+const GroupsModule = (function () {
     let groupNodes = [
-        { title: "IACCS_Node_1", type: "IACCS", sub_type: "OG", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
-        { title: "IACCS_Node_2", type: "IACCS", sub_type: "OG", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
-        { title: "IACCS_Node_3", type: "IACCS", sub_type: "OG", node_location: "CHENNAI",   latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
-        { title: "IACCS_Node_4", type: "IACCS", sub_type: "OG", node_location: "KOLKATA",   latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_1", type: "IACCS", sub_type: "OG", node_location: "DELHI", latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_2", type: "IACCS", sub_type: "OG", node_location: "DELHI", latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_3", type: "IACCS", sub_type: "OG", node_location: "CHENNAI", latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
+        { title: "IACCS_Node_4", type: "IACCS", sub_type: "OG", node_location: "KOLKATA", latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
         { title: "IACCS_Node_5", type: "IACCS", sub_type: "OG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
         { title: "IACCS_Node_6", type: "IACCS", sub_type: "OG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
         { title: "IACCS_Node_7", type: "IACCS", sub_type: "UG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
         { title: "IACCS_Node_8", type: "IACCS", sub_type: "UG", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
-
-        { title: "DELHI",     type: "DC", node_location: "DELHI",     latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
-        { title: "MUMBAI",    type: "DC", node_location: "MUMBAI",    latitude: 19.0760, longitude: 72.8777, color: "orange", status: ["green"] },
-        { title: "CHENNAI",   type: "DC", node_location: "CHENNAI",   latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
-        { title: "KOLKATA",   type: "DC", node_location: "KOLKATA",   latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
+        { title: "DELHI", type: "DC", node_location: "DELHI", latitude: 28.6139, longitude: 77.2090, color: "orange", status: ["green"] },
+        { title: "MUMBAI", type: "DC", node_location: "MUMBAI", latitude: 19.0760, longitude: 72.8777, color: "orange", status: ["green"] },
+        { title: "CHENNAI", type: "DC", node_location: "CHENNAI", latitude: 13.0827, longitude: 80.2707, color: "orange", status: ["green"] },
+        { title: "KOLKATA", type: "DC", node_location: "KOLKATA", latitude: 22.5726, longitude: 88.3639, color: "orange", status: ["green"] },
         { title: "BANGALORE", type: "DC", node_location: "BANGALORE", latitude: 12.9716, longitude: 77.5946, color: "orange", status: ["green"] },
     ];
 
@@ -586,10 +684,10 @@ const GroupsModule = (function() {
             empty.style.display = "block";
             return;
         }
+
         empty.style.display = "none";
 
         if (currentGroup === "dc") {
-            // DC nodes - simple list (unchanged)
             nodes.forEach(node => {
                 const div = document.createElement("div");
                 div.className = "group-site";
@@ -607,7 +705,6 @@ const GroupsModule = (function() {
             return;
         }
 
-        // IACCS → group by location, show dots only
         const grouped = {};
         nodes.forEach(node => {
             const loc = (node.node_location || "Unknown").toUpperCase();
@@ -617,33 +714,35 @@ const GroupsModule = (function() {
 
         Object.keys(grouped).sort().forEach(location => {
             const locationNodes = grouped[location];
+            const groupSite = document.createElement("div");
+            groupSite.className = "group-site";
 
-            // Location name
-            const locDiv = document.createElement("div");
-            locDiv.className = "location-name";
-            locDiv.textContent = location;
-            list.appendChild(locDiv);
+            const cityName = document.createElement("span");
+            cityName.className = "city-name";
+            cityName.textContent = location;
+            groupSite.appendChild(cityName);
 
-            // One container with all dots for this location
-            const dotsContainer = document.createElement("div");
-            dotsContainer.className = "location-dots-container";
+            const statusDots = document.createElement("div");
+            statusDots.className = "status-dots";
 
             locationNodes.forEach(node => {
                 const dot = document.createElement("div");
                 dot.className = `dot bg-${node.status[0] || "gray"}`;
                 dot.title = `${node.title} (${node.sub_type || "?"})`;
                 dot.style.cursor = "pointer";
-
                 dot.onclick = (e) => {
                     e.stopPropagation();
                     MapModule.zoomToLatLon(node.latitude, node.longitude, 10);
-                    setTimeout(() => MapModule.focusSiteTemporarily(node.title, 5000), 600);
+                    setTimeout(() => {
+                        MapModule.focusSiteTemporarily(node.title, 5000);
+                        ContactsModule.showContactPanel(node.title);
+                    }, 600);
                 };
-
-                dotsContainer.appendChild(dot);
+                statusDots.appendChild(dot);
             });
 
-            list.appendChild(dotsContainer);
+            groupSite.appendChild(statusDots);
+            list.appendChild(groupSite);
         });
     }
 
@@ -687,24 +786,21 @@ const GroupsModule = (function() {
             });
         });
 
-        document.getElementById("group-header").addEventListener("click", () => {
-            setTimeout(renderGroupSites, 10);
-        });
-
+        // Initial fetch once
         updateNodeStatuses();
-        setInterval(updateNodeStatuses, 60000);
     }
 
     return {
         init,
-        renderGroupSites
+        renderGroupSites,
+        updateNodeStatuses
     };
 })();
 
 // ──────────────────────────────────────────────────────────────
-// Main Map Data Module
+// Main Map Data Module  → always polling (unchanged)
 // ──────────────────────────────────────────────────────────────
-const MainMapDataModule = (function() {
+const MainMapDataModule = (function () {
     let mapSitesData = [];
 
     async function loadAndUpdate() {
@@ -713,7 +809,7 @@ const MainMapDataModule = (function() {
             if (!resp.ok) throw new Error();
             const raw = await resp.json();
             mapSitesData = raw.filter(s =>
-                ["green","yellow","red","orange"].includes((s.color || "").toLowerCase().trim())
+                ["green", "yellow", "red", "orange"].includes((s.color || "").toLowerCase().trim())
             );
             MapModule.setData(mapSitesData);
             ProblemsModule.updateProblemsDisplay(mapSitesData);
@@ -736,59 +832,9 @@ const MainMapDataModule = (function() {
 })();
 
 // ──────────────────────────────────────────────────────────────
-// Contacts, Problems, History, UIController modules (kept mostly unchanged)
+// Problems Module
 // ──────────────────────────────────────────────────────────────
-const ContactsModule = (function() {
-    const panel = document.getElementById("contact-panel");
-    const titleEl = document.getElementById("contact-title");
-    const contentEl = document.getElementById("contact-content");
-    const arrowEl = document.getElementById("contact-arrow");
-    const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
-
-    async function loadContactInfo(siteName) {
-        try {
-            const resp = await fetch(`/api/site-contact-info/${encodeURIComponent(siteName)}/`);
-            if (!resp.ok) throw new Error();
-            const data = await resp.json();
-            titleEl.textContent = siteName;
-            contentEl.innerHTML = data.length === 0
-                ? "<i style='color:var(--text-muted)'>No contact details available</i>"
-                : `<table>${data.map(c => `
-                    <tr><th>Email</th><td>${c.email || "-"}</td></tr>
-                    <tr><th>Phone</th><td>${c.phone || "-"}</td></tr>
-                    <tr><th>Address</th><td>${c.address || "-"}</td></tr>
-                    <tr><th>EN Details</th><td><a href="/getnasdetails_india_map/${c.id}/">view EN Details</a></td></tr>
-                `).join("")}</table>`;
-        } catch (err) {
-            Utils.showAlert("Failed to load contact info", "danger");
-            contentEl.innerHTML = "<i style='color:var(--danger)'>Error loading contact information</i>";
-        }
-    }
-
-    function showContactPanel(siteName) {
-        loadContactInfo(siteName);
-        panel.style.display = "block";
-        contentEl.style.display = "block";
-        arrowEl.textContent = "▲";
-        if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
-            if (panel.parentElement !== document.body) document.body.appendChild(panel);
-            panel.style.cssText = `position:fixed; bottom:100px; right:40px; width:400px; z-index:1000;`;
-        } else {
-            if (panel.parentElement !== sidebarContent) sidebarContent.appendChild(panel);
-            panel.style.cssText = `position:relative; width:100%; max-width:380px; margin:20px 0;`;
-        }
-    }
-
-    function init() {
-        MapModule.getChart()?.seriesContainer.events.on("hit", () => {
-            panel.style.display = "none";
-        });
-    }
-
-    return { init, showContactPanel };
-})();
-
-const ProblemsModule = (function() {
+const ProblemsModule = (function () {
     let nameSortAsc = true;
     let colorSortDesc = true;
     let timeSortNewestFirst = true;
@@ -814,8 +860,9 @@ const ProblemsModule = (function() {
         document.querySelectorAll('.problem-entry').forEach(el => {
             el.addEventListener('click', () => {
                 const site = el.querySelector('.problem-site').textContent.trim();
-                HistoryModule.loadSiteHistory(site, "desc");
+                UIController.closeAllPanels();
                 UIController.openPanel('history');
+                HistoryModule.loadSiteHistory(site, "desc");
                 if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
                     UIController.toggleSidebar();
                 }
@@ -824,12 +871,12 @@ const ProblemsModule = (function() {
     }
 
     function updateProblemsDisplay(sites) {
-        const problematic = sites.filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+        const problematic = sites.filter(s => ["red", "yellow"].includes((s.color || "").toLowerCase().trim()));
         const list = document.getElementById("problems-list");
         const empty = document.getElementById("problems-empty");
         const countEl = document.getElementById("issues-count");
 
-        problematic.sort((a,b) => new Date(b.problem_since) - new Date(a.problem_since));
+        problematic.sort((a, b) => new Date(b.problem_since) - new Date(a.problem_since));
         renderEntries(problematic);
 
         if (problematic.length === 0) {
@@ -852,24 +899,24 @@ const ProblemsModule = (function() {
                 btn.classList.add('active');
 
                 let items = [...MainMapDataModule.getMapSitesData()]
-                    .filter(s => ["red","yellow"].includes((s.color||"").toLowerCase().trim()));
+                    .filter(s => ["red", "yellow"].includes((s.color || "").toLowerCase().trim()));
 
                 if (type === "time") {
                     timeSortNewestFirst = !timeSortNewestFirst;
                     btn.textContent = timeSortNewestFirst ? "Newest" : "Oldest";
-                    items.sort((a,b) => timeSortNewestFirst
+                    items.sort((a, b) => timeSortNewestFirst
                         ? new Date(b.problem_since) - new Date(a.problem_since)
                         : new Date(a.problem_since) - new Date(b.problem_since));
                 } else if (type === "name") {
                     nameSortAsc = !nameSortAsc;
-                    items.sort((a,b) => nameSortAsc
+                    items.sort((a, b) => nameSortAsc
                         ? a.title.localeCompare(b.title)
                         : b.title.localeCompare(a.title));
                 } else if (type === "color") {
                     colorSortDesc = !colorSortDesc;
-                    items.sort((a,b) => {
-                        const ca = (a.color||"").toLowerCase().trim();
-                        const cb = (b.color||"").toLowerCase().trim();
+                    items.sort((a, b) => {
+                        const ca = (a.color || "").toLowerCase().trim();
+                        const cb = (b.color || "").toLowerCase().trim();
                         const cmp = ca.localeCompare(cb);
                         return colorSortDesc ? -cmp : cmp;
                     });
@@ -883,12 +930,16 @@ const ProblemsModule = (function() {
     return { init, updateProblemsDisplay };
 })();
 
-const HistoryModule = (function() {
+// ──────────────────────────────────────────────────────────────
+// History Module
+// ──────────────────────────────────────────────────────────────
+const HistoryModule = (function () {
     let currentHistorySite = null;
 
     function renderEntries(entries) {
         const list = document.getElementById('history-list');
         list.innerHTML = "";
+
         if (!entries || entries.length === 0) {
             list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:50px 0;">No history records found</div>';
             return;
@@ -899,8 +950,8 @@ const HistoryModule = (function() {
             div.className = 'history-entry';
             div.innerHTML = `
                 <div class="history-time">${Utils.formatDateLocal(entry.status_changed_at)}</div>
-                <div style="font-weight:600; margin:4px 0;">
-                    ${entry.site__name || entry.site_name || "—"}
+                <div class="history-site" style="font-weight:600; margin:4px 0;">
+                    ${entry.site__name || entry.site__sitename || "—"}
                 </div>
                 <div>
                     <span style="color:var(--text-muted);">from</span>
@@ -913,14 +964,35 @@ const HistoryModule = (function() {
             `;
             list.appendChild(div);
         });
+
+        allSitesProblemClickListener();
+    }
+
+    function allSitesProblemClickListener() {
+        document.querySelectorAll('.history-entry').forEach(el => {
+            el.addEventListener('click', () => {
+                const site = el.querySelector('.history-site').textContent.trim();
+                console.log("Problem entry clicked for site:", site);
+                UIController.closeAllPanels();
+                UIController.openPanel('history');
+                HistoryModule.loadSiteHistory(site, "desc");
+                if (document.getElementById('sidebar-column').classList.contains('collapsed')) {
+                    UIController.toggleSidebar();
+                }
+            });
+        });
     }
 
     async function loadAllHistory(order = "desc") {
+        currentHistorySite = null;
+        document.getElementById('history-back-btn').style.display = 'none';
+        document.getElementById('history-panel-subtitle').textContent = 'Status History';
+
         try {
             const resp = await fetch("{% url 'status-history-all-sites' %}");
             if (!resp.ok) throw new Error();
             let data = await resp.json();
-            data.sort((a,b) => {
+            data.sort((a, b) => {
                 const ta = new Date(a.status_changed_at);
                 const tb = new Date(b.status_changed_at);
                 return order === "desc" ? tb - ta : ta - tb;
@@ -935,11 +1007,14 @@ const HistoryModule = (function() {
 
     async function loadSiteHistory(siteName, order = "desc") {
         currentHistorySite = siteName;
+        document.getElementById('history-back-btn').style.display = 'inline-block';
+        document.getElementById('history-panel-subtitle').textContent = `Status History - ${siteName}`;
+
         try {
             const resp = await fetch(`/api/status-history/${encodeURIComponent(siteName)}/`);
             if (!resp.ok) throw new Error();
             let data = await resp.json();
-            data.sort((a,b) => {
+            data.sort((a, b) => {
                 const ta = new Date(a.status_changed_at);
                 const tb = new Date(b.status_changed_at);
                 return order === "desc" ? tb - ta : ta - tb;
@@ -965,6 +1040,7 @@ const HistoryModule = (function() {
                 const order = btn.dataset.order;
                 document.querySelectorAll('#history-content .history-sort-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+
                 if (currentHistorySite) {
                     loadSiteHistory(currentHistorySite, order);
                 } else {
@@ -976,35 +1052,25 @@ const HistoryModule = (function() {
         loadAllHistory("desc");
     }
 
-    return { init, loadSiteHistory };
+    return { init, loadSiteHistory, loadAllHistory };
 })();
 
-const UIController = (function() {
+// ──────────────────────────────────────────────────────────────
+// UI Controller
+// ──────────────────────────────────────────────────────────────
+const UIController = (function () {
     const sidebar = document.getElementById('sidebar-column');
     const toggleBtn = document.getElementById('sidebar-toggle');
     const contactPanel = document.getElementById('contact-panel');
     const sidebarContent = document.querySelector('#sidebar-column .sidebar-content');
 
     function updateContactPosition() {
-        if (sidebar.classList.contains('collapsed')) {
+        const collapsed = sidebar.classList.contains("collapsed");
+        document.body.classList.toggle("sidebar-collapsed", collapsed);
+        if (collapsed) {
             document.body.appendChild(contactPanel);
-            contactPanel.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                right: 40px;
-                width: 400px;
-                margin: 0;
-            `;
         } else {
             sidebarContent.appendChild(contactPanel);
-            contactPanel.style.cssText = `
-                position: relative;
-                bottom: auto;
-                right: auto;
-                width: 100%;
-                max-width: 380px;
-                margin: 20px 0;
-            `;
         }
     }
 
@@ -1018,15 +1084,41 @@ const UIController = (function() {
 
     function openPanel(panelId) {
         document.querySelectorAll('.panel-content').forEach(c => {
-            if (c.id !== panelId + '-content') c.classList.remove('open');
+            if (c.id !== panelId + '-content') {
+                c.classList.remove('open');
+            }
         });
-        document.querySelectorAll('.panel-header span:last-child').forEach(s => s.textContent = '▼');
+
+        document.querySelectorAll('.panel-header span:last-child').forEach(s => {
+            s.textContent = '▼';
+        });
 
         const content = document.getElementById(panelId + '-content');
         const header = document.getElementById(panelId + '-header');
-        content.classList.add('open');
-        header.querySelector('span:last-child').textContent = '▲';
+
+        if (content.classList.contains('open')) {
+            content.classList.remove('open');
+            header.querySelector('span:last-child').textContent = '▼';
+            PanelPollingManager.stopPolling(panelId);
+        } else {
+            content.classList.add('open');
+            header.querySelector('span:last-child').textContent = '▲';
+            PanelPollingManager.startPolling(panelId);
+        }
     }
+
+    function closeAllPanels() {
+        console.log("Closing all panels");
+        document.querySelectorAll('.panel-content').forEach(c => c.classList.remove('open'));
+        document.querySelectorAll('.panel-header span:last-child').forEach(s => s.textContent = '▼');
+
+        // Stop polling for all controlled panels when closing everything
+        PanelPollingManager.stopPolling('group');
+        PanelPollingManager.stopPolling('subtype');
+        console.log("All panels closed");
+    }
+
+    window.closeAllPanels = closeAllPanels; // Expose for debugging
 
     function init() {
         if (localStorage.getItem('sidebarCollapsed') === "true") {
@@ -1040,13 +1132,13 @@ const UIController = (function() {
 
         document.querySelectorAll('.panel-header').forEach(header => {
             header.addEventListener('click', () => {
-                const content = header.nextElementSibling;
-                const panelId = header.id.replace('-header','');
-                const isOpen = content.classList.contains('open');
-                if (isOpen) {
-                    content.classList.remove('open');
-                    header.querySelector('span:last-child').textContent = '▼';
+                const panelId = header.id.replace('-header', '');
+                const content = document.getElementById(panelId + '-content');
+
+                if (content.classList.contains('open')) {
+                    closeAllPanels();
                 } else {
+                    closeAllPanels();
                     openPanel(panelId);
                 }
             });
@@ -1059,6 +1151,7 @@ const UIController = (function() {
             const query = searchInput.value.toLowerCase().trim();
             searchResults.innerHTML = "";
             searchResults.style.display = "none";
+
             if (query.length < 2) return;
 
             const allSites = MainMapDataModule.getMapSitesData();
@@ -1073,16 +1166,20 @@ const UIController = (function() {
                 matches.forEach(site => {
                     const item = document.createElement("div");
                     item.className = "search-item";
-                    item.textContent = site.title;
+                    item.textContent = `${site.title} - ${site.address || ""}`;
                     item.onclick = () => {
                         MapModule.zoomToLatLon(site.latitude, site.longitude, 10);
-                        setTimeout(() => MapModule.focusSiteTemporarily(site.title, 5000), 600);
+                        setTimeout(() => {
+                            MapModule.focusSiteTemporarily(site.title, 5000);
+                            ContactsModule.showContactPanel(site.title);
+                        }, 600);
                         searchInput.value = "";
                         searchResults.style.display = "none";
                     };
                     searchResults.appendChild(item);
                 });
             }
+
             searchResults.style.display = "block";
         }, 300));
 
@@ -1091,27 +1188,63 @@ const UIController = (function() {
                 searchResults.style.display = "none";
             }
         });
+
+        let selectedIndex = -1;
+        searchInput.addEventListener("keydown", e => {
+            const items = searchResults.querySelectorAll(".search-item");
+            if (!items.length || searchResults.style.display === "none") return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateActiveItem(items);
+            }
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateActiveItem(items);
+            }
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                    items[selectedIndex].click();
+                }
+            }
+            if (e.key === "Escape") {
+                searchResults.style.display = "none";
+                selectedIndex = -1;
+            }
+        });
+
+        function updateActiveItem(items) {
+            items.forEach((el, i) => {
+                el.classList.toggle("active", i === selectedIndex);
+            });
+            items[selectedIndex]?.scrollIntoView({
+                block: "nearest"
+            });
+        }
     }
 
-    return { init, toggleSidebar, openPanel };
+    return { init, toggleSidebar, openPanel, closeAllPanels };
 })();
 
 // ──────────────────────────────────────────────────────────────
 // App Orchestration
 // ──────────────────────────────────────────────────────────────
-am4core.ready(function() {
+am4core.ready(function () {
     SettingsModule.init();
     MapModule.init();
+    ContactsModule.init();
     MCTModule.init();
     GroupsModule.init();
     MainMapDataModule.init();
     ProblemsModule.init();
     HistoryModule.init();
-    ContactsModule.init();
+    PanelPollingManager.init();
     UIController.init();
 
     document.getElementById("last-update-time").textContent = Utils.formatDateLocal(new Date());
 });
 </script>
-
 {% endblock %}
